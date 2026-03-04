@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Firebase specific
+# DO NOT git track your service account keys
+serviceAccountKey.json
+.runtimeconfig.json
+firebase-debug.log
+.firebase/
+
+# Postgres / Database
+*.sql
+*.dump
+.psql_history
+
+# Build files
+dist/
+build/
