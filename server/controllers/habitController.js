@@ -17,8 +17,15 @@ const createHabit = (req, res) => {
   const { taskName, reminderTime, accountID, planID } = req.body;
 
   // input validation 
+  if (!taskName && !reminderTime) {
+    return res.status(400).json({ error: 'Task name and reminder time are required' });
+  }
+  
   if (!taskName) {
     return res.status(400).json({ error: 'Task name is required' });
+  }
+  if (!reminderTime) {
+    return res.status(400).json({ error: 'Reminder time is required' });
   }
 
   // successful database save simulation
