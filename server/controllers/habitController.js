@@ -8,9 +8,32 @@ const getHabits = (req, res) => {
 };
 
 const createHabit = (req, res) => {
-  const { title } = req.body;
-  const newHabit = { id: Date.now(), title, completed: false, count: 0 };
-  res.status(201).json(newHabit);
+  // authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+
+  // class diagram variables
+  const { taskName, reminderTime, accountID, planID } = req.body;
+
+  // input validation 
+  if (!taskName) {
+    return res.status(400).json({ error: 'Task name is required' });
+  }
+
+  // successful database save simulation
+  res.status(201).json({
+    message: 'Task successfully created',
+    task: {
+      taskID: Date.now(),
+      taskName: taskName,
+      reminderTime: reminderTime,
+      isCompleted: false, 
+      accountID: accountID,
+      planID: planID 
+    }
+  });
 };
 
 module.exports = { getHabits, createHabit };
+

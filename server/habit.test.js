@@ -20,7 +20,7 @@ describe('Habit Addition API (POST /api/habits)', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('Task successfully created'); // validates "return" state
-    expect(response.body.task).toHaveProperty('taskID'); // validates Class attributes
+    expect(response.body.task).toHaveProperty('taskID'); // validates class attributes
     expect(response.body.task.taskName).toBe('Drink Water');
     expect(response.body.task.isCompleted).toBe(false);
   });
@@ -36,7 +36,7 @@ describe('Habit Addition API (POST /api/habits)', () => {
 
     const response = await request(app)
       .post('/api/habits')
-      // Intentionally trigger the "No" path
+      // intentionally trigger the "No" path
       .send(newTask);
 
     expect(response.status).toBe(401);
