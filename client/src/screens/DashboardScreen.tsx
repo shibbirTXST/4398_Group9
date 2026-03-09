@@ -245,6 +245,13 @@ export default function DashboardScreen({route, navigation}: any) {
                     <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
                   </View>
                 )}
+                right={props => (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text {...props} style={styles.count}>{habit.count}/1</Text>
+                    <IconButton icon="pencil" onPress={() => openEditDialog(habit)} />
+                    <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
+                  </View>
+                )}
                 style={styles.habitItem}
               />
             ))}

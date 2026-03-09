@@ -5,6 +5,13 @@ let habits = [
 ];
 
 const getHabits = (req, res) => {
+let habits = [
+  { id: 1, title: 'Drink Water', completed: false, count: 0 },
+  { id: 2, title: 'Read for 30 mins', completed: true, count: 1 },
+  { id: 3, title: 'Exercise', completed: false, count: 0 },
+];
+
+const getHabits = (req, res) => {
   res.status(200).json(habits);
 };
 
