@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Portal, Dialog, TextInput, Button } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,11 +20,95 @@ export default function DashboardScreen() {
     { id: '2', title: 'Read for 30 mins', completed: true, count: 1 },
     { id: '3', title: 'Exercise', completed: false, count: 0 },
   ]);
+  const [dialogVisible, setDialogVisible] = React.useState(false);
+  const [title, setTitle] = React.useState('');
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editingId, setEditingId] = React.useState<string | null>(null);
 
   const toggleHabit = (id: string) => {
     setHabits(habits.map(h => 
       h.id === id ? { ...h, completed: !h.completed } : h
     ));
+  };
+
+  React.useEffect(() => {
+    // load habits from API
+    const load = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/habits');
+        if (!res.ok) throw new Error('Failed to fetch habits');
+        const data = await res.json();
+        // ensure ids are strings for list keys
+        setHabits(data.map((h: any) => ({ ...h, id: String(h.id) })));
+      } catch (err) {
+        console.warn('Could not load habits:', err);
+      }
+    };
+    load();
+  }, []);
+
+  const createHabit = async () => {
+    if (!title.trim()) return;
+    try {
+      const res = await fetch('http://localhost:5000/api/habits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title.trim() }),
+      });
+      if (!res.ok) throw new Error('Create failed');
+      const created = await res.json();
+      setHabits(prev => [...prev, { ...created, id: String(created.id) }]);
+      setTitle('');
+      setDialogVisible(false);
+    } catch (err) {
+      console.error('Error creating habit', err);
+    }
+  };
+
+  const updateHabit = async () => {
+    if (!title.trim() || !editingId) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/habits/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title.trim() }),
+      });
+      if (!res.ok) throw new Error('Update failed');
+      const updated = await res.json();
+      setHabits(prev => prev.map(h => h.id === editingId ? { ...h, title: updated.title } : h));
+      setTitle('');
+      setDialogVisible(false);
+      setIsEditing(false);
+      setEditingId(null);
+    } catch (err) {
+      console.error('Error updating habit', err);
+    }
+  };
+
+  const deleteHabit = async (id: string) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/habits/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Delete failed');
+      setHabits(prev => prev.filter(h => h.id !== id));
+    } catch (err) {
+      console.error('Error deleting habit', err);
+    }
+  };
+
+  const openEditDialog = (habit: any) => {
+    setTitle(habit.title);
+    setIsEditing(true);
+    setEditingId(habit.id);
+    setDialogVisible(true);
+  };
+
+  const openCreateDialog = () => {
+    setTitle('');
+    setIsEditing(false);
+    setEditingId(null);
+    setDialogVisible(true);
   };
 
   return (
@@ -52,7 +136,13 @@ export default function DashboardScreen() {
                     onPress={() => toggleHabit(habit.id)}
                    />
                 )}
-                right={props => <Text {...props} style={styles.count}>{habit.count}/1</Text>}
+                right={props => (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text {...props} style={styles.count}>{habit.count}/1</Text>
+                    <IconButton icon="pencil" onPress={() => openEditDialog(habit)} />
+                    <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
+                  </View>
+                )}
                 style={styles.habitItem}
               />
             ))}
@@ -60,9 +150,25 @@ export default function DashboardScreen() {
           <FAB
             icon="plus"
             style={styles.fab}
-            onPress={() => console.log('Add Habit')}
+            onPress={openCreateDialog}
             label="New Habit"
           />
+          <Portal>
+            <Dialog visible={dialogVisible} onDismiss={() => { setDialogVisible(false); setIsEditing(false); setEditingId(null); setTitle(''); }}>
+              <Dialog.Title>{isEditing ? 'Edit Habit' : 'New Habit'}</Dialog.Title>
+              <Dialog.Content>
+                <TextInput
+                  label="Title"
+                  value={title}
+                  onChangeText={setTitle}
+                />
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={() => { setDialogVisible(false); setIsEditing(false); setEditingId(null); setTitle(''); }}>Cancel</Button>
+                <Button onPress={isEditing ? updateHabit : createHabit}>{isEditing ? 'Update' : 'Create'}</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </SafeAreaView>
       </PaperProvider>
     </SafeAreaProvider>
