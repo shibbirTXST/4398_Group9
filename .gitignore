@@ -25,3 +25,6 @@ lerna-debug.log*
 # --- Dependencies ---
 node_modules/
 jspm_packages/
+
+# Jest coverage output
+coverage/
