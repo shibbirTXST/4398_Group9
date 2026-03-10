@@ -21,10 +21,11 @@ export default function DashboardScreen() {
     { id: '3', title: 'Exercise', completed: false, count: 0 },
   ]);
   const [dialogVisible, setDialogVisible] = React.useState(false);
+  const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
   const [title, setTitle] = React.useState('');
   const [isEditing, setIsEditing] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [menuVisible, setMenuVisible] = React.useState(false);
+  const [accMenuVisible, setAccMenuVisible] = React.useState(false);
 
   const toggleHabit = (id: string) => {
     setHabits(habits.map(h => 
@@ -112,12 +113,24 @@ export default function DashboardScreen() {
     setDialogVisible(true);
   };
 
-  const openMenu = () => setMenuVisible(true);
-  const closeMenu = () => setMenuVisible(false);
+  const openAccMenu = () => setAccMenuVisible(true);
+  const closeAccMenu = () => setAccMenuVisible(false);
+
+  const showDeleteAccDialog = () => {
+    setDeleteAccDialogVisible(true);
+    closeAccMenu();
+  };
+
+  const hideDeleteAccDialog = () => setDeleteAccDialogVisible(false);
+
+  const confirmDelete = () => {
+    console.log("Proceeding with account deletion...");
+    hideDeleteAccDialog();
+  }
 
   const handleDeleteAccount = () => {
     console.log("Delete account pressed");
-    closeMenu();
+    closeAccMenu();
   }
 
   return (
@@ -128,19 +141,33 @@ export default function DashboardScreen() {
           <Appbar.Action icon="logout" onPress={logout} />
           
           <Menu
-            visible={menuVisible}
-            onDismiss={closeMenu}
+            visible={accMenuVisible}
+            onDismiss={closeAccMenu}
             anchor={
-              <Appbar.Action icon="account" onPress={openMenu} />
+              <Appbar.Action icon="account" onPress={openAccMenu} />
             }
           >
             <Menu.Item
-              onPress={handleDeleteAccount}
+              onPress={showDeleteAccDialog}
               title="Delete account"
               leadingIcon="delete"
               titleStyle={{ color: 'red' }}
             />
           </Menu>
+
+          <Portal>
+            <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
+            <Dialog.Content>
+              <Text variant="bodyMedium">
+                This action is permanent. All your habit data will be lost forever.
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={hideDeleteAccDialog}>Cancel</Button>
+              <Button onPress={confirmDelete} textColor='red'>Delete</Button>
+            </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </Appbar.Header>
         <SafeAreaView style={styles.container}>
           <View style={styles.content}>
