@@ -44,22 +44,42 @@ const createHabit = (req, res) => {
 };
 
 const deleteHabit = (req, res) => {
+  //authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+
+  //reading in
   const { id } = req.params;
   const index = habits.findIndex(h => h.id == id);
+  //error handling for habit not found
   if (index === -1) {
     return res.status(404).json({ message: 'Habit not found' });
   }
+  //deletion operation
   habits.splice(index, 1);
   res.status(200).json({ message: 'Habit deleted' });
 };
 
 const updateHabit = (req, res) => {
+  //authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+  //reading in
   const { id } = req.params;
   const { title } = req.body;
+
+  //error handling for missing title
+  if(!title) {
+    return res.status(400).json({ error: 'Error Message Return: Title is required' });
+  }
+  //error handling for id not found
   const index = habits.findIndex(h => h.id == id);
   if (index === -1) {
     return res.status(404).json({ message: 'Habit not found' });
   }
+  //update operation
   habits[index].title = title;
   res.status(200).json(habits[index]);
 };

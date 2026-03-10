@@ -28,6 +28,20 @@ Start the server:
 npm run dev
 ```
 
+#### Running Tests
+All server-side tests are executed from the workspace root using Jest and Supertest. The necessary packages are installed at the root level.
+```bash
+# install on root if you haven't already
+npm install
+
+# run tests
+npm test
+```
+You can also invoke the test script from inside `server`:
+```bash
+cd server && npm test
+```
+
 ### 3. Frontend (Client)
 Navigate to the `client` directory and install dependencies:
 ```bash
