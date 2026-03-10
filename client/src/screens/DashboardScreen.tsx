@@ -26,6 +26,7 @@ export default function DashboardScreen({route, navigation}: any) {
   const [title, setTitle] = React.useState('');
   const [isEditing, setIsEditing] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [menuVisible, setMenuVisible] = React.useState(false);
   const [accMenuVisible, setAccMenuVisible] = React.useState(false);
 
   // state for the pop-up snackbar message
