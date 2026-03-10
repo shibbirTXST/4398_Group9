@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,13 +13,42 @@ const theme = {
   },
 };
 
-export default function DashboardScreen() {
+export default function DashboardScreen({route, navigation}: any) {
   const { logout } = useAuth();
   const [habits, setHabits] = React.useState([
     { id: '1', title: 'Drink Water', completed: false, count: 0 },
     { id: '2', title: 'Read for 30 mins', completed: true, count: 1 },
     { id: '3', title: 'Exercise', completed: false, count: 0 },
   ]);
+
+  // state for the pop-up snackbar message
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  // listen for new habits coming back from the HabitAdditionScreen
+  useEffect(() => {
+    if (route.params?.newHabit) {
+      const { newHabit, successMessage } = route.params;
+
+      // add the new habit to the top of our list
+      setHabits(prevHabits => [
+        // map the backend habit object to our frontend format
+        { 
+          id: newHabit.taskID.toString(), 
+          title: newHabit.taskName,       
+          completed: newHabit.isCompleted, 
+          count: 0 
+        },
+        ...prevHabits 
+      ]);
+
+      // trigger the pop-up message
+      setSnackbarMessage(successMessage);
+      setSnackbarVisible(true);
+
+      navigation.setParams({ newHabit: undefined, successMessage: undefined });
+    }
+  }, [route.params?.newHabit]);
 
   const toggleHabit = (id: string) => {
     setHabits(habits.map(h => 
@@ -60,9 +89,24 @@ export default function DashboardScreen() {
           <FAB
             icon="plus"
             style={styles.fab}
-            onPress={() => console.log('Add Habit')}
+            onPress={() => navigation.navigate('HabitAdditionScreen')}
             label="New Habit"
           />
+
+          {/*the pop-up notification*/}
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={3000} // disappears after 3 seconds
+            action={{
+              label: 'Close',
+              onPress: () => {
+                setSnackbarVisible(false);
+              },
+            }}>
+            {snackbarMessage}
+          </Snackbar>
+
         </SafeAreaView>
       </PaperProvider>
     </SafeAreaProvider>
