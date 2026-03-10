@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu, Divider } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 
@@ -24,6 +24,7 @@ export default function DashboardScreen({route, navigation}: any) {
   const [title, setTitle] = React.useState('');
   const [isEditing, setIsEditing] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [menuVisible, setMenuVisible] = React.useState(false);
 
   // state for the pop-up snackbar message
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -140,13 +141,35 @@ export default function DashboardScreen({route, navigation}: any) {
     setDialogVisible(true);
   };
 
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
+
+  const handleDeleteAccount = () => {
+    console.log("Delete account pressed");
+    closeMenu();
+  }
+
   return (
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <Appbar.Header>
           <Appbar.Content title="Habit Tracker" />
           <Appbar.Action icon="logout" onPress={logout} />
-          <Appbar.Action icon="account" onPress={() => {}} />
+          
+          <Menu
+            visible={menuVisible}
+            onDismiss={closeMenu}
+            anchor={
+              <Appbar.Action icon="account" onPress={openMenu} />
+            }
+          >
+            <Menu.Item
+              onPress={handleDeleteAccount}
+              title="Delete account"
+              leadingIcon="delete"
+              titleStyle={{ color: 'red' }}
+            />
+          </Menu>
         </Appbar.Header>
         <SafeAreaView style={styles.container}>
           <View style={styles.content}>
