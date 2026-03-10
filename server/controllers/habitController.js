@@ -48,10 +48,13 @@ const deleteHabit = (req, res) => {
   if (!req.headers.authorization) {
     return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
   }
-
   //reading in
   const { id } = req.params;
   const index = habits.findIndex(h => h.id == id);
+  //error handling for invalid id format
+  if(id != parseInt(id)) {
+    return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
+  }
   //error handling for habit not found
   if (index === -1) {
     return res.status(404).json({ message: 'Habit not found' });
@@ -69,6 +72,11 @@ const updateHabit = (req, res) => {
   //reading in
   const { id } = req.params;
   const { title } = req.body;
+
+  //error handling for invalid id format
+  if(id != parseInt(id)) {
+    return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
+  }
 
   //error handling for missing title
   if(!title) {
