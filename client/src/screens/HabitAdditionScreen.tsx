@@ -18,6 +18,13 @@ export default function HabitAdditionScreen() {
       return;
     }
 
+    // format validation for a valid 24-hour time 
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (!timeRegex.test(reminderTime)) {
+      setError('Please enter a valid 24-hour time (e.g., 14:30)');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
