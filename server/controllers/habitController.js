@@ -67,11 +67,17 @@ const deleteHabit = (req, res) => {
     return res.status(404).json({ message: 'Habit not found' });
   }
   //deletion operation
+  //deletion operation
   habits.splice(index, 1);
   res.status(200).json({ message: 'Habit deleted' });
 };
 
 const updateHabit = (req, res) => {
+  //authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+  //reading in
   //authentication check
   if (!req.headers.authorization) {
     return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
@@ -94,6 +100,7 @@ const updateHabit = (req, res) => {
   if (index === -1) {
     return res.status(404).json({ message: 'Habit not found' });
   }
+  //update operation
   //update operation
   habits[index].title = title;
   res.status(200).json(habits[index]);
