@@ -168,6 +168,7 @@ export default function DashboardScreen({route, navigation}: any) {
   const handleDeleteAccount = () => {
     console.log("Delete account pressed");
     closeAccMenu();
+    closeAccMenu();
   }
 
   return (
@@ -180,11 +181,15 @@ export default function DashboardScreen({route, navigation}: any) {
           <Menu
             visible={accMenuVisible}
             onDismiss={closeAccMenu}
+            visible={accMenuVisible}
+            onDismiss={closeAccMenu}
             anchor={
+              <Appbar.Action icon="account" onPress={openAccMenu} />
               <Appbar.Action icon="account" onPress={openAccMenu} />
             }
           >
             <Menu.Item
+              onPress={showDeleteAccDialog}
               onPress={showDeleteAccDialog}
               title="Delete account"
               leadingIcon="delete"
