@@ -22,6 +22,7 @@ export default function DashboardScreen() {
   ]);
   const [dialogVisible, setDialogVisible] = React.useState(false);
   const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
+  const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
   const [title, setTitle] = React.useState('');
   const [isEditing, setIsEditing] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
@@ -126,6 +127,12 @@ export default function DashboardScreen() {
   const confirmDelete = () => {
     console.log("Proceeding with account deletion...");
     hideDeleteAccDialog();
+    setDeleteSuccessDialogVisible(true);
+  }
+
+  const handleFinalLogout = () => {
+    setDeleteSuccessDialogVisible(false);
+    logout();
   }
 
   const handleDeleteAccount = () => {
@@ -139,7 +146,7 @@ export default function DashboardScreen() {
         <Appbar.Header>
           <Appbar.Content title="Habit Tracker" />
           <Appbar.Action icon="logout" onPress={logout} />
-          
+          {/* Account Menu */}
           <Menu
             visible={accMenuVisible}
             onDismiss={closeAccMenu}
@@ -154,7 +161,8 @@ export default function DashboardScreen() {
               titleStyle={{ color: 'red' }}
             />
           </Menu>
-
+          
+          {/* Delete Account Dialog */}
           <Portal>
             <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
             <Dialog.Content>
@@ -165,6 +173,21 @@ export default function DashboardScreen() {
             <Dialog.Actions>
               <Button onPress={hideDeleteAccDialog}>Cancel</Button>
               <Button onPress={confirmDelete} textColor='red'>Delete</Button>
+            </Dialog.Actions>
+            </Dialog>
+          </Portal>
+
+          {/* Delete Account Success Dialog */}
+          <Portal>
+            <Dialog visible={deleteSuccessDialogVisible} onDismiss={handleFinalLogout}>
+            <Dialog.Title>Success</Dialog.Title>
+            <Dialog.Content>
+              <Text variant="bodyMedium">
+                Account successfully deleted.
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={handleFinalLogout}>OK</Button>
             </Dialog.Actions>
             </Dialog>
           </Portal>
