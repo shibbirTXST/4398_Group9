@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('./index');
+const app = require('../app');
 
 // test cases
 describe('Habit Addition API (POST /api/habits)', () => {

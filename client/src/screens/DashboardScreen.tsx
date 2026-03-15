@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu, Divider } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu} from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 
@@ -24,9 +24,7 @@ export default function DashboardScreen({route, navigation}: any) {
   const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
   const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
   const [title, setTitle] = React.useState('');
-  const [isEditing, setIsEditing] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [menuVisible, setMenuVisible] = React.useState(false);
   const [accMenuVisible, setAccMenuVisible] = React.useState(false);
 
   // state for the pop-up snackbar message
@@ -80,24 +78,6 @@ export default function DashboardScreen({route, navigation}: any) {
     load();
   }, []);
 
-  const createHabit = async () => {
-    if (!title.trim()) return;
-    try {
-      const res = await fetch('http://localhost:5000/api/habits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: title.trim() }),
-      });
-      if (!res.ok) throw new Error('Create failed');
-      const created = await res.json();
-      setHabits(prev => [...prev, { ...created, id: String(created.id) }]);
-      setTitle('');
-      setDialogVisible(false);
-    } catch (err) {
-      console.error('Error creating habit', err);
-    }
-  };
-
   const updateHabit = async () => {
     if (!title.trim() || !editingId) return;
     try {
@@ -111,7 +91,7 @@ export default function DashboardScreen({route, navigation}: any) {
       setHabits(prev => prev.map(h => h.id === editingId ? { ...h, title: updated.title } : h));
       setTitle('');
       setDialogVisible(false);
-      setIsEditing(false);
+      //setIsEditing(false);
       setEditingId(null);
     } catch (err) {
       console.error('Error updating habit', err);
@@ -132,15 +112,7 @@ export default function DashboardScreen({route, navigation}: any) {
 
   const openEditDialog = (habit: any) => {
     setTitle(habit.title);
-    setIsEditing(true);
     setEditingId(habit.id);
-    setDialogVisible(true);
-  };
-
-  const openCreateDialog = () => {
-    setTitle('');
-    setIsEditing(false);
-    setEditingId(null);
     setDialogVisible(true);
   };
 
@@ -168,7 +140,6 @@ export default function DashboardScreen({route, navigation}: any) {
   const handleDeleteAccount = () => {
     console.log("Delete account pressed");
     closeAccMenu();
-    closeAccMenu();
   }
 
   return (
@@ -181,15 +152,11 @@ export default function DashboardScreen({route, navigation}: any) {
           <Menu
             visible={accMenuVisible}
             onDismiss={closeAccMenu}
-            visible={accMenuVisible}
-            onDismiss={closeAccMenu}
             anchor={
-              <Appbar.Action icon="account" onPress={openAccMenu} />
               <Appbar.Action icon="account" onPress={openAccMenu} />
             }
           >
             <Menu.Item
-              onPress={showDeleteAccDialog}
               onPress={showDeleteAccDialog}
               title="Delete account"
               leadingIcon="delete"
@@ -251,13 +218,6 @@ export default function DashboardScreen({route, navigation}: any) {
                     <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
                   </View>
                 )}
-                right={props => (
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text {...props} style={styles.count}>{habit.count}/1</Text>
-                    <IconButton icon="pencil" onPress={() => openEditDialog(habit)} />
-                    <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
-                  </View>
-                )}
                 style={styles.habitItem}
               />
             ))}
@@ -284,8 +244,8 @@ export default function DashboardScreen({route, navigation}: any) {
           </Snackbar>
 
           <Portal>
-            <Dialog visible={dialogVisible} onDismiss={() => { setDialogVisible(false); setIsEditing(false); setEditingId(null); setTitle(''); }}>
-              <Dialog.Title>{isEditing ? 'Edit Habit' : 'New Habit'}</Dialog.Title>
+            <Dialog visible={dialogVisible} onDismiss={() => { setDialogVisible(false); setEditingId(null); setTitle(''); }}>
+              <Dialog.Title>{'Edit Habit'}</Dialog.Title>
               <Dialog.Content>
                 <TextInput
                   label="Title"
@@ -294,8 +254,8 @@ export default function DashboardScreen({route, navigation}: any) {
                 />
               </Dialog.Content>
               <Dialog.Actions>
-                <Button onPress={() => { setDialogVisible(false); setIsEditing(false); setEditingId(null); setTitle(''); }}>Cancel</Button>
-                <Button onPress={isEditing ? updateHabit : createHabit}>{isEditing ? 'Update' : 'Create'}</Button>
+                <Button onPress={() => { setDialogVisible(false); setEditingId(null); setTitle(''); }}>Cancel</Button>
+                <Button onPress={updateHabit}>Update</Button>
               </Dialog.Actions>
             </Dialog>
           </Portal>
