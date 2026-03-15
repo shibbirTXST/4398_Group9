@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu} from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
+import { auth } from '../config/firebase';
 
 const theme = {
   ...DefaultTheme,
@@ -66,11 +67,18 @@ export default function DashboardScreen({route, navigation}: any) {
   }, []);
 
   const updateHabit = async () => {
+    //check if user is authenticated before allowing update
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
     if (!title.trim() || !editingId) return;
     try {
       const res = await fetch(`http://localhost:5000/api/habits/${editingId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title: title.trim() }),
       });
       if (!res.ok) throw new Error('Update failed');
@@ -78,7 +86,6 @@ export default function DashboardScreen({route, navigation}: any) {
       setHabits(prev => prev.map(h => h.id === editingId ? { ...h, title: updated.title } : h));
       setTitle('');
       setDialogVisible(false);
-      //setIsEditing(false);
       setEditingId(null);
     } catch (err) {
       console.error('Error updating habit', err);
@@ -86,9 +93,19 @@ export default function DashboardScreen({route, navigation}: any) {
   };
 
   const deleteHabit = async (id: string) => {
+    //check if user is authenticated before allowing delete
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
     try {
       const res = await fetch(`http://localhost:5000/api/habits/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       if (!res.ok) throw new Error('Delete failed');
       setHabits(prev => prev.filter(h => h.id !== id));
