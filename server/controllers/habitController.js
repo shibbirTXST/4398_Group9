@@ -28,6 +28,8 @@ const createHabit = (req, res) => {
   if (!reminderTime) {
     return res.status(400).json({ error: 'Reminder time is required' });
   }
+  const newHabit = { id: Date.now(), title: taskName, completed: false, count: 0 };
+  habits.push(newHabit);
 
   // successful database save simulation
   res.status(201).json({

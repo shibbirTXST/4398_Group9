@@ -35,19 +35,6 @@ export default function DashboardScreen({route, navigation}: any) {
   useEffect(() => {
     if (route.params?.newHabit) {
       const { newHabit, successMessage } = route.params;
-
-      // add the new habit to the top of our list
-      setHabits(prevHabits => [
-        // map the backend habit object to our frontend format
-        { 
-          id: newHabit.taskID.toString(), 
-          title: newHabit.taskName,       
-          completed: newHabit.isCompleted, 
-          count: 0 
-        },
-        ...prevHabits 
-      ]);
-
       // trigger the pop-up message
       setSnackbarMessage(successMessage);
       setSnackbarVisible(true);
