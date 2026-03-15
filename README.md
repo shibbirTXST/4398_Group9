@@ -40,18 +40,22 @@ npx expo start
 You can use the Expo Go app on your phone or an emulator to view the app.
 
 #### Running Tests
-All server-side tests are executed from the workspace root using Jest and Supertest. The necessary packages are installed at the root level.
+All tests are executed from the workspace root using Jest and Supertest. The necessary packages are installed at the root level.
 ```bash
 # install on root if you haven't already
-npm install --save-dev jest
-npm install supertest --save-dev
+npm install
 
-# run tests
+# run tests (Both Server and Client)
 npm test
 ```
-You can also invoke the test script from inside `server`:
+You can also invoke the test script from inside `server` or `client` to test only server-side/client-side components:
 ```bash
+#Server-side
 cd server
+npm test
+
+#Client-side
+cd client
 npm test
 ```
 
