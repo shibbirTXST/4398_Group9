@@ -95,16 +95,3 @@ const updateHabit = (req, res) => {
 };
 
 module.exports = { getHabits, createHabit, deleteHabit, updateHabit };
-
-const updateHabit = (req, res) => {
-  const { id } = req.params;
-  const { title } = req.body;
-  const index = habits.findIndex(h => h.id == id);
-  if (index === -1) {
-    return res.status(404).json({ message: 'Habit not found' });
-  }
-  habits[index].title = title;
-  res.status(200).json(habits[index]);
-};
-
-module.exports = { getHabits, createHabit, deleteHabit, updateHabit };

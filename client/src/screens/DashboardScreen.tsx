@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu} from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
+import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 const theme = {
@@ -27,6 +28,8 @@ export default function DashboardScreen({route, navigation}: any) {
   const [title, setTitle] = React.useState('');
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [accMenuVisible, setAccMenuVisible] = React.useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // state for the pop-up snackbar message
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -130,6 +133,35 @@ export default function DashboardScreen({route, navigation}: any) {
 
   const hideDeleteAccDialog = () => setDeleteAccDialogVisible(false);
 
+  const deleteAccount = async () => {
+    try {
+
+      const user = auth.currentUser;
+
+      if (!user) throw new Error("No user logged in");
+
+      const credential = EmailAuthProvider.credential(email, password);
+
+      await reauthenticateWithCredential(user, credential);
+
+      const token = await user.getIdToken();
+
+      const res = await fetch("http://localhost:5000/api/delete-account", {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!res.ok) throw new Error("Failed to delete account");
+
+      confirmDelete();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   const confirmDelete = () => {
     console.log("Proceeding with account deletion...");
     hideDeleteAccDialog();
@@ -172,13 +204,25 @@ export default function DashboardScreen({route, navigation}: any) {
           <Portal>
             <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
             <Dialog.Content>
-              <Text variant="bodyMedium">
-                This action is permanent. All your habit data will be lost forever.
+              <Text>
+                Please reenter your account details to delete your account. This action is permanent.
               </Text>
+              <TextInput
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+              />
+
+              <TextInput
+                label="Password"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={hideDeleteAccDialog}>Cancel</Button>
-              <Button onPress={confirmDelete} textColor='red'>Delete</Button>
+              <Button onPress={deleteAccount} textColor='red'>Delete</Button>
             </Dialog.Actions>
             </Dialog>
           </Portal>

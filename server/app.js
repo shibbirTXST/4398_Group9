@@ -13,4 +13,7 @@ app.get('/', (req, res) => {
 const habitRoutes = require('./routes/habitRoutes');
 app.use('/api/habits', habitRoutes);
 
+const authRoutes = require('./routes/auth');
+app.use('/api', authRoutes);
+
 module.exports = app;
