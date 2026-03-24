@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Portal, Dialog, TextInput, Button, Menu, Divider } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu} from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
+import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 const theme = {
   ...DefaultTheme,
@@ -13,7 +15,7 @@ const theme = {
   },
 };
 
-export default function DashboardScreen() {
+export default function DashboardScreen({route, navigation}: any) {
   const { logout } = useAuth();
   const [habits, setHabits] = React.useState([
     { id: '1', title: 'Drink Water', completed: false, count: 0 },
@@ -24,9 +26,26 @@ export default function DashboardScreen() {
   const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
   const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
   const [title, setTitle] = React.useState('');
-  const [isEditing, setIsEditing] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [accMenuVisible, setAccMenuVisible] = React.useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // state for the pop-up snackbar message
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  // listen for new habits coming back from the HabitAdditionScreen
+  useEffect(() => {
+    if (route.params?.newHabit) {
+      const { newHabit, successMessage } = route.params;
+      // trigger the pop-up message
+      setSnackbarMessage(successMessage);
+      setSnackbarVisible(true);
+
+      navigation.setParams({ newHabit: undefined, successMessage: undefined });
+    }
+  }, [route.params?.newHabit]);
 
   const toggleHabit = (id: string) => {
     setHabits(habits.map(h => 
@@ -50,30 +69,19 @@ export default function DashboardScreen() {
     load();
   }, []);
 
-  const createHabit = async () => {
-    if (!title.trim()) return;
-    try {
-      const res = await fetch('http://localhost:5000/api/habits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: title.trim() }),
-      });
-      if (!res.ok) throw new Error('Create failed');
-      const created = await res.json();
-      setHabits(prev => [...prev, { ...created, id: String(created.id) }]);
-      setTitle('');
-      setDialogVisible(false);
-    } catch (err) {
-      console.error('Error creating habit', err);
-    }
-  };
-
   const updateHabit = async () => {
+    //check if user is authenticated before allowing update
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
     if (!title.trim() || !editingId) return;
     try {
       const res = await fetch(`http://localhost:5000/api/habits/${editingId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title: title.trim() }),
       });
       if (!res.ok) throw new Error('Update failed');
@@ -81,7 +89,6 @@ export default function DashboardScreen() {
       setHabits(prev => prev.map(h => h.id === editingId ? { ...h, title: updated.title } : h));
       setTitle('');
       setDialogVisible(false);
-      setIsEditing(false);
       setEditingId(null);
     } catch (err) {
       console.error('Error updating habit', err);
@@ -89,9 +96,19 @@ export default function DashboardScreen() {
   };
 
   const deleteHabit = async (id: string) => {
+    //check if user is authenticated before allowing delete
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
     try {
       const res = await fetch(`http://localhost:5000/api/habits/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       if (!res.ok) throw new Error('Delete failed');
       setHabits(prev => prev.filter(h => h.id !== id));
@@ -102,15 +119,7 @@ export default function DashboardScreen() {
 
   const openEditDialog = (habit: any) => {
     setTitle(habit.title);
-    setIsEditing(true);
     setEditingId(habit.id);
-    setDialogVisible(true);
-  };
-
-  const openCreateDialog = () => {
-    setTitle('');
-    setIsEditing(false);
-    setEditingId(null);
     setDialogVisible(true);
   };
 
@@ -123,6 +132,35 @@ export default function DashboardScreen() {
   };
 
   const hideDeleteAccDialog = () => setDeleteAccDialogVisible(false);
+
+  const deleteAccount = async () => {
+    try {
+
+      const user = auth.currentUser;
+
+      if (!user) throw new Error("No user logged in");
+
+      const credential = EmailAuthProvider.credential(email, password);
+
+      await reauthenticateWithCredential(user, credential);
+
+      const token = await user.getIdToken();
+
+      const res = await fetch("http://localhost:5000/api/delete-account", {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!res.ok) throw new Error("Failed to delete account");
+
+      confirmDelete();
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   const confirmDelete = () => {
     console.log("Proceeding with account deletion...");
@@ -166,13 +204,25 @@ export default function DashboardScreen() {
           <Portal>
             <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
             <Dialog.Content>
-              <Text variant="bodyMedium">
-                This action is permanent. All your habit data will be lost forever.
+              <Text>
+                Please reenter your account details to delete your account. This action is permanent.
               </Text>
+              <TextInput
+                label="Email"
+                value={email}
+                onChangeText={setEmail}
+              />
+
+              <TextInput
+                label="Password"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={hideDeleteAccDialog}>Cancel</Button>
-              <Button onPress={confirmDelete} textColor='red'>Delete</Button>
+              <Button onPress={deleteAccount} textColor='red'>Delete</Button>
             </Dialog.Actions>
             </Dialog>
           </Portal>
@@ -223,12 +273,27 @@ export default function DashboardScreen() {
           <FAB
             icon="plus"
             style={styles.fab}
-            onPress={openCreateDialog}
+            onPress={() => navigation.navigate('HabitAdditionScreen')}
             label="New Habit"
           />
+
+          {/*the pop-up notification*/}
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={3000} // disappears after 3 seconds
+            action={{
+              label: 'Close',
+              onPress: () => {
+                setSnackbarVisible(false);
+              },
+            }}>
+            {snackbarMessage}
+          </Snackbar>
+
           <Portal>
-            <Dialog visible={dialogVisible} onDismiss={() => { setDialogVisible(false); setIsEditing(false); setEditingId(null); setTitle(''); }}>
-              <Dialog.Title>{isEditing ? 'Edit Habit' : 'New Habit'}</Dialog.Title>
+            <Dialog visible={dialogVisible} onDismiss={() => { setDialogVisible(false); setEditingId(null); setTitle(''); }}>
+              <Dialog.Title>{'Edit Habit'}</Dialog.Title>
               <Dialog.Content>
                 <TextInput
                   label="Title"
@@ -237,8 +302,8 @@ export default function DashboardScreen() {
                 />
               </Dialog.Content>
               <Dialog.Actions>
-                <Button onPress={() => { setDialogVisible(false); setIsEditing(false); setEditingId(null); setTitle(''); }}>Cancel</Button>
-                <Button onPress={isEditing ? updateHabit : createHabit}>{isEditing ? 'Update' : 'Create'}</Button>
+                <Button onPress={() => { setDialogVisible(false); setEditingId(null); setTitle(''); }}>Cancel</Button>
+                <Button onPress={updateHabit}>Update</Button>
               </Dialog.Actions>
             </Dialog>
           </Portal>

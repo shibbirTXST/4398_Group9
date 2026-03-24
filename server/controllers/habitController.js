@@ -9,10 +9,40 @@ const getHabits = (req, res) => {
 };
 
 const createHabit = (req, res) => {
-  const { title } = req.body;
-  const newHabit = { id: Date.now(), title, completed: false, count: 0 };
+  // authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+
+  // class diagram variables
+  const { taskName, reminderTime, accountID, planID } = req.body;
+
+  // input validation 
+  if (!taskName && !reminderTime) {
+    return res.status(400).json({ error: 'Task name and reminder time are required' });
+  }
+  
+  if (!taskName) {
+    return res.status(400).json({ error: 'Task name is required' });
+  }
+  if (!reminderTime) {
+    return res.status(400).json({ error: 'Reminder time is required' });
+  }
+  const newHabit = { id: Date.now(), title: taskName, completed: false, count: 0 };
   habits.push(newHabit);
-  res.status(201).json({ message: 'Task successfully created', task: newHabit });
+
+  // successful database save simulation
+  res.status(201).json({
+    message: 'Task successfully created',
+    task: {
+      taskID: Date.now(),
+      taskName: taskName,
+      reminderTime: reminderTime,
+      isCompleted: false, 
+      accountID: accountID,
+      planID: planID 
+    }
+  });
 };
 
 const deleteHabit = (req, res) => {
