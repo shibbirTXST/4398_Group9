@@ -21,7 +21,7 @@ const createHabit = (req, res) => {
   if (!taskName && !reminderTime) {
     return res.status(400).json({ error: 'Task name and reminder time are required' });
   }
-  
+
   if (!taskName) {
     return res.status(400).json({ error: 'Task name is required' });
   }
@@ -38,9 +38,9 @@ const createHabit = (req, res) => {
       taskID: Date.now(),
       taskName: taskName,
       reminderTime: reminderTime,
-      isCompleted: false, 
+      isCompleted: false,
       accountID: accountID,
-      planID: planID 
+      planID: planID
     }
   });
 };
@@ -54,7 +54,7 @@ const deleteHabit = (req, res) => {
   const { id } = req.params;
   const index = habits.findIndex(h => h.id == id);
   //error handling for invalid id format
-  if(id != parseInt(id)) {
+  if (id != parseInt(id)) {
     return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
   }
   //error handling for habit not found
@@ -76,12 +76,12 @@ const updateHabit = (req, res) => {
   const { title } = req.body;
 
   //error handling for invalid id format
-  if(id != parseInt(id)) {
+  if (id != parseInt(id)) {
     return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
   }
 
   //error handling for missing title
-  if(!title) {
+  if (!title) {
     return res.status(400).json({ error: 'Error Message Return: Title is required' });
   }
   //error handling for id not found
@@ -94,4 +94,4 @@ const updateHabit = (req, res) => {
   res.status(200).json(habits[index]);
 };
 
-module.exports = { getHabits, createHabit, deleteHabit, updateHabit };
+export { getHabits, createHabit, deleteHabit, updateHabit };

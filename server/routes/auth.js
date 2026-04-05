@@ -1,8 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const admin = require("../firebaseAdmin");
+import express from 'express';
+import admin from '../firebaseAdmin.js';
 
-router.delete("/delete-account", async (req, res) => {
+const authRouter = express.Router();
+
+authRouter.delete("/delete-account", async (req, res) => {
 
   try {
 
@@ -29,4 +30,4 @@ router.delete("/delete-account", async (req, res) => {
 
 });
 
-module.exports = router;
+export { authRouter };

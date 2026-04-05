@@ -1,10 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const { getHabits, createHabit, deleteHabit, updateHabit } = require('../controllers/habitController');
+import express from 'express';
 
-router.get('/', getHabits);
-router.post('/', createHabit);
-router.put('/:id', updateHabit);
-router.delete('/:id', deleteHabit);
+const habitRouter = express.Router();
+import { getHabits, createHabit, deleteHabit, updateHabit } from '../controllers/habitController.js';
 
-module.exports = router;
+habitRouter.get('/', getHabits);
+habitRouter.post('/', createHabit);
+habitRouter.put('/:id', updateHabit);
+habitRouter.delete('/:id', deleteHabit);
+
+export { habitRouter };
