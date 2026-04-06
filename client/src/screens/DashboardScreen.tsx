@@ -35,8 +35,14 @@ export default function DashboardScreen({ route, navigation }: any) {
     }
   }, [route.params?.newHabit]);
 
-  // Load routines and habits from API securely
-  useEffect(() => {
+  const toggleHabit = (id: string) => {
+    setHabits(habits.map(h => 
+      h.id === id ? { ...h, completed: !h.completed, count: 1-h.count } : h
+    ));
+  };
+
+  React.useEffect(() => {
+    // load habits from API
     const load = async () => {
       try {
         const tok = await auth.currentUser?.getIdToken();
