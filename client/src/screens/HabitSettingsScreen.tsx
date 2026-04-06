@@ -1,16 +1,69 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { TextInput, Button, Text, HelperText, Appbar } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { auth } from '../config/firebase';
 
-export default function HabitAdditionScreen() {
+export default function HabitSettingsScreen() {
+
+  const route = useRoute();
+  const { isEditing, habit } = route.params as { isEditing: boolean; habit: any };
+
   const [taskName, setTaskName] = useState('');
   const [reminderTime, setReminderTime] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
+  //Habit update
+  const handleUpdateHabit = async () => {
+    // input validation
+    if (!taskName.trim() || !reminderTime.trim()) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    // format validation for a valid 24-hour time 
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (!timeRegex.test(reminderTime)) {
+      setError('Please enter a valid 24-hour time (e.g., 14:30)');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    //check if user is authenticated before allowing update
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
+    if (!taskName.trim() || !reminderTime.trim()) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/habits/${habit.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ title: taskName.trim(), reminderTime: reminderTime.trim() }),
+      });
+      if (!res.ok) throw new Error('Update failed');
+      setTaskName('');
+      setReminderTime('');
+      const updated = await res.json();
+      navigation.navigate('Dashboard', { 
+        updatedHabit: updated.task,
+        successMessage: 'Habit updated successfully!'
+      });
+    } catch (err) {
+      console.error('Error updating habit', err);
+    }finally {
+      setLoading(false);
+    }
+  };
+
+  //New habit creation
   const handleCreateHabit = async () => {
     // input validation
     if (!taskName.trim() || !reminderTime.trim()) {
@@ -74,7 +127,7 @@ export default function HabitAdditionScreen() {
     <View style={styles.mainContainer}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="New Habit" />
+        <Appbar.Content title={isEditing ? "Edit Habit" : "New Habit"} />
       </Appbar.Header>
 
       <KeyboardAvoidingView
@@ -83,11 +136,15 @@ export default function HabitAdditionScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
-            <Text style={styles.title}>Create a Habit</Text>
-            <Text style={styles.subtitle}>What do you want to track today?</Text>
+            <Text style={styles.title}>
+              {isEditing ? 'Modify a Habit' : 'Create a Habit'}
+            </Text>
+            <Text style={styles.subtitle}>
+              {isEditing ? 'How would you like to modify this habit?' : 'What habit would you like to track?'}
+            </Text>
 
             <TextInput
-              label="Habit Name"
+              label={isEditing ? habit.title : "Habit Name"}
               placeholder="e.g., Drink Water"
               value={taskName}
               onChangeText={setTaskName}
@@ -96,7 +153,7 @@ export default function HabitAdditionScreen() {
             />
 
             <TextInput
-              label="Reminder Time"
+              label={isEditing ? habit.reminderTime : "Reminder Time"}
               placeholder="e.g., 08:00 AM"
               value={reminderTime}
               onChangeText={setReminderTime}
@@ -108,7 +165,7 @@ export default function HabitAdditionScreen() {
 
             <Button
               mode="contained"
-              onPress={handleCreateHabit}
+              onPress={isEditing ? handleUpdateHabit : handleCreateHabit}
               loading={loading}
               disabled={loading}
               style={styles.button}

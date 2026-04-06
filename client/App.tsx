@@ -10,7 +10,7 @@ import { auth } from './src/config/firebase';
 import SignInScreen from './src/screens/SignInScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
-import HabitAdditionScreen from './src/screens/HabitAdditionScreen';
+import HabitSettingsScreen from './src/screens/HabitSettingsScreen';
 import ProgressScreen from './src/screens/ProgressScreen';  
 import { View } from 'react-native';
 import { ComponentProps } from 'react';
@@ -202,7 +202,7 @@ function RootNavigation() {
           name="Home"
           component={HomeTabs}
         />
-        <Stack.Screen name="HabitAdditionScreen" component={HabitAdditionScreen} />
+        <Stack.Screen name="HabitSettingsScreen" component={HabitSettingsScreen} />
         </>
       ) : (
         <>
