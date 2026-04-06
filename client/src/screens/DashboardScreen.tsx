@@ -49,7 +49,7 @@ export default function DashboardScreen({route, navigation}: any) {
 
   const toggleHabit = (id: string) => {
     setHabits(habits.map(h => 
-      h.id === id ? { ...h, completed: !h.completed } : h
+      h.id === id ? { ...h, completed: !h.completed, count: 1-h.count } : h
     ));
   };
 
