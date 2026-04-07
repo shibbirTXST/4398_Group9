@@ -19,6 +19,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     expect(response.status).toBe(200);
     expect(response.body.title).toBe(updatedTitle);
     expect(response.body.reminderTime).toBe(updatedReminderTime);
+    expect(response.body.id).toBe(habitId);
     expect(response.body.planId).toBe(PlanID);
   });
   
