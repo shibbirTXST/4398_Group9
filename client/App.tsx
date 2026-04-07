@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { PaperProvider, MD3LightTheme as DefaultTheme, ActivityIndicator } from 'react-native-paper';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import SignInScreen from './src/screens/SignInScreen';
@@ -10,6 +11,7 @@ import DashboardScreen from './src/screens/DashboardScreen';
 import HabitAdditionScreen from './src/screens/HabitAdditionScreen';
 import ProgressScreen from './src/screens/ProgressScreen';  
 import { View } from 'react-native';
+import { ComponentProps } from 'react';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -26,12 +28,30 @@ const theme = {
 function HomeTabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size}) => {
+          type Props = ComponentProps<typeof Ionicons>;
+          type IconName = Props["name"];
+
+          let iconName;
+
+          if (route.name === 'Dashboard') {
+            iconName = focused
+              ? 'home'
+              : 'home-outline';
+          } else if (route.name === 'Progress') {
+            iconName = focused
+              ? 'bar-chart'
+              : 'bar-chart-outline';
+          }
+
+          return <Ionicons name={iconName as IconName} size={size} color={color} />;
+        },
         tabBarLabelStyle: {
           fontSize: 16,
         },
         headerShown: false,
-      }}
+      })}
     >
       <Tab.Screen name='Dashboard' component={DashboardScreen} />
       <Tab.Screen name='Progress' component={ProgressScreen} />

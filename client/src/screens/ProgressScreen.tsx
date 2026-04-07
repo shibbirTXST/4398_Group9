@@ -1,48 +1,48 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { Text, Title } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Appbar, MD3LightTheme as DefaultTheme, PaperProvider, Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#6200ee',
+    secondary: '#03dac6',
+  },
+};
 
 export default function ProgressScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.content}>
-          <Title style={styles.title}>Your Progress</Title>
-          <Text style={styles.subtitle}>This is where your progress will be displayed (eventually)</Text>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <SafeAreaProvider>
+      <PaperProvider theme={theme}>
+        <Appbar.Header>
+          <Appbar.Content title="Progress" />
+        </Appbar.Header>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.content}>
+            <Text variant="headlineSmall" style={styles.title}>This is where your progress will be displayed (eventually).</Text>
+          </View>
+        </SafeAreaView>
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
   },
   content: {
-    padding: 20,
+    padding: 16,
   },
   title: {
-    fontSize: 28,
+    marginBottom: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    textAlign: 'center',
-    marginBottom: 32,
-    color: '#666',
   },
 });
