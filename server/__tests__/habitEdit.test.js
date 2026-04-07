@@ -26,11 +26,12 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
   it('should return 404 Not Found if the habit does not exist', async () => {
     const nonExistentHabitId = 9999;
     const updatedTitle = 'Some Title';
+    const updatedReminderTime = '20:00';
 
     const response = await request(app)
       .put(`/api/habits/${nonExistentHabitId}`)
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle });
+      .send({ title: updatedTitle, reminderTime: updatedReminderTime });
 
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('Habit not found');
@@ -40,11 +41,12 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
   it('should block the update operation and return an error if the user is not logged in', async () => {
     const habitId = 2;
     const updatedTitle = 'Read for 1 hour';
+    const updatedReminderTime = '20:00';
 
     const response = await request(app)
       .put(`/api/habits/${habitId}`)
       // intentionally trigger the "No" path by NOT setting the Authorization header
-      .send({ title: updatedTitle });
+      .send({ title: updatedTitle, reminderTime: updatedReminderTime });
 
     expect(response.status).toBe(401);
     expect(response.body.error).toContain('Error Message Return'); // validates "Error Message Return" state
@@ -53,11 +55,13 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
   // test case 4: error handling - missing title in request body
   it('should return an error if the title is missing in the request body', async () => {
     const habitId = 2;
+    const updatedReminderTime = '20:00';
+
 
     const response = await request(app)
       .put(`/api/habits/${habitId}`)
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({}); // no title provided
+      .send({ reminderTime: updatedReminderTime }); // no title provided
 
     expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for missing fields
     expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
@@ -72,7 +76,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     const response = await request(app)
       .put(`/api/habits/${habitId}`)
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle, planId: PlanID }); // no reminder time provided
+      .send({ title: updatedTitle }); // no reminder time provided
 
     expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for missing fields
     expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
@@ -129,11 +133,12 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
   it('should return an error if the habit ID is invalid', async () => {
     const invalidHabitId = 'invalid-id';
     const updatedTitle = 'Read for 1 hour';
+    const updatedReminderTime = '20:00';
 
     const response = await request(app)
       .put(`/api/habits/${invalidHabitId}`)
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle });
+      .send({ title: updatedTitle, reminderTime: updatedReminderTime });
 
     expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for invalid IDs
     expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message

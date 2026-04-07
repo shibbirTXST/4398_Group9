@@ -1,7 +1,7 @@
 let habits = [
-  { id: 1, title: 'Drink Water', completed: false, count: 0 },
-  { id: 2, title: 'Read for 30 mins', completed: true, count: 1 },
-  { id: 3, title: 'Exercise', completed: false, count: 0 },
+  { id: 1, title: 'Drink Water', completed: false, count: 0, reminderTime: '08:00' },
+  { id: 2, title: 'Read for 30 mins', completed: true, count: 1, reminderTime: '18:00' },
+  { id: 3, title: 'Exercise', completed: false, count: 0, reminderTime: '19:00' },
 ];
 
 const getHabits = (req, res) => {
@@ -28,7 +28,7 @@ const createHabit = (req, res) => {
   if (!reminderTime) {
     return res.status(400).json({ error: 'Reminder time is required' });
   }
-  const newHabit = { id: Date.now(), title: taskName, completed: false, count: 0 };
+  const newHabit = { id: Date.now(), title: taskName, completed: false, count: 0, reminderTime: reminderTime };
   habits.push(newHabit);
 
   // successful database save simulation
@@ -73,24 +73,26 @@ const updateHabit = (req, res) => {
   }
   //reading in
   const { id } = req.params;
-  const { title } = req.body;
+  const { title, reminderTime } = req.body;
 
   //error handling for invalid id format
   if(id != parseInt(id)) {
     return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
   }
 
-  //error handling for missing title
-  if(!title) {
-    return res.status(400).json({ error: 'Error Message Return: Title is required' });
+  //error handling for missing title and reminder time
+  if(!title || !reminderTime) {
+    return res.status(400).json({ error: 'Error Message Return: Title and reminder time are required' });
   }
   //error handling for id not found
   const index = habits.findIndex(h => h.id == id);
   if (index === -1) {
     return res.status(404).json({ message: 'Habit not found' });
   }
-  //update operation
+  
+  //simulated update operation
   habits[index].title = title;
+  habits[index].reminderTime = reminderTime;
   res.status(200).json(habits[index]);
 };
 

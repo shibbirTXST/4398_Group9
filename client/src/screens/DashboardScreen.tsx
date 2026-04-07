@@ -17,11 +17,7 @@ const theme = {
 
 export default function DashboardScreen({route, navigation}: any) {
   const { logout } = useAuth();
-  const [habits, setHabits] = React.useState([
-    { id: '1', title: 'Drink Water', completed: false, count: 0 },
-    { id: '2', title: 'Read for 30 mins', completed: true, count: 1 },
-    { id: '3', title: 'Exercise', completed: false, count: 0 },
-  ]);
+  const [habits, setHabits] = useState<any[]>([]);
   const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
   const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
   const [accMenuVisible, setAccMenuVisible] = React.useState(false);
