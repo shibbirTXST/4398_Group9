@@ -40,7 +40,7 @@ describe('Habit Addition API (POST /api/habits)', () => {
       .send(newTask);
 
     expect(response.status).toBe(401);
-    expect(response.body.error).toContain('Error Message Return'); // validates "Error Message Return" state
+    expect(response.body.error).toContain('Error Message'); // validates "Error Message" state
   });
 
   // test case 3: input validation 
@@ -95,5 +95,4 @@ describe('Habit Addition API (POST /api/habits)', () => {
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Task name and reminder time are required'); 
   });
-
 });
