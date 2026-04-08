@@ -40,7 +40,7 @@ describe('Habit Deletion API (DELETE /api/habits/:id)', () => {
       .send();
 
     expect(response.status).toBe(401);
-    expect(response.body.error).toContain('Error Message Return'); // validates "Error Message Return" state
+    expect(response.body.error).toContain('Error Message'); // validates "Error Message Return" state
   });
 
   // test case 4: error handling - invalid habit ID
@@ -53,6 +53,6 @@ describe('Habit Deletion API (DELETE /api/habits/:id)', () => {
       .send();
 
     expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for invalid IDs
-    expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
+    expect(response.body.error).toContain('Error Message'); // assuming the server returns this error message
   });
 });

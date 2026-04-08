@@ -1,12 +1,22 @@
+let plans = [
+  { id: 1, name: 'Morning Routine' }
+];
+
 let habits = [
-  { id: 1, title: 'Drink Water', completed: false, count: 0, reminderTime: '08:00' },
-  { id: 2, title: 'Read for 30 mins', completed: true, count: 1, reminderTime: '18:00' },
-  { id: 3, title: 'Exercise', completed: false, count: 0, reminderTime: '19:00' },
+  { id: 1, title: 'Drink Water', completed: false, count: 0, reminderTime: '08:00', planID: 1 },
+  { id: 2, title: 'Read for 30 mins', completed: true, count: 1, reminderTime: '18:00', planID: 0 },
+  { id: 3, title: 'Exercise', completed: false, count: 0, reminderTime: '19:00', planID: 1 },
 ];
 
 const getHabits = (req, res) => {
   res.status(200).json(habits);
 };
+
+const getPlans = (req, res) => {
+  res.status(200).json(plans);
+};
+
+//habit controller functions
 
 const createHabit = (req, res) => {
   // authentication check
@@ -96,4 +106,18 @@ const updateHabit = (req, res) => {
   res.status(200).json(habits[index]);
 };
 
-module.exports = { getHabits, createHabit, deleteHabit, updateHabit };
+//plan controller functions
+
+const createPlan = (req, res) => {
+  return res.status(501).json({ error: 'Error Message Return: Create plan functionality not implemented yet' });
+};
+
+const deletePlan = (req, res) => {
+  return res.status(501).json({ error: 'Error Message Return: Delete plan functionality not implemented yet' });
+};
+
+const updatePlan = (req, res) => {
+  return res.status(501).json({ error: 'Error Message Return: Update plan functionality not implemented yet' });
+};
+
+module.exports = { getHabits, getPlans, createHabit, deleteHabit, updateHabit, createPlan, deletePlan, updatePlan };
