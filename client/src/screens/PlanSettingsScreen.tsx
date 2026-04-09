@@ -42,9 +42,12 @@ export default function PlanSettingsScreens() {
       if (!res.ok) throw new Error('Update failed');
       setPlanName('');
       const updated = await res.json();
-      navigation.navigate('Dashboard', { 
+      navigation.navigate('Home', { 
+        screen: 'Dashboard',
+        params: {
         updatedPlan: updated.planId,
         successMessage: 'Plan updated successfully!'
+        },
       });
     } catch (err) {
       console.error('Error updating plan', err);
@@ -89,9 +92,12 @@ export default function PlanSettingsScreens() {
       if (response.status === 201) {
         // clear form and navigate back to the Dashboard on success
         setPlanName('');
-        navigation.navigate('Dashboard', { 
-            newPlan: jsonResponse.plan,
-            successMessage: 'Plan added successfully!'
+        navigation.navigate('Home', { 
+            screen: 'Dashboard',
+            params: {
+                newPlan: jsonResponse.plan,
+                successMessage: 'Plan added successfully!'
+            }
         }); 
       } else {
         setError(jsonResponse.error || 'Failed to create plan');

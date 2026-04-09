@@ -53,9 +53,12 @@ export default function HabitSettingsScreen() {
       setTaskName('');
       setReminderTime('');
       const updated = await res.json();
-      navigation.navigate('Dashboard', { 
-        updatedHabit: updated.task,
-        successMessage: 'Habit updated successfully!'
+      navigation.navigate('Home', { 
+        screen: 'Dashboard',
+        params: {
+          updatedHabit: updated.task,
+          successMessage: 'Habit updated successfully!'
+        }
       });
     } catch (err) {
       console.error('Error updating habit', err);

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button} from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, FAB, List, IconButton, Snackbar, Button} from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
+import { useAuth } from '../context/AuthContext';
+import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 
 const theme = {
   ...DefaultTheme,
@@ -77,12 +79,6 @@ export default function DashboardScreen({route, navigation}: any) {
     return acc;
   }, {} as Record<number, typeof habits>);
 }, [habits]);
-
-    const toggleHabit = (id: string) => {
-    setHabits(habits.map(h => 
-      h.id === id ? { ...h, completed: !h.completed } : h
-    ));
-  };
 
   const deleteHabit = async (id: string) => {
     //check if user is authenticated before allowing delete
