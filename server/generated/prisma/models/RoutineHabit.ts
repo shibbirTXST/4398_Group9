@@ -28,38 +28,38 @@ export type AggregateRoutineHabit = {
 
 export type RoutineHabitAvgAggregateOutputType = {
   routineHabit_id: number | null
-  routine_id: number | null
-  habit_id: number | null
+  routineId: number | null
+  habitId: number | null
   orderIndex: number | null
 }
 
 export type RoutineHabitSumAggregateOutputType = {
   routineHabit_id: number | null
-  routine_id: number | null
-  habit_id: number | null
+  routineId: number | null
+  habitId: number | null
   orderIndex: number | null
 }
 
 export type RoutineHabitMinAggregateOutputType = {
   routineHabit_id: number | null
-  routine_id: number | null
-  habit_id: number | null
+  routineId: number | null
+  habitId: number | null
   orderIndex: number | null
   createdAt: Date | null
 }
 
 export type RoutineHabitMaxAggregateOutputType = {
   routineHabit_id: number | null
-  routine_id: number | null
-  habit_id: number | null
+  routineId: number | null
+  habitId: number | null
   orderIndex: number | null
   createdAt: Date | null
 }
 
 export type RoutineHabitCountAggregateOutputType = {
   routineHabit_id: number
-  routine_id: number
-  habit_id: number
+  routineId: number
+  habitId: number
   orderIndex: number
   createdAt: number
   _all: number
@@ -68,38 +68,38 @@ export type RoutineHabitCountAggregateOutputType = {
 
 export type RoutineHabitAvgAggregateInputType = {
   routineHabit_id?: true
-  routine_id?: true
-  habit_id?: true
+  routineId?: true
+  habitId?: true
   orderIndex?: true
 }
 
 export type RoutineHabitSumAggregateInputType = {
   routineHabit_id?: true
-  routine_id?: true
-  habit_id?: true
+  routineId?: true
+  habitId?: true
   orderIndex?: true
 }
 
 export type RoutineHabitMinAggregateInputType = {
   routineHabit_id?: true
-  routine_id?: true
-  habit_id?: true
+  routineId?: true
+  habitId?: true
   orderIndex?: true
   createdAt?: true
 }
 
 export type RoutineHabitMaxAggregateInputType = {
   routineHabit_id?: true
-  routine_id?: true
-  habit_id?: true
+  routineId?: true
+  habitId?: true
   orderIndex?: true
   createdAt?: true
 }
 
 export type RoutineHabitCountAggregateInputType = {
   routineHabit_id?: true
-  routine_id?: true
-  habit_id?: true
+  routineId?: true
+  habitId?: true
   orderIndex?: true
   createdAt?: true
   _all?: true
@@ -193,8 +193,8 @@ export type RoutineHabitGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type RoutineHabitGroupByOutputType = {
   routineHabit_id: number
-  routine_id: number
-  habit_id: number
+  routineId: number
+  habitId: number
   orderIndex: number
   createdAt: Date
   _count: RoutineHabitCountAggregateOutputType | null
@@ -224,8 +224,8 @@ export type RoutineHabitWhereInput = {
   OR?: Prisma.RoutineHabitWhereInput[]
   NOT?: Prisma.RoutineHabitWhereInput | Prisma.RoutineHabitWhereInput[]
   routineHabit_id?: Prisma.IntFilter<"RoutineHabit"> | number
-  routine_id?: Prisma.IntFilter<"RoutineHabit"> | number
-  habit_id?: Prisma.IntFilter<"RoutineHabit"> | number
+  routineId?: Prisma.IntFilter<"RoutineHabit"> | number
+  habitId?: Prisma.IntFilter<"RoutineHabit"> | number
   orderIndex?: Prisma.IntFilter<"RoutineHabit"> | number
   createdAt?: Prisma.DateTimeFilter<"RoutineHabit"> | Date | string
   routine?: Prisma.XOR<Prisma.RoutineScalarRelationFilter, Prisma.RoutineWhereInput>
@@ -234,8 +234,8 @@ export type RoutineHabitWhereInput = {
 
 export type RoutineHabitOrderByWithRelationInput = {
   routineHabit_id?: Prisma.SortOrder
-  routine_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   routine?: Prisma.RoutineOrderByWithRelationInput
@@ -247,8 +247,8 @@ export type RoutineHabitWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.RoutineHabitWhereInput | Prisma.RoutineHabitWhereInput[]
   OR?: Prisma.RoutineHabitWhereInput[]
   NOT?: Prisma.RoutineHabitWhereInput | Prisma.RoutineHabitWhereInput[]
-  routine_id?: Prisma.IntFilter<"RoutineHabit"> | number
-  habit_id?: Prisma.IntFilter<"RoutineHabit"> | number
+  routineId?: Prisma.IntFilter<"RoutineHabit"> | number
+  habitId?: Prisma.IntFilter<"RoutineHabit"> | number
   orderIndex?: Prisma.IntFilter<"RoutineHabit"> | number
   createdAt?: Prisma.DateTimeFilter<"RoutineHabit"> | Date | string
   routine?: Prisma.XOR<Prisma.RoutineScalarRelationFilter, Prisma.RoutineWhereInput>
@@ -257,8 +257,8 @@ export type RoutineHabitWhereUniqueInput = Prisma.AtLeast<{
 
 export type RoutineHabitOrderByWithAggregationInput = {
   routineHabit_id?: Prisma.SortOrder
-  routine_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.RoutineHabitCountOrderByAggregateInput
@@ -273,8 +273,8 @@ export type RoutineHabitScalarWhereWithAggregatesInput = {
   OR?: Prisma.RoutineHabitScalarWhereWithAggregatesInput[]
   NOT?: Prisma.RoutineHabitScalarWhereWithAggregatesInput | Prisma.RoutineHabitScalarWhereWithAggregatesInput[]
   routineHabit_id?: Prisma.IntWithAggregatesFilter<"RoutineHabit"> | number
-  routine_id?: Prisma.IntWithAggregatesFilter<"RoutineHabit"> | number
-  habit_id?: Prisma.IntWithAggregatesFilter<"RoutineHabit"> | number
+  routineId?: Prisma.IntWithAggregatesFilter<"RoutineHabit"> | number
+  habitId?: Prisma.IntWithAggregatesFilter<"RoutineHabit"> | number
   orderIndex?: Prisma.IntWithAggregatesFilter<"RoutineHabit"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RoutineHabit"> | Date | string
 }
@@ -288,8 +288,8 @@ export type RoutineHabitCreateInput = {
 
 export type RoutineHabitUncheckedCreateInput = {
   routineHabit_id?: number
-  routine_id: number
-  habit_id: number
+  routineId: number
+  habitId: number
   orderIndex: number
   createdAt?: Date | string
 }
@@ -303,16 +303,16 @@ export type RoutineHabitUpdateInput = {
 
 export type RoutineHabitUncheckedUpdateInput = {
   routineHabit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RoutineHabitCreateManyInput = {
   routineHabit_id?: number
-  routine_id: number
-  habit_id: number
+  routineId: number
+  habitId: number
   orderIndex: number
   createdAt?: Date | string
 }
@@ -324,8 +324,8 @@ export type RoutineHabitUpdateManyMutationInput = {
 
 export type RoutineHabitUncheckedUpdateManyInput = {
   routineHabit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -342,39 +342,39 @@ export type RoutineHabitOrderByRelationAggregateInput = {
 
 export type RoutineHabitCountOrderByAggregateInput = {
   routineHabit_id?: Prisma.SortOrder
-  routine_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type RoutineHabitAvgOrderByAggregateInput = {
   routineHabit_id?: Prisma.SortOrder
-  routine_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
 }
 
 export type RoutineHabitMaxOrderByAggregateInput = {
   routineHabit_id?: Prisma.SortOrder
-  routine_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type RoutineHabitMinOrderByAggregateInput = {
   routineHabit_id?: Prisma.SortOrder
-  routine_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type RoutineHabitSumOrderByAggregateInput = {
   routineHabit_id?: Prisma.SortOrder
-  routine_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
 }
 
@@ -470,7 +470,7 @@ export type RoutineHabitCreateWithoutHabitInput = {
 
 export type RoutineHabitUncheckedCreateWithoutHabitInput = {
   routineHabit_id?: number
-  routine_id: number
+  routineId: number
   orderIndex: number
   createdAt?: Date | string
 }
@@ -506,8 +506,8 @@ export type RoutineHabitScalarWhereInput = {
   OR?: Prisma.RoutineHabitScalarWhereInput[]
   NOT?: Prisma.RoutineHabitScalarWhereInput | Prisma.RoutineHabitScalarWhereInput[]
   routineHabit_id?: Prisma.IntFilter<"RoutineHabit"> | number
-  routine_id?: Prisma.IntFilter<"RoutineHabit"> | number
-  habit_id?: Prisma.IntFilter<"RoutineHabit"> | number
+  routineId?: Prisma.IntFilter<"RoutineHabit"> | number
+  habitId?: Prisma.IntFilter<"RoutineHabit"> | number
   orderIndex?: Prisma.IntFilter<"RoutineHabit"> | number
   createdAt?: Prisma.DateTimeFilter<"RoutineHabit"> | Date | string
 }
@@ -520,7 +520,7 @@ export type RoutineHabitCreateWithoutRoutineInput = {
 
 export type RoutineHabitUncheckedCreateWithoutRoutineInput = {
   routineHabit_id?: number
-  habit_id: number
+  habitId: number
   orderIndex: number
   createdAt?: Date | string
 }
@@ -553,7 +553,7 @@ export type RoutineHabitUpdateManyWithWhereWithoutRoutineInput = {
 
 export type RoutineHabitCreateManyHabitInput = {
   routineHabit_id?: number
-  routine_id: number
+  routineId: number
   orderIndex: number
   createdAt?: Date | string
 }
@@ -566,21 +566,21 @@ export type RoutineHabitUpdateWithoutHabitInput = {
 
 export type RoutineHabitUncheckedUpdateWithoutHabitInput = {
   routineHabit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RoutineHabitUncheckedUpdateManyWithoutHabitInput = {
   routineHabit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RoutineHabitCreateManyRoutineInput = {
   routineHabit_id?: number
-  habit_id: number
+  habitId: number
   orderIndex: number
   createdAt?: Date | string
 }
@@ -593,14 +593,14 @@ export type RoutineHabitUpdateWithoutRoutineInput = {
 
 export type RoutineHabitUncheckedUpdateWithoutRoutineInput = {
   routineHabit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RoutineHabitUncheckedUpdateManyWithoutRoutineInput = {
   routineHabit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -609,8 +609,8 @@ export type RoutineHabitUncheckedUpdateManyWithoutRoutineInput = {
 
 export type RoutineHabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   routineHabit_id?: boolean
-  routine_id?: boolean
-  habit_id?: boolean
+  routineId?: boolean
+  habitId?: boolean
   orderIndex?: boolean
   createdAt?: boolean
   routine?: boolean | Prisma.RoutineDefaultArgs<ExtArgs>
@@ -619,8 +619,8 @@ export type RoutineHabitSelect<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type RoutineHabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   routineHabit_id?: boolean
-  routine_id?: boolean
-  habit_id?: boolean
+  routineId?: boolean
+  habitId?: boolean
   orderIndex?: boolean
   createdAt?: boolean
   routine?: boolean | Prisma.RoutineDefaultArgs<ExtArgs>
@@ -629,8 +629,8 @@ export type RoutineHabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
 
 export type RoutineHabitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   routineHabit_id?: boolean
-  routine_id?: boolean
-  habit_id?: boolean
+  routineId?: boolean
+  habitId?: boolean
   orderIndex?: boolean
   createdAt?: boolean
   routine?: boolean | Prisma.RoutineDefaultArgs<ExtArgs>
@@ -639,13 +639,13 @@ export type RoutineHabitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
 
 export type RoutineHabitSelectScalar = {
   routineHabit_id?: boolean
-  routine_id?: boolean
-  habit_id?: boolean
+  routineId?: boolean
+  habitId?: boolean
   orderIndex?: boolean
   createdAt?: boolean
 }
 
-export type RoutineHabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"routineHabit_id" | "routine_id" | "habit_id" | "orderIndex" | "createdAt", ExtArgs["result"]["routineHabit"]>
+export type RoutineHabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"routineHabit_id" | "routineId" | "habitId" | "orderIndex" | "createdAt", ExtArgs["result"]["routineHabit"]>
 export type RoutineHabitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   routine?: boolean | Prisma.RoutineDefaultArgs<ExtArgs>
   habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
@@ -667,8 +667,8 @@ export type $RoutineHabitPayload<ExtArgs extends runtime.Types.Extensions.Intern
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     routineHabit_id: number
-    routine_id: number
-    habit_id: number
+    routineId: number
+    habitId: number
     orderIndex: number
     createdAt: Date
   }, ExtArgs["result"]["routineHabit"]>
@@ -1097,8 +1097,8 @@ export interface Prisma__RoutineHabitClient<T, Null = never, ExtArgs extends run
  */
 export interface RoutineHabitFieldRefs {
   readonly routineHabit_id: Prisma.FieldRef<"RoutineHabit", 'Int'>
-  readonly routine_id: Prisma.FieldRef<"RoutineHabit", 'Int'>
-  readonly habit_id: Prisma.FieldRef<"RoutineHabit", 'Int'>
+  readonly routineId: Prisma.FieldRef<"RoutineHabit", 'Int'>
+  readonly habitId: Prisma.FieldRef<"RoutineHabit", 'Int'>
   readonly orderIndex: Prisma.FieldRef<"RoutineHabit", 'Int'>
   readonly createdAt: Prisma.FieldRef<"RoutineHabit", 'DateTime'>
 }

@@ -27,18 +27,18 @@ export type AggregateHabit = {
 }
 
 export type HabitAvgAggregateOutputType = {
-  habit_id: number | null
-  user_id: number | null
+  habitId: number | null
+  userId: number | null
 }
 
 export type HabitSumAggregateOutputType = {
-  habit_id: number | null
-  user_id: number | null
+  habitId: number | null
+  userId: number | null
 }
 
 export type HabitMinAggregateOutputType = {
-  habit_id: number | null
-  user_id: number | null
+  habitId: number | null
+  userId: number | null
   habitName: string | null
   description: string | null
   targetGoal: string | null
@@ -49,8 +49,8 @@ export type HabitMinAggregateOutputType = {
 }
 
 export type HabitMaxAggregateOutputType = {
-  habit_id: number | null
-  user_id: number | null
+  habitId: number | null
+  userId: number | null
   habitName: string | null
   description: string | null
   targetGoal: string | null
@@ -61,8 +61,8 @@ export type HabitMaxAggregateOutputType = {
 }
 
 export type HabitCountAggregateOutputType = {
-  habit_id: number
-  user_id: number
+  habitId: number
+  userId: number
   habitName: number
   description: number
   targetGoal: number
@@ -75,18 +75,18 @@ export type HabitCountAggregateOutputType = {
 
 
 export type HabitAvgAggregateInputType = {
-  habit_id?: true
-  user_id?: true
+  habitId?: true
+  userId?: true
 }
 
 export type HabitSumAggregateInputType = {
-  habit_id?: true
-  user_id?: true
+  habitId?: true
+  userId?: true
 }
 
 export type HabitMinAggregateInputType = {
-  habit_id?: true
-  user_id?: true
+  habitId?: true
+  userId?: true
   habitName?: true
   description?: true
   targetGoal?: true
@@ -97,8 +97,8 @@ export type HabitMinAggregateInputType = {
 }
 
 export type HabitMaxAggregateInputType = {
-  habit_id?: true
-  user_id?: true
+  habitId?: true
+  userId?: true
   habitName?: true
   description?: true
   targetGoal?: true
@@ -109,8 +109,8 @@ export type HabitMaxAggregateInputType = {
 }
 
 export type HabitCountAggregateInputType = {
-  habit_id?: true
-  user_id?: true
+  habitId?: true
+  userId?: true
   habitName?: true
   description?: true
   targetGoal?: true
@@ -208,8 +208,8 @@ export type HabitGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 }
 
 export type HabitGroupByOutputType = {
-  habit_id: number
-  user_id: number
+  habitId: number
+  userId: number
   habitName: string
   description: string | null
   targetGoal: string | null
@@ -243,8 +243,8 @@ export type HabitWhereInput = {
   AND?: Prisma.HabitWhereInput | Prisma.HabitWhereInput[]
   OR?: Prisma.HabitWhereInput[]
   NOT?: Prisma.HabitWhereInput | Prisma.HabitWhereInput[]
-  habit_id?: Prisma.IntFilter<"Habit"> | number
-  user_id?: Prisma.IntFilter<"Habit"> | number
+  habitId?: Prisma.IntFilter<"Habit"> | number
+  userId?: Prisma.IntFilter<"Habit"> | number
   habitName?: Prisma.StringFilter<"Habit"> | string
   description?: Prisma.StringNullableFilter<"Habit"> | string | null
   targetGoal?: Prisma.StringNullableFilter<"Habit"> | string | null
@@ -259,8 +259,8 @@ export type HabitWhereInput = {
 }
 
 export type HabitOrderByWithRelationInput = {
-  habit_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   habitName?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   targetGoal?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -275,11 +275,11 @@ export type HabitOrderByWithRelationInput = {
 }
 
 export type HabitWhereUniqueInput = Prisma.AtLeast<{
-  habit_id?: number
+  habitId?: number
   AND?: Prisma.HabitWhereInput | Prisma.HabitWhereInput[]
   OR?: Prisma.HabitWhereInput[]
   NOT?: Prisma.HabitWhereInput | Prisma.HabitWhereInput[]
-  user_id?: Prisma.IntFilter<"Habit"> | number
+  userId?: Prisma.IntFilter<"Habit"> | number
   habitName?: Prisma.StringFilter<"Habit"> | string
   description?: Prisma.StringNullableFilter<"Habit"> | string | null
   targetGoal?: Prisma.StringNullableFilter<"Habit"> | string | null
@@ -291,11 +291,11 @@ export type HabitWhereUniqueInput = Prisma.AtLeast<{
   logs?: Prisma.LogListRelationFilter
   reminders?: Prisma.ReminderListRelationFilter
   routineHabits?: Prisma.RoutineHabitListRelationFilter
-}, "habit_id">
+}, "habitId">
 
 export type HabitOrderByWithAggregationInput = {
-  habit_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   habitName?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   targetGoal?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -314,8 +314,8 @@ export type HabitScalarWhereWithAggregatesInput = {
   AND?: Prisma.HabitScalarWhereWithAggregatesInput | Prisma.HabitScalarWhereWithAggregatesInput[]
   OR?: Prisma.HabitScalarWhereWithAggregatesInput[]
   NOT?: Prisma.HabitScalarWhereWithAggregatesInput | Prisma.HabitScalarWhereWithAggregatesInput[]
-  habit_id?: Prisma.IntWithAggregatesFilter<"Habit"> | number
-  user_id?: Prisma.IntWithAggregatesFilter<"Habit"> | number
+  habitId?: Prisma.IntWithAggregatesFilter<"Habit"> | number
+  userId?: Prisma.IntWithAggregatesFilter<"Habit"> | number
   habitName?: Prisma.StringWithAggregatesFilter<"Habit"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Habit"> | string | null
   targetGoal?: Prisma.StringNullableWithAggregatesFilter<"Habit"> | string | null
@@ -340,8 +340,8 @@ export type HabitCreateInput = {
 }
 
 export type HabitUncheckedCreateInput = {
-  habit_id?: number
-  user_id: number
+  habitId?: number
+  userId: number
   habitName: string
   description?: string | null
   targetGoal?: string | null
@@ -369,8 +369,8 @@ export type HabitUpdateInput = {
 }
 
 export type HabitUncheckedUpdateInput = {
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   habitName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -384,8 +384,8 @@ export type HabitUncheckedUpdateInput = {
 }
 
 export type HabitCreateManyInput = {
-  habit_id?: number
-  user_id: number
+  habitId?: number
+  userId: number
   habitName: string
   description?: string | null
   targetGoal?: string | null
@@ -406,8 +406,8 @@ export type HabitUpdateManyMutationInput = {
 }
 
 export type HabitUncheckedUpdateManyInput = {
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   habitName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -428,8 +428,8 @@ export type HabitOrderByRelationAggregateInput = {
 }
 
 export type HabitCountOrderByAggregateInput = {
-  habit_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   habitName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   targetGoal?: Prisma.SortOrder
@@ -440,13 +440,13 @@ export type HabitCountOrderByAggregateInput = {
 }
 
 export type HabitAvgOrderByAggregateInput = {
-  habit_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type HabitMaxOrderByAggregateInput = {
-  habit_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   habitName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   targetGoal?: Prisma.SortOrder
@@ -457,8 +457,8 @@ export type HabitMaxOrderByAggregateInput = {
 }
 
 export type HabitMinOrderByAggregateInput = {
-  habit_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   habitName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   targetGoal?: Prisma.SortOrder
@@ -469,8 +469,8 @@ export type HabitMinOrderByAggregateInput = {
 }
 
 export type HabitSumOrderByAggregateInput = {
-  habit_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type HabitScalarRelationFilter = {
@@ -580,7 +580,7 @@ export type HabitCreateWithoutUserInput = {
 }
 
 export type HabitUncheckedCreateWithoutUserInput = {
-  habit_id?: number
+  habitId?: number
   habitName: string
   description?: string | null
   targetGoal?: string | null
@@ -623,8 +623,8 @@ export type HabitScalarWhereInput = {
   AND?: Prisma.HabitScalarWhereInput | Prisma.HabitScalarWhereInput[]
   OR?: Prisma.HabitScalarWhereInput[]
   NOT?: Prisma.HabitScalarWhereInput | Prisma.HabitScalarWhereInput[]
-  habit_id?: Prisma.IntFilter<"Habit"> | number
-  user_id?: Prisma.IntFilter<"Habit"> | number
+  habitId?: Prisma.IntFilter<"Habit"> | number
+  userId?: Prisma.IntFilter<"Habit"> | number
   habitName?: Prisma.StringFilter<"Habit"> | string
   description?: Prisma.StringNullableFilter<"Habit"> | string | null
   targetGoal?: Prisma.StringNullableFilter<"Habit"> | string | null
@@ -648,8 +648,8 @@ export type HabitCreateWithoutLogsInput = {
 }
 
 export type HabitUncheckedCreateWithoutLogsInput = {
-  habit_id?: number
-  user_id: number
+  habitId?: number
+  userId: number
   habitName: string
   description?: string | null
   targetGoal?: string | null
@@ -691,8 +691,8 @@ export type HabitUpdateWithoutLogsInput = {
 }
 
 export type HabitUncheckedUpdateWithoutLogsInput = {
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   habitName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -718,8 +718,8 @@ export type HabitCreateWithoutRemindersInput = {
 }
 
 export type HabitUncheckedCreateWithoutRemindersInput = {
-  habit_id?: number
-  user_id: number
+  habitId?: number
+  userId: number
   habitName: string
   description?: string | null
   targetGoal?: string | null
@@ -761,8 +761,8 @@ export type HabitUpdateWithoutRemindersInput = {
 }
 
 export type HabitUncheckedUpdateWithoutRemindersInput = {
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   habitName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -788,8 +788,8 @@ export type HabitCreateWithoutRoutineHabitsInput = {
 }
 
 export type HabitUncheckedCreateWithoutRoutineHabitsInput = {
-  habit_id?: number
-  user_id: number
+  habitId?: number
+  userId: number
   habitName: string
   description?: string | null
   targetGoal?: string | null
@@ -831,8 +831,8 @@ export type HabitUpdateWithoutRoutineHabitsInput = {
 }
 
 export type HabitUncheckedUpdateWithoutRoutineHabitsInput = {
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   habitName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -845,7 +845,7 @@ export type HabitUncheckedUpdateWithoutRoutineHabitsInput = {
 }
 
 export type HabitCreateManyUserInput = {
-  habit_id?: number
+  habitId?: number
   habitName: string
   description?: string | null
   targetGoal?: string | null
@@ -869,7 +869,7 @@ export type HabitUpdateWithoutUserInput = {
 }
 
 export type HabitUncheckedUpdateWithoutUserInput = {
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   habitName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -883,7 +883,7 @@ export type HabitUncheckedUpdateWithoutUserInput = {
 }
 
 export type HabitUncheckedUpdateManyWithoutUserInput = {
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   habitName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -943,8 +943,8 @@ export type HabitCountOutputTypeCountRoutineHabitsArgs<ExtArgs extends runtime.T
 
 
 export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  habit_id?: boolean
-  user_id?: boolean
+  habitId?: boolean
+  userId?: boolean
   habitName?: boolean
   description?: boolean
   targetGoal?: boolean
@@ -960,8 +960,8 @@ export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 }, ExtArgs["result"]["habit"]>
 
 export type HabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  habit_id?: boolean
-  user_id?: boolean
+  habitId?: boolean
+  userId?: boolean
   habitName?: boolean
   description?: boolean
   targetGoal?: boolean
@@ -973,8 +973,8 @@ export type HabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 }, ExtArgs["result"]["habit"]>
 
 export type HabitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  habit_id?: boolean
-  user_id?: boolean
+  habitId?: boolean
+  userId?: boolean
   habitName?: boolean
   description?: boolean
   targetGoal?: boolean
@@ -986,8 +986,8 @@ export type HabitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 }, ExtArgs["result"]["habit"]>
 
 export type HabitSelectScalar = {
-  habit_id?: boolean
-  user_id?: boolean
+  habitId?: boolean
+  userId?: boolean
   habitName?: boolean
   description?: boolean
   targetGoal?: boolean
@@ -997,7 +997,7 @@ export type HabitSelectScalar = {
   status?: boolean
 }
 
-export type HabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"habit_id" | "user_id" | "habitName" | "description" | "targetGoal" | "goalUnit" | "frequencyType" | "createdAt" | "status", ExtArgs["result"]["habit"]>
+export type HabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"habitId" | "userId" | "habitName" | "description" | "targetGoal" | "goalUnit" | "frequencyType" | "createdAt" | "status", ExtArgs["result"]["habit"]>
 export type HabitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   logs?: boolean | Prisma.Habit$logsArgs<ExtArgs>
@@ -1021,8 +1021,8 @@ export type $HabitPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     routineHabits: Prisma.$RoutineHabitPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    habit_id: number
-    user_id: number
+    habitId: number
+    userId: number
     habitName: string
     description: string | null
     targetGoal: string | null
@@ -1113,8 +1113,8 @@ export interface HabitDelegate<ExtArgs extends runtime.Types.Extensions.Internal
    * // Get first 10 Habits
    * const habits = await prisma.habit.findMany({ take: 10 })
    * 
-   * // Only select the `habit_id`
-   * const habitWithHabit_idOnly = await prisma.habit.findMany({ select: { habit_id: true } })
+   * // Only select the `habitId`
+   * const habitWithHabitIdOnly = await prisma.habit.findMany({ select: { habitId: true } })
    * 
    */
   findMany<T extends HabitFindManyArgs>(args?: Prisma.SelectSubset<T, HabitFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -1158,9 +1158,9 @@ export interface HabitDelegate<ExtArgs extends runtime.Types.Extensions.Internal
    *   ]
    * })
    * 
-   * // Create many Habits and only return the `habit_id`
-   * const habitWithHabit_idOnly = await prisma.habit.createManyAndReturn({
-   *   select: { habit_id: true },
+   * // Create many Habits and only return the `habitId`
+   * const habitWithHabitIdOnly = await prisma.habit.createManyAndReturn({
+   *   select: { habitId: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -1249,9 +1249,9 @@ export interface HabitDelegate<ExtArgs extends runtime.Types.Extensions.Internal
    *   ]
    * })
    * 
-   * // Update zero or more Habits and only return the `habit_id`
-   * const habitWithHabit_idOnly = await prisma.habit.updateManyAndReturn({
-   *   select: { habit_id: true },
+   * // Update zero or more Habits and only return the `habitId`
+   * const habitWithHabitIdOnly = await prisma.habit.updateManyAndReturn({
+   *   select: { habitId: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1457,8 +1457,8 @@ export interface Prisma__HabitClient<T, Null = never, ExtArgs extends runtime.Ty
  * Fields of the Habit model
  */
 export interface HabitFieldRefs {
-  readonly habit_id: Prisma.FieldRef<"Habit", 'Int'>
-  readonly user_id: Prisma.FieldRef<"Habit", 'Int'>
+  readonly habitId: Prisma.FieldRef<"Habit", 'Int'>
+  readonly userId: Prisma.FieldRef<"Habit", 'Int'>
   readonly habitName: Prisma.FieldRef<"Habit", 'String'>
   readonly description: Prisma.FieldRef<"Habit", 'String'>
   readonly targetGoal: Prisma.FieldRef<"Habit", 'String'>

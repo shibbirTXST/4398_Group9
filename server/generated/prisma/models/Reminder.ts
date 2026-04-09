@@ -27,32 +27,32 @@ export type AggregateReminder = {
 }
 
 export type ReminderAvgAggregateOutputType = {
-  reminder_id: number | null
-  habit_id: number | null
+  reminderId: number | null
+  habitId: number | null
 }
 
 export type ReminderSumAggregateOutputType = {
-  reminder_id: number | null
-  habit_id: number | null
+  reminderId: number | null
+  habitId: number | null
 }
 
 export type ReminderMinAggregateOutputType = {
-  reminder_id: number | null
-  habit_id: number | null
+  reminderId: number | null
+  habitId: number | null
   reminderTime: string | null
   enabledStatus: boolean | null
 }
 
 export type ReminderMaxAggregateOutputType = {
-  reminder_id: number | null
-  habit_id: number | null
+  reminderId: number | null
+  habitId: number | null
   reminderTime: string | null
   enabledStatus: boolean | null
 }
 
 export type ReminderCountAggregateOutputType = {
-  reminder_id: number
-  habit_id: number
+  reminderId: number
+  habitId: number
   reminderTime: number
   daysOfWeek: number
   enabledStatus: number
@@ -61,32 +61,32 @@ export type ReminderCountAggregateOutputType = {
 
 
 export type ReminderAvgAggregateInputType = {
-  reminder_id?: true
-  habit_id?: true
+  reminderId?: true
+  habitId?: true
 }
 
 export type ReminderSumAggregateInputType = {
-  reminder_id?: true
-  habit_id?: true
+  reminderId?: true
+  habitId?: true
 }
 
 export type ReminderMinAggregateInputType = {
-  reminder_id?: true
-  habit_id?: true
+  reminderId?: true
+  habitId?: true
   reminderTime?: true
   enabledStatus?: true
 }
 
 export type ReminderMaxAggregateInputType = {
-  reminder_id?: true
-  habit_id?: true
+  reminderId?: true
+  habitId?: true
   reminderTime?: true
   enabledStatus?: true
 }
 
 export type ReminderCountAggregateInputType = {
-  reminder_id?: true
-  habit_id?: true
+  reminderId?: true
+  habitId?: true
   reminderTime?: true
   daysOfWeek?: true
   enabledStatus?: true
@@ -180,8 +180,8 @@ export type ReminderGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 export type ReminderGroupByOutputType = {
-  reminder_id: number
-  habit_id: number
+  reminderId: number
+  habitId: number
   reminderTime: string | null
   daysOfWeek: runtime.JsonValue | null
   enabledStatus: boolean
@@ -211,8 +211,8 @@ export type ReminderWhereInput = {
   AND?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[]
   OR?: Prisma.ReminderWhereInput[]
   NOT?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[]
-  reminder_id?: Prisma.IntFilter<"Reminder"> | number
-  habit_id?: Prisma.IntFilter<"Reminder"> | number
+  reminderId?: Prisma.IntFilter<"Reminder"> | number
+  habitId?: Prisma.IntFilter<"Reminder"> | number
   reminderTime?: Prisma.StringNullableFilter<"Reminder"> | string | null
   daysOfWeek?: Prisma.JsonNullableFilter<"Reminder">
   enabledStatus?: Prisma.BoolFilter<"Reminder"> | boolean
@@ -220,8 +220,8 @@ export type ReminderWhereInput = {
 }
 
 export type ReminderOrderByWithRelationInput = {
-  reminder_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  reminderId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   reminderTime?: Prisma.SortOrderInput | Prisma.SortOrder
   daysOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
   enabledStatus?: Prisma.SortOrder
@@ -229,20 +229,20 @@ export type ReminderOrderByWithRelationInput = {
 }
 
 export type ReminderWhereUniqueInput = Prisma.AtLeast<{
-  reminder_id?: number
+  reminderId?: number
   AND?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[]
   OR?: Prisma.ReminderWhereInput[]
   NOT?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[]
-  habit_id?: Prisma.IntFilter<"Reminder"> | number
+  habitId?: Prisma.IntFilter<"Reminder"> | number
   reminderTime?: Prisma.StringNullableFilter<"Reminder"> | string | null
   daysOfWeek?: Prisma.JsonNullableFilter<"Reminder">
   enabledStatus?: Prisma.BoolFilter<"Reminder"> | boolean
   habit?: Prisma.XOR<Prisma.HabitScalarRelationFilter, Prisma.HabitWhereInput>
-}, "reminder_id">
+}, "reminderId">
 
 export type ReminderOrderByWithAggregationInput = {
-  reminder_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  reminderId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   reminderTime?: Prisma.SortOrderInput | Prisma.SortOrder
   daysOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
   enabledStatus?: Prisma.SortOrder
@@ -257,8 +257,8 @@ export type ReminderScalarWhereWithAggregatesInput = {
   AND?: Prisma.ReminderScalarWhereWithAggregatesInput | Prisma.ReminderScalarWhereWithAggregatesInput[]
   OR?: Prisma.ReminderScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ReminderScalarWhereWithAggregatesInput | Prisma.ReminderScalarWhereWithAggregatesInput[]
-  reminder_id?: Prisma.IntWithAggregatesFilter<"Reminder"> | number
-  habit_id?: Prisma.IntWithAggregatesFilter<"Reminder"> | number
+  reminderId?: Prisma.IntWithAggregatesFilter<"Reminder"> | number
+  habitId?: Prisma.IntWithAggregatesFilter<"Reminder"> | number
   reminderTime?: Prisma.StringNullableWithAggregatesFilter<"Reminder"> | string | null
   daysOfWeek?: Prisma.JsonNullableWithAggregatesFilter<"Reminder">
   enabledStatus?: Prisma.BoolWithAggregatesFilter<"Reminder"> | boolean
@@ -272,8 +272,8 @@ export type ReminderCreateInput = {
 }
 
 export type ReminderUncheckedCreateInput = {
-  reminder_id?: number
-  habit_id: number
+  reminderId?: number
+  habitId: number
   reminderTime?: string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: boolean
@@ -287,16 +287,16 @@ export type ReminderUpdateInput = {
 }
 
 export type ReminderUncheckedUpdateInput = {
-  reminder_id?: Prisma.IntFieldUpdateOperationsInput | number
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  reminderId?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   reminderTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ReminderCreateManyInput = {
-  reminder_id?: number
-  habit_id: number
+  reminderId?: number
+  habitId: number
   reminderTime?: string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: boolean
@@ -309,8 +309,8 @@ export type ReminderUpdateManyMutationInput = {
 }
 
 export type ReminderUncheckedUpdateManyInput = {
-  reminder_id?: Prisma.IntFieldUpdateOperationsInput | number
-  habit_id?: Prisma.IntFieldUpdateOperationsInput | number
+  reminderId?: Prisma.IntFieldUpdateOperationsInput | number
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
   reminderTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -327,35 +327,35 @@ export type ReminderOrderByRelationAggregateInput = {
 }
 
 export type ReminderCountOrderByAggregateInput = {
-  reminder_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  reminderId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   reminderTime?: Prisma.SortOrder
   daysOfWeek?: Prisma.SortOrder
   enabledStatus?: Prisma.SortOrder
 }
 
 export type ReminderAvgOrderByAggregateInput = {
-  reminder_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  reminderId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
 }
 
 export type ReminderMaxOrderByAggregateInput = {
-  reminder_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  reminderId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   reminderTime?: Prisma.SortOrder
   enabledStatus?: Prisma.SortOrder
 }
 
 export type ReminderMinOrderByAggregateInput = {
-  reminder_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  reminderId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
   reminderTime?: Prisma.SortOrder
   enabledStatus?: Prisma.SortOrder
 }
 
 export type ReminderSumOrderByAggregateInput = {
-  reminder_id?: Prisma.SortOrder
-  habit_id?: Prisma.SortOrder
+  reminderId?: Prisma.SortOrder
+  habitId?: Prisma.SortOrder
 }
 
 export type ReminderCreateNestedManyWithoutHabitInput = {
@@ -411,7 +411,7 @@ export type ReminderCreateWithoutHabitInput = {
 }
 
 export type ReminderUncheckedCreateWithoutHabitInput = {
-  reminder_id?: number
+  reminderId?: number
   reminderTime?: string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: boolean
@@ -447,15 +447,15 @@ export type ReminderScalarWhereInput = {
   AND?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
   OR?: Prisma.ReminderScalarWhereInput[]
   NOT?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
-  reminder_id?: Prisma.IntFilter<"Reminder"> | number
-  habit_id?: Prisma.IntFilter<"Reminder"> | number
+  reminderId?: Prisma.IntFilter<"Reminder"> | number
+  habitId?: Prisma.IntFilter<"Reminder"> | number
   reminderTime?: Prisma.StringNullableFilter<"Reminder"> | string | null
   daysOfWeek?: Prisma.JsonNullableFilter<"Reminder">
   enabledStatus?: Prisma.BoolFilter<"Reminder"> | boolean
 }
 
 export type ReminderCreateManyHabitInput = {
-  reminder_id?: number
+  reminderId?: number
   reminderTime?: string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: boolean
@@ -468,14 +468,14 @@ export type ReminderUpdateWithoutHabitInput = {
 }
 
 export type ReminderUncheckedUpdateWithoutHabitInput = {
-  reminder_id?: Prisma.IntFieldUpdateOperationsInput | number
+  reminderId?: Prisma.IntFieldUpdateOperationsInput | number
   reminderTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ReminderUncheckedUpdateManyWithoutHabitInput = {
-  reminder_id?: Prisma.IntFieldUpdateOperationsInput | number
+  reminderId?: Prisma.IntFieldUpdateOperationsInput | number
   reminderTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   enabledStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -484,8 +484,8 @@ export type ReminderUncheckedUpdateManyWithoutHabitInput = {
 
 
 export type ReminderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  reminder_id?: boolean
-  habit_id?: boolean
+  reminderId?: boolean
+  habitId?: boolean
   reminderTime?: boolean
   daysOfWeek?: boolean
   enabledStatus?: boolean
@@ -493,8 +493,8 @@ export type ReminderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 }, ExtArgs["result"]["reminder"]>
 
 export type ReminderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  reminder_id?: boolean
-  habit_id?: boolean
+  reminderId?: boolean
+  habitId?: boolean
   reminderTime?: boolean
   daysOfWeek?: boolean
   enabledStatus?: boolean
@@ -502,8 +502,8 @@ export type ReminderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 }, ExtArgs["result"]["reminder"]>
 
 export type ReminderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  reminder_id?: boolean
-  habit_id?: boolean
+  reminderId?: boolean
+  habitId?: boolean
   reminderTime?: boolean
   daysOfWeek?: boolean
   enabledStatus?: boolean
@@ -511,14 +511,14 @@ export type ReminderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 }, ExtArgs["result"]["reminder"]>
 
 export type ReminderSelectScalar = {
-  reminder_id?: boolean
-  habit_id?: boolean
+  reminderId?: boolean
+  habitId?: boolean
   reminderTime?: boolean
   daysOfWeek?: boolean
   enabledStatus?: boolean
 }
 
-export type ReminderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"reminder_id" | "habit_id" | "reminderTime" | "daysOfWeek" | "enabledStatus", ExtArgs["result"]["reminder"]>
+export type ReminderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"reminderId" | "habitId" | "reminderTime" | "daysOfWeek" | "enabledStatus", ExtArgs["result"]["reminder"]>
 export type ReminderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   habit?: boolean | Prisma.HabitDefaultArgs<ExtArgs>
 }
@@ -535,8 +535,8 @@ export type $ReminderPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     habit: Prisma.$HabitPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    reminder_id: number
-    habit_id: number
+    reminderId: number
+    habitId: number
     reminderTime: string | null
     daysOfWeek: runtime.JsonValue | null
     enabledStatus: boolean
@@ -623,8 +623,8 @@ export interface ReminderDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * // Get first 10 Reminders
    * const reminders = await prisma.reminder.findMany({ take: 10 })
    * 
-   * // Only select the `reminder_id`
-   * const reminderWithReminder_idOnly = await prisma.reminder.findMany({ select: { reminder_id: true } })
+   * // Only select the `reminderId`
+   * const reminderWithReminderIdOnly = await prisma.reminder.findMany({ select: { reminderId: true } })
    * 
    */
   findMany<T extends ReminderFindManyArgs>(args?: Prisma.SelectSubset<T, ReminderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -668,9 +668,9 @@ export interface ReminderDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   ]
    * })
    * 
-   * // Create many Reminders and only return the `reminder_id`
-   * const reminderWithReminder_idOnly = await prisma.reminder.createManyAndReturn({
-   *   select: { reminder_id: true },
+   * // Create many Reminders and only return the `reminderId`
+   * const reminderWithReminderIdOnly = await prisma.reminder.createManyAndReturn({
+   *   select: { reminderId: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -759,9 +759,9 @@ export interface ReminderDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    *   ]
    * })
    * 
-   * // Update zero or more Reminders and only return the `reminder_id`
-   * const reminderWithReminder_idOnly = await prisma.reminder.updateManyAndReturn({
-   *   select: { reminder_id: true },
+   * // Update zero or more Reminders and only return the `reminderId`
+   * const reminderWithReminderIdOnly = await prisma.reminder.updateManyAndReturn({
+   *   select: { reminderId: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -964,8 +964,8 @@ export interface Prisma__ReminderClient<T, Null = never, ExtArgs extends runtime
  * Fields of the Reminder model
  */
 export interface ReminderFieldRefs {
-  readonly reminder_id: Prisma.FieldRef<"Reminder", 'Int'>
-  readonly habit_id: Prisma.FieldRef<"Reminder", 'Int'>
+  readonly reminderId: Prisma.FieldRef<"Reminder", 'Int'>
+  readonly habitId: Prisma.FieldRef<"Reminder", 'Int'>
   readonly reminderTime: Prisma.FieldRef<"Reminder", 'String'>
   readonly daysOfWeek: Prisma.FieldRef<"Reminder", 'Json'>
   readonly enabledStatus: Prisma.FieldRef<"Reminder", 'Boolean'>

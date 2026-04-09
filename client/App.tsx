@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from './src/context/AuthContext';
 import SignInScreen from './src/screens/SignInScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
-import HabitAdditionScreen from './src/screens/HabitAdditionScreen';  
+import HabitAdditionScreen from './src/screens/HabitAdditionScreen';
 import { View } from 'react-native';
 
 const Stack = createStackNavigator();
@@ -35,8 +35,8 @@ function RootNavigation() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <>
-        <Stack.Screen name="Dashboard" component={DashboardScreen} />
-        <Stack.Screen name="HabitAdditionScreen" component={HabitAdditionScreen} />
+          <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <Stack.Screen name="HabitAdditionScreen" component={HabitAdditionScreen} />
         </>
       ) : (
         <>

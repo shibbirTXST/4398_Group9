@@ -6,7 +6,7 @@ const getHabits = (req, res) => {
   const rUserId = req.user.uid; // Assuming authCheck middleware attaches uid to req.user
 
   // Fetch habits from the database for the authenticated user
-  const habits = db.habits.findMany({
+  const habits = db.habit.findMany({
     where: {
       userId: rUserId,
     },
@@ -20,11 +20,20 @@ const getHabits = (req, res) => {
   res.status(200).json(habits);
 };
 
-const createHabit = (req, res) => {
+const createHabit = async (req, res) => {
   const rUserId = req.user.uid;
 
   // class diagram variables
-  const { habitName, userId, planID } = req.body;
+  const { userId, habitName, frequencyType, status } = req.body;
+
+  const newHabit = {
+    userId: userId,
+    habitName: habitName,
+    frequencyType: frequencyType,
+    status: status
+  };
+
+  const addHabit = await db.habit.create({ data: newHabit });
 
   // // input validation 
   // if (!taskName && !reminderTime) {
@@ -39,18 +48,10 @@ const createHabit = (req, res) => {
   // }
 
 
-
   // successful database save simulation
   res.status(201).json({
     message: 'Task successfully created',
-    task: {
-      taskID: Date.now(),
-      taskName: taskName,
-      reminderTime: reminderTime,
-      isCompleted: false,
-      accountID: accountID,
-      planID: planID
-    }
+    task: addHabit
   });
 };
 

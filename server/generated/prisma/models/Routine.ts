@@ -27,18 +27,18 @@ export type AggregateRoutine = {
 }
 
 export type RoutineAvgAggregateOutputType = {
-  routine_id: number | null
-  user_id: number | null
+  routineId: number | null
+  userId: number | null
 }
 
 export type RoutineSumAggregateOutputType = {
-  routine_id: number | null
-  user_id: number | null
+  routineId: number | null
+  userId: number | null
 }
 
 export type RoutineMinAggregateOutputType = {
-  routine_id: number | null
-  user_id: number | null
+  routineId: number | null
+  userId: number | null
   routineName: string | null
   description: string | null
   targetTime: string | null
@@ -47,8 +47,8 @@ export type RoutineMinAggregateOutputType = {
 }
 
 export type RoutineMaxAggregateOutputType = {
-  routine_id: number | null
-  user_id: number | null
+  routineId: number | null
+  userId: number | null
   routineName: string | null
   description: string | null
   targetTime: string | null
@@ -57,8 +57,8 @@ export type RoutineMaxAggregateOutputType = {
 }
 
 export type RoutineCountAggregateOutputType = {
-  routine_id: number
-  user_id: number
+  routineId: number
+  userId: number
   routineName: number
   description: number
   targetTime: number
@@ -69,18 +69,18 @@ export type RoutineCountAggregateOutputType = {
 
 
 export type RoutineAvgAggregateInputType = {
-  routine_id?: true
-  user_id?: true
+  routineId?: true
+  userId?: true
 }
 
 export type RoutineSumAggregateInputType = {
-  routine_id?: true
-  user_id?: true
+  routineId?: true
+  userId?: true
 }
 
 export type RoutineMinAggregateInputType = {
-  routine_id?: true
-  user_id?: true
+  routineId?: true
+  userId?: true
   routineName?: true
   description?: true
   targetTime?: true
@@ -89,8 +89,8 @@ export type RoutineMinAggregateInputType = {
 }
 
 export type RoutineMaxAggregateInputType = {
-  routine_id?: true
-  user_id?: true
+  routineId?: true
+  userId?: true
   routineName?: true
   description?: true
   targetTime?: true
@@ -99,8 +99,8 @@ export type RoutineMaxAggregateInputType = {
 }
 
 export type RoutineCountAggregateInputType = {
-  routine_id?: true
-  user_id?: true
+  routineId?: true
+  userId?: true
   routineName?: true
   description?: true
   targetTime?: true
@@ -196,8 +196,8 @@ export type RoutineGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 export type RoutineGroupByOutputType = {
-  routine_id: number
-  user_id: number
+  routineId: number
+  userId: number
   routineName: string
   description: string | null
   targetTime: string | null
@@ -229,8 +229,8 @@ export type RoutineWhereInput = {
   AND?: Prisma.RoutineWhereInput | Prisma.RoutineWhereInput[]
   OR?: Prisma.RoutineWhereInput[]
   NOT?: Prisma.RoutineWhereInput | Prisma.RoutineWhereInput[]
-  routine_id?: Prisma.IntFilter<"Routine"> | number
-  user_id?: Prisma.IntFilter<"Routine"> | number
+  routineId?: Prisma.IntFilter<"Routine"> | number
+  userId?: Prisma.IntFilter<"Routine"> | number
   routineName?: Prisma.StringFilter<"Routine"> | string
   description?: Prisma.StringNullableFilter<"Routine"> | string | null
   targetTime?: Prisma.StringNullableFilter<"Routine"> | string | null
@@ -241,8 +241,8 @@ export type RoutineWhereInput = {
 }
 
 export type RoutineOrderByWithRelationInput = {
-  routine_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   routineName?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   targetTime?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -253,11 +253,11 @@ export type RoutineOrderByWithRelationInput = {
 }
 
 export type RoutineWhereUniqueInput = Prisma.AtLeast<{
-  routine_id?: number
+  routineId?: number
   AND?: Prisma.RoutineWhereInput | Prisma.RoutineWhereInput[]
   OR?: Prisma.RoutineWhereInput[]
   NOT?: Prisma.RoutineWhereInput | Prisma.RoutineWhereInput[]
-  user_id?: Prisma.IntFilter<"Routine"> | number
+  userId?: Prisma.IntFilter<"Routine"> | number
   routineName?: Prisma.StringFilter<"Routine"> | string
   description?: Prisma.StringNullableFilter<"Routine"> | string | null
   targetTime?: Prisma.StringNullableFilter<"Routine"> | string | null
@@ -265,11 +265,11 @@ export type RoutineWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Routine"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   routineHabits?: Prisma.RoutineHabitListRelationFilter
-}, "routine_id">
+}, "routineId">
 
 export type RoutineOrderByWithAggregationInput = {
-  routine_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   routineName?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   targetTime?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -286,8 +286,8 @@ export type RoutineScalarWhereWithAggregatesInput = {
   AND?: Prisma.RoutineScalarWhereWithAggregatesInput | Prisma.RoutineScalarWhereWithAggregatesInput[]
   OR?: Prisma.RoutineScalarWhereWithAggregatesInput[]
   NOT?: Prisma.RoutineScalarWhereWithAggregatesInput | Prisma.RoutineScalarWhereWithAggregatesInput[]
-  routine_id?: Prisma.IntWithAggregatesFilter<"Routine"> | number
-  user_id?: Prisma.IntWithAggregatesFilter<"Routine"> | number
+  routineId?: Prisma.IntWithAggregatesFilter<"Routine"> | number
+  userId?: Prisma.IntWithAggregatesFilter<"Routine"> | number
   routineName?: Prisma.StringWithAggregatesFilter<"Routine"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Routine"> | string | null
   targetTime?: Prisma.StringNullableWithAggregatesFilter<"Routine"> | string | null
@@ -306,8 +306,8 @@ export type RoutineCreateInput = {
 }
 
 export type RoutineUncheckedCreateInput = {
-  routine_id?: number
-  user_id: number
+  routineId?: number
+  userId: number
   routineName: string
   description?: string | null
   targetTime?: string | null
@@ -327,8 +327,8 @@ export type RoutineUpdateInput = {
 }
 
 export type RoutineUncheckedUpdateInput = {
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   routineName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -338,8 +338,8 @@ export type RoutineUncheckedUpdateInput = {
 }
 
 export type RoutineCreateManyInput = {
-  routine_id?: number
-  user_id: number
+  routineId?: number
+  userId: number
   routineName: string
   description?: string | null
   targetTime?: string | null
@@ -356,8 +356,8 @@ export type RoutineUpdateManyMutationInput = {
 }
 
 export type RoutineUncheckedUpdateManyInput = {
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   routineName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -376,8 +376,8 @@ export type RoutineOrderByRelationAggregateInput = {
 }
 
 export type RoutineCountOrderByAggregateInput = {
-  routine_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   routineName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   targetTime?: Prisma.SortOrder
@@ -386,13 +386,13 @@ export type RoutineCountOrderByAggregateInput = {
 }
 
 export type RoutineAvgOrderByAggregateInput = {
-  routine_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type RoutineMaxOrderByAggregateInput = {
-  routine_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   routineName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   targetTime?: Prisma.SortOrder
@@ -401,8 +401,8 @@ export type RoutineMaxOrderByAggregateInput = {
 }
 
 export type RoutineMinOrderByAggregateInput = {
-  routine_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   routineName?: Prisma.SortOrder
   description?: Prisma.SortOrder
   targetTime?: Prisma.SortOrder
@@ -411,8 +411,8 @@ export type RoutineMinOrderByAggregateInput = {
 }
 
 export type RoutineSumOrderByAggregateInput = {
-  routine_id?: Prisma.SortOrder
-  user_id?: Prisma.SortOrder
+  routineId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type RoutineScalarRelationFilter = {
@@ -486,7 +486,7 @@ export type RoutineCreateWithoutUserInput = {
 }
 
 export type RoutineUncheckedCreateWithoutUserInput = {
-  routine_id?: number
+  routineId?: number
   routineName: string
   description?: string | null
   targetTime?: string | null
@@ -525,8 +525,8 @@ export type RoutineScalarWhereInput = {
   AND?: Prisma.RoutineScalarWhereInput | Prisma.RoutineScalarWhereInput[]
   OR?: Prisma.RoutineScalarWhereInput[]
   NOT?: Prisma.RoutineScalarWhereInput | Prisma.RoutineScalarWhereInput[]
-  routine_id?: Prisma.IntFilter<"Routine"> | number
-  user_id?: Prisma.IntFilter<"Routine"> | number
+  routineId?: Prisma.IntFilter<"Routine"> | number
+  userId?: Prisma.IntFilter<"Routine"> | number
   routineName?: Prisma.StringFilter<"Routine"> | string
   description?: Prisma.StringNullableFilter<"Routine"> | string | null
   targetTime?: Prisma.StringNullableFilter<"Routine"> | string | null
@@ -544,8 +544,8 @@ export type RoutineCreateWithoutRoutineHabitsInput = {
 }
 
 export type RoutineUncheckedCreateWithoutRoutineHabitsInput = {
-  routine_id?: number
-  user_id: number
+  routineId?: number
+  userId: number
   routineName: string
   description?: string | null
   targetTime?: string | null
@@ -579,8 +579,8 @@ export type RoutineUpdateWithoutRoutineHabitsInput = {
 }
 
 export type RoutineUncheckedUpdateWithoutRoutineHabitsInput = {
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
-  user_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
   routineName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -589,7 +589,7 @@ export type RoutineUncheckedUpdateWithoutRoutineHabitsInput = {
 }
 
 export type RoutineCreateManyUserInput = {
-  routine_id?: number
+  routineId?: number
   routineName: string
   description?: string | null
   targetTime?: string | null
@@ -607,7 +607,7 @@ export type RoutineUpdateWithoutUserInput = {
 }
 
 export type RoutineUncheckedUpdateWithoutUserInput = {
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
   routineName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -617,7 +617,7 @@ export type RoutineUncheckedUpdateWithoutUserInput = {
 }
 
 export type RoutineUncheckedUpdateManyWithoutUserInput = {
-  routine_id?: Prisma.IntFieldUpdateOperationsInput | number
+  routineId?: Prisma.IntFieldUpdateOperationsInput | number
   routineName?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -657,8 +657,8 @@ export type RoutineCountOutputTypeCountRoutineHabitsArgs<ExtArgs extends runtime
 
 
 export type RoutineSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  routine_id?: boolean
-  user_id?: boolean
+  routineId?: boolean
+  userId?: boolean
   routineName?: boolean
   description?: boolean
   targetTime?: boolean
@@ -670,8 +670,8 @@ export type RoutineSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 }, ExtArgs["result"]["routine"]>
 
 export type RoutineSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  routine_id?: boolean
-  user_id?: boolean
+  routineId?: boolean
+  userId?: boolean
   routineName?: boolean
   description?: boolean
   targetTime?: boolean
@@ -681,8 +681,8 @@ export type RoutineSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 }, ExtArgs["result"]["routine"]>
 
 export type RoutineSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  routine_id?: boolean
-  user_id?: boolean
+  routineId?: boolean
+  userId?: boolean
   routineName?: boolean
   description?: boolean
   targetTime?: boolean
@@ -692,8 +692,8 @@ export type RoutineSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 }, ExtArgs["result"]["routine"]>
 
 export type RoutineSelectScalar = {
-  routine_id?: boolean
-  user_id?: boolean
+  routineId?: boolean
+  userId?: boolean
   routineName?: boolean
   description?: boolean
   targetTime?: boolean
@@ -701,7 +701,7 @@ export type RoutineSelectScalar = {
   status?: boolean
 }
 
-export type RoutineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"routine_id" | "user_id" | "routineName" | "description" | "targetTime" | "createdAt" | "status", ExtArgs["result"]["routine"]>
+export type RoutineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"routineId" | "userId" | "routineName" | "description" | "targetTime" | "createdAt" | "status", ExtArgs["result"]["routine"]>
 export type RoutineInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   routineHabits?: boolean | Prisma.Routine$routineHabitsArgs<ExtArgs>
@@ -721,8 +721,8 @@ export type $RoutinePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     routineHabits: Prisma.$RoutineHabitPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    routine_id: number
-    user_id: number
+    routineId: number
+    userId: number
     routineName: string
     description: string | null
     targetTime: string | null
@@ -811,8 +811,8 @@ export interface RoutineDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * // Get first 10 Routines
    * const routines = await prisma.routine.findMany({ take: 10 })
    * 
-   * // Only select the `routine_id`
-   * const routineWithRoutine_idOnly = await prisma.routine.findMany({ select: { routine_id: true } })
+   * // Only select the `routineId`
+   * const routineWithRoutineIdOnly = await prisma.routine.findMany({ select: { routineId: true } })
    * 
    */
   findMany<T extends RoutineFindManyArgs>(args?: Prisma.SelectSubset<T, RoutineFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoutinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -856,9 +856,9 @@ export interface RoutineDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    *   ]
    * })
    * 
-   * // Create many Routines and only return the `routine_id`
-   * const routineWithRoutine_idOnly = await prisma.routine.createManyAndReturn({
-   *   select: { routine_id: true },
+   * // Create many Routines and only return the `routineId`
+   * const routineWithRoutineIdOnly = await prisma.routine.createManyAndReturn({
+   *   select: { routineId: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -947,9 +947,9 @@ export interface RoutineDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    *   ]
    * })
    * 
-   * // Update zero or more Routines and only return the `routine_id`
-   * const routineWithRoutine_idOnly = await prisma.routine.updateManyAndReturn({
-   *   select: { routine_id: true },
+   * // Update zero or more Routines and only return the `routineId`
+   * const routineWithRoutineIdOnly = await prisma.routine.updateManyAndReturn({
+   *   select: { routineId: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1153,8 +1153,8 @@ export interface Prisma__RoutineClient<T, Null = never, ExtArgs extends runtime.
  * Fields of the Routine model
  */
 export interface RoutineFieldRefs {
-  readonly routine_id: Prisma.FieldRef<"Routine", 'Int'>
-  readonly user_id: Prisma.FieldRef<"Routine", 'Int'>
+  readonly routineId: Prisma.FieldRef<"Routine", 'Int'>
+  readonly userId: Prisma.FieldRef<"Routine", 'Int'>
   readonly routineName: Prisma.FieldRef<"Routine", 'String'>
   readonly description: Prisma.FieldRef<"Routine", 'String'>
   readonly targetTime: Prisma.FieldRef<"Routine", 'String'>

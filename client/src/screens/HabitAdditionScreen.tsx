@@ -32,13 +32,27 @@ export default function HabitAdditionScreen() {
     setLoading(true);
     setError('');
 
+    /** Look up userID from database using Firebase UID */
+    const fuid = auth.currentUser?.uid;
+
+    const resp = await fetch(`http://localhost:5000/api/users/${fuid}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+        // 'Authorization': `Bearer ${tok}`
+      }
+    });
+
+    const rJson = await resp.json();
+    const userId = await rJson['userId'];
+    /** */
+
     // map data to backend variables
     const newHabitPayload = {
-      taskName: taskName,
-      reminderTime: reminderTime,
-      // hardcoded for DEMO
-      accountID: 1,
-      planID: 1
+      userId: userId,
+      habitName: taskName.trim(),
+      frequencyType: 'Daily',
+      status: 'Active',
     };
 
     try {
@@ -46,6 +60,11 @@ export default function HabitAdditionScreen() {
       if (user) {
         const token = await user.getIdToken();
         setToken(token);
+      } else {
+        console.log('No authenticated user found');
+        setError('User not authenticated. Please sign in again.');
+        setLoading(false);
+        return;
       }
 
 

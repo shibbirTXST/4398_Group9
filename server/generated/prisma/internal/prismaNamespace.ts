@@ -893,7 +893,8 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 
 export const UserScalarFieldEnum = {
-  user_id: 'user_id',
+  userId: 'userId',
+  firebaseUid: 'firebaseUid',
   username: 'username',
   email: 'email',
   createdAt: 'createdAt',
@@ -905,8 +906,8 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 
 export const HabitScalarFieldEnum = {
-  habit_id: 'habit_id',
-  user_id: 'user_id',
+  habitId: 'habitId',
+  userId: 'userId',
   habitName: 'habitName',
   description: 'description',
   targetGoal: 'targetGoal',
@@ -920,8 +921,8 @@ export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof Ha
 
 
 export const RoutineScalarFieldEnum = {
-  routine_id: 'routine_id',
-  user_id: 'user_id',
+  routineId: 'routineId',
+  userId: 'userId',
   routineName: 'routineName',
   description: 'description',
   targetTime: 'targetTime',
@@ -933,8 +934,8 @@ export type RoutineScalarFieldEnum = (typeof RoutineScalarFieldEnum)[keyof typeo
 
 
 export const LogScalarFieldEnum = {
-  log_id: 'log_id',
-  habit_id: 'habit_id',
+  logId: 'logId',
+  habitId: 'habitId',
   logDate: 'logDate',
   completionStatus: 'completionStatus',
   notes: 'notes',
@@ -945,8 +946,8 @@ export type LogScalarFieldEnum = (typeof LogScalarFieldEnum)[keyof typeof LogSca
 
 
 export const ReminderScalarFieldEnum = {
-  reminder_id: 'reminder_id',
-  habit_id: 'habit_id',
+  reminderId: 'reminderId',
+  habitId: 'habitId',
   reminderTime: 'reminderTime',
   daysOfWeek: 'daysOfWeek',
   enabledStatus: 'enabledStatus'
@@ -957,8 +958,8 @@ export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typ
 
 export const RoutineHabitScalarFieldEnum = {
   routineHabit_id: 'routineHabit_id',
-  routine_id: 'routine_id',
-  habit_id: 'habit_id',
+  routineId: 'routineId',
+  habitId: 'habitId',
   orderIndex: 'orderIndex',
   createdAt: 'createdAt'
 } as const

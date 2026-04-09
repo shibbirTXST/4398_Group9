@@ -3,10 +3,11 @@ import admin from '../firebaseAdmin.js';
 const authCheck = async (req, res, next) => {
     const header = req.headers.authorization;
     if (!header || !header.startsWith('Bearer ')) {
+        console.log("didn't find token");
         return res.status(401).send('Unauthorized');
     }
 
-    const idToken = header.split('Bearer ')[1];
+    const idToken = header.split(' ')[1];
 
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
