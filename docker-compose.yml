@@ -1,18 +1,14 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:latest
-    container_name: habit_tracker_db
-    restart: always
+    image: postgres:16-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: habit_tracker
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: habit_tracker_db
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  db_data:

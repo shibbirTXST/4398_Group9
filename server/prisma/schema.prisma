@@ -11,3 +11,84 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  user_id       Int       @id @default(autoincrement())
+  username      String // Maps from VARCHAR
+  email         String    @unique
+  createdAt     DateTime  @default(now()) // Maps from TIMESTAMP
+  profilePicUrl DateTime? // Corresponds to TIMESTAMP? or perhaps should be String?
+  activeStatus  DateTime? // Corresponds to TIMESTAMP?
+
+  // Relations
+  habits   Habit[]
+  routines Routine[]
+}
+
+model Habit {
+  habit_id      Int      @id @default(autoincrement())
+  user_id       Int // Foreign Key
+  habitName     String
+  description   String?
+  targetGoal    String?
+  goalUnit      String? // Maps from GOALINIT
+  frequencyType String // e.g., 'Daily', 'Weekly'
+  createdAt     DateTime @default(now())
+  status        String // e.g., 'Active', 'Archived'
+
+  // Relations
+  user          User           @relation(fields: [user_id], references: [user_id])
+  logs          Log[]
+  reminders     Reminder[]
+  routineHabits RoutineHabit[]
+}
+
+model Routine {
+  routine_id  Int      @id @default(autoincrement())
+  user_id     Int // Foreign Key
+  routineName String
+  description String?
+  targetTime  String? // e.g., 'Morning', 'Evening'
+  createdAt   DateTime @default(now())
+  status      String // e.g., 'Active', 'Archived'
+
+  // Relations
+  user          User           @relation(fields: [user_id], references: [user_id])
+  routineHabits RoutineHabit[]
+}
+
+model Log {
+  log_id           Int       @id @default(autoincrement())
+  habit_id         Int // Foreign Key
+  logDate          DateTime
+  completionStatus Json? // Maps from Boolean/Value (Flexible field)
+  notes            DateTime? // Check image: Notes are listed as TIMESTAMP? Typically it's String.
+  createdAt        DateTime  @default(now())
+
+  // Relations
+  habit Habit @relation(fields: [habit_id], references: [habit_id])
+}
+
+model Reminder {
+  reminder_id   Int     @id @default(autoincrement())
+  habit_id      Int // Foreign Key
+  reminderTime  String? // Maps from (vARCHARRunday) - Non-standard format?
+  daysOfWeek    Json? // Maps from BITMASK/JSON
+  enabledStatus Boolean @default(true)
+
+  // Relations
+  habit Habit @relation(fields: [habit_id], references: [habit_id])
+}
+
+// Explicit Join Table for many-to-many relation between Routine and Habit
+model RoutineHabit {
+  routineHabit_id Int      @id @default(autoincrement())
+  routine_id      Int // Foreign Key
+  habit_id        Int // Foreign Key
+  orderIndex      Int
+  createdAt       DateTime @default(now())
+
+  // Relations
+  routine Routine @relation(fields: [routine_id], references: [routine_id])
+  habit   Habit   @relation(fields: [habit_id], references: [habit_id])
+}
