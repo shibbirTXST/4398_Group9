@@ -16,6 +16,7 @@ describe('Habit Deletion API (DELETE /api/habits/:id)', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Habit deleted');
+    expect(response.body.habitId).toEqual(habitId); // validates that the correct habit was deleted
   });
 
   //test case 2: error handling - habit not found

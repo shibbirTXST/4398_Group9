@@ -73,7 +73,10 @@ const deleteHabit = (req, res) => {
   }
   //deletion operation
   habits.splice(index, 1);
-  res.status(200).json({ message: 'Habit deleted' });
+  res.status(200).json({ 
+    message: 'Habit deleted',
+    habitId: parseInt(id)
+   });
 };
 
 const updateHabit = (req, res) => {
@@ -83,7 +86,7 @@ const updateHabit = (req, res) => {
   }
   //reading in
   const { id } = req.params;
-  const { title, reminderTime } = req.body;
+  const { title, reminderTime, planID } = req.body;
 
   //error handling for invalid id format
   if(id != parseInt(id)) {
@@ -103,21 +106,96 @@ const updateHabit = (req, res) => {
   //simulated update operation
   habits[index].title = title;
   habits[index].reminderTime = reminderTime;
+  habits[index].planID = planID;
   res.status(200).json(habits[index]);
 };
 
 //plan controller functions
 
 const createPlan = (req, res) => {
-  return res.status(501).json({ error: 'Error Message Return: Create plan functionality not implemented yet' });
+  // authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+  const { name } = req.body;
+
+  // input validation
+  if (!name) {
+    return res.status(400).json({ error: 'Error Message Return: Plan name is required' });
+  }
+
+  const newPlan = { id: Date.now(), name: name };
+  plans.push(newPlan);
+  res.status(201).json({
+    message: 'Plan successfully created',
+    plan: newPlan
+  });
 };
 
 const deletePlan = (req, res) => {
-  return res.status(501).json({ error: 'Error Message Return: Delete plan functionality not implemented yet' });
+  // authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+
+  const { id } = req.params;
+  // error handling for invalid id format
+  if(id != parseInt(id)) {
+    return res.status(400).json({ error: 'Error Message Return: Invalid plan ID' });
+  }
+
+  const index = plans.findIndex(p => p.id == id);
+  // error handling for plan not found
+  if (index === -1) {
+    return res.status(404).json({ message: 'Plan not found' });
+  }
+
+  // delete
+  plans.splice(index, 1);
+  while (habits.some(h => h.planID == id)) {
+    const habitIndex = habits.findIndex(h => h.planID == id);
+    habits.splice(habitIndex, 1);
+  }
+
+  res.status(200).json({ 
+    message: 'Plan deleted',
+    planId: parseInt(id),
+    hasHabits: habits.some(h => h.planID == id)
+  });
 };
 
 const updatePlan = (req, res) => {
-  return res.status(501).json({ error: 'Error Message Return: Update plan functionality not implemented yet' });
+  // authentication check
+  if (!req.headers.authorization) {
+    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+
+  const { id } = req.params;
+  const { name } = req.body;
+
+  // error handling for invalid id format
+  if(id != parseInt(id)) {
+    return res.status(400).json({ error: 'Invalid plan ID format' });
+  }
+
+  // error handling for missing name
+  if (!name) {
+    return res.status(400).json({ error: 'Error Message Return: Plan name is required' });
+  }
+
+  const index = plans.findIndex(p => p.id == id);
+  // error handling for plan not found
+  if (index === -1) {
+    return res.status(404).json({ message: 'Plan not found' });
+  }
+
+  // update
+  plans[index].name = name;
+
+  res.status(200).json({ 
+    message: 'Plan successfully updated', 
+    planId: parseInt(id),
+    });
 };
 
 module.exports = { getHabits, getPlans, createHabit, deleteHabit, updateHabit, createPlan, deletePlan, updatePlan };
