@@ -20,6 +20,7 @@ model User {
   createdAt     DateTime  @default(now()) // Maps from TIMESTAMP
   profilePicUrl DateTime? // Corresponds to TIMESTAMP? or perhaps should be String?
   activeStatus  DateTime? // Corresponds to TIMESTAMP?
+  pushToken     String? // users might click "Deny" when the app asks for notification permissions
 
   // Relations
   habits   Habit[]
