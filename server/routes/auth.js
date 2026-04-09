@@ -40,4 +40,36 @@ authRouter.delete('/delete-account', async (req, res) => {
   }
 });
 
+// push token route for saving Expo push tokens to the database
+authRouter.post('/push-token', async (req, res) => {
+  try {
+    // Verify the Firebase token to make sure the user is actually logged in
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const idToken = authHeader.split('Bearer ')[1];
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const firebaseUid = decodedToken.uid;
+
+    // Grab the Expo push token sent from frontend
+    const { pushToken } = req.body;
+    if (!pushToken) {
+      return res.status(400).json({ error: 'Push token is required' });
+    }
+
+    // Save it to the new column in the Prisma database
+    await db.user.update({
+      where: { firebaseUid: firebaseUid },
+      data: { pushToken: pushToken }
+    });
+
+    res.status(200).json({ message: 'Push token saved successfully' });
+  } catch (error) {
+    console.error('Error saving push token:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export { authRouter };
