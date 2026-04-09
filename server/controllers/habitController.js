@@ -1,14 +1,23 @@
 import admin from '../firebaseAdmin.js';
 import db from '../db/db.js';
 
-const getHabits = (req, res) => {
+const getHabits = async (req, res) => {
 
   const rUserId = req.user.uid; // Assuming authCheck middleware attaches uid to req.user
 
+  const uid = await fetch(`http://localhost:5000/api/users/${rUserId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  const userData = await uid.json();
+  const userId = userData.userId;
+
   // Fetch habits from the database for the authenticated user
-  const habits = db.habit.findMany({
+  const habits = await db.habit.findMany({
     where: {
-      userId: rUserId,
+      userId: userId,
     },
     select: {
       habitId: true,

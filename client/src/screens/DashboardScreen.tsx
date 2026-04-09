@@ -53,11 +53,15 @@ export default function DashboardScreen({ route, navigation }: any) {
     // load habits from API
     const load = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/habits');
+        const tok = await auth.currentUser?.getIdToken();
+        const res = await fetch('http://localhost:5000/api/habits', {
+          headers: { 'Authorization': `Bearer ${tok}` }
+        });
         if (!res.ok) throw new Error('Failed to fetch habits');
         const data = await res.json();
+        console.log('Loaded habits:', data);
         // ensure ids are strings for list keys
-        setHabits(data.map((h: any) => ({ ...h, id: String(h.id) })));
+        setHabits(data);
       } catch (err) {
         console.warn('Could not load habits:', err);
       }
@@ -242,24 +246,24 @@ export default function DashboardScreen({ route, navigation }: any) {
           <View style={styles.content}>
             <Text variant="headlineSmall" style={styles.title}>Your Habits Today</Text>
 
-            {habits.map((habit) => (
+            {habits.map((habit: any) => (
               <List.Item
-                key={habit.id}
-                title={habit.title}
-                description={habit.completed ? "Done for today!" : "Not done yet"}
+                key={habit.habitId}
+                title={habit.habitName}
+                description={habit.status ? "Done for today!" : "Not done yet"}
                 left={props => (
                   <IconButton
                     {...props}
-                    icon={habit.completed ? "check-circle" : "circle-outline"}
-                    iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                    onPress={() => toggleHabit(habit.id)}
+                    icon={habit.status ? "check-circle" : "circle-outline"}
+                    iconColor={habit.status ? theme.colors.primary : theme.colors.outline}
+                    onPress={() => toggleHabit(habit.habitId)}
                   />
                 )}
                 right={props => (
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text {...props} style={styles.count}>{habit.count}/1</Text>
                     <IconButton icon="pencil" onPress={() => openEditDialog(habit)} />
-                    <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
+                    <IconButton icon="delete" onPress={() => deleteHabit(habit.habitId)} />
                   </View>
                 )}
                 style={styles.habitItem}
