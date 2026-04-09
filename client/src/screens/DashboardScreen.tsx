@@ -5,6 +5,8 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { registerForPushNotificationsAsync, savePushTokenToServer } from '../utils/notifications';
+import { API_BASE_URL } from '../config/API_base_url';
 
 const theme = {
   ...DefaultTheme,
@@ -54,7 +56,7 @@ export default function DashboardScreen({ route, navigation }: any) {
     const load = async () => {
       try {
         const tok = await auth.currentUser?.getIdToken();
-        const res = await fetch('http://localhost:5000/api/habits', {
+        const res = await fetch(`${API_BASE_URL}/api/habits`, {
           headers: { 'Authorization': `Bearer ${tok}` }
         });
         if (!res.ok) throw new Error('Failed to fetch habits');
@@ -73,6 +75,31 @@ export default function DashboardScreen({ route, navigation }: any) {
     load();
   }, []);
 
+  React.useEffect(() => {
+    (async () => {
+      const result = await registerForPushNotificationsAsync();
+      if (!result.token) {
+        console.warn('Push registration failed:', result.error);
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const idToken = await user.getIdToken();
+          const saveRes = await savePushTokenToServer(result.token, idToken);
+          if (!saveRes.ok) {
+            console.warn('Failed to save push token to server:', saveRes.error);
+          }
+        } catch (err) {
+          console.warn('Could not get ID token to save push token:', err);
+        }
+      } else {
+        console.warn('Push token obtained but no authenticated user to attach it to.');
+      }
+    })();
+  }, []);
+
   const updateHabit = async () => {
     //check if user is authenticated before allowing update
     const user = auth.currentUser;
@@ -83,7 +110,7 @@ export default function DashboardScreen({ route, navigation }: any) {
     const token = await user.getIdToken();
     if (!title.trim() || !editingId) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/${editingId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/habits/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title: title.trim() }),
@@ -113,7 +140,7 @@ export default function DashboardScreen({ route, navigation }: any) {
     }
     const token = await user.getIdToken();
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/habits/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -157,7 +184,7 @@ export default function DashboardScreen({ route, navigation }: any) {
 
       const token = await user.getIdToken();
 
-      const res = await fetch("http://localhost:5000/api/delete-account", {
+      const res = await fetch(`${API_BASE_URL}/api/delete-account`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,

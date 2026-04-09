@@ -4,10 +4,12 @@ import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView } from 're
 import { TextInput, Button, Text, HelperText, Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { API_BASE_URL } from '../config/API_base_url';
+import ReminderTimePicker from '../components/ReminderTimePicker';
 
 export default function HabitAdditionScreen() {
   const [taskName, setTaskName] = useState('');
-  const [reminderTime, setReminderTime] = useState('');
+  const [reminderTime, setReminderTime] = useState<Date>(new Date(new Date().setHours(9, 0, 0, 0)));
   const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,17 +23,16 @@ export default function HabitAdditionScreen() {
       return;
     }
 
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (reminderTime.trim() && !timeRegex.test(reminderTime.trim())) {
-      setError('Please enter a valid 24-hour time (e.g., 14:30)');
-      return;
-    }
-
     setLoading(true);
     setError('');
 
+    // Format the Date object into a 24-hour string (e.g., "14:30") for the backend
+    const formattedTime = `${reminderTime.getHours().toString().padStart(2, '0')}:${reminderTime.getMinutes().toString().padStart(2, '0')}`;
+
+    // Use new payload structure, but add formatted time
     const newHabitPayload = {
       habitName: taskName.trim(),
+      reminderTime: formattedTime, // Added time format
       frequencyType: 'Daily',
       status: 'Active',
     };
@@ -47,7 +48,8 @@ export default function HabitAdditionScreen() {
       const token = await user.getIdToken();
       setToken(token);
 
-      const response = await fetch('http://localhost:5000/api/habits', {
+      // Swap out localhost for API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/habits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +62,7 @@ export default function HabitAdditionScreen() {
 
       if (response.status === 201) {
         setTaskName('');
-        setReminderTime('');
+        setReminderTime(new Date(new Date().setHours(9, 0, 0, 0))); // Reset time picker
         navigation.navigate('Dashboard', {
           newHabit: jsonResponse.habit,
           successMessage: 'Habit added successfully!',
@@ -101,13 +103,9 @@ export default function HabitAdditionScreen() {
               style={styles.input}
             />
 
-            <TextInput
-              label="Reminder Time"
-              placeholder="e.g., 08:00 AM"
-              value={reminderTime}
-              onChangeText={setReminderTime}
-              mode="outlined"
-              style={styles.input}
+            <ReminderTimePicker 
+              initialTime={reminderTime} 
+              onTimeChange={(newTime) => setReminderTime(newTime)} 
             />
 
             {error ? <HelperText type="error" visible={true}>{error}</HelperText> : null}
