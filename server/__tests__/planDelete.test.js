@@ -15,7 +15,7 @@ describe('Plan Delete API (POST /api/habits/plans)', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Plan deleted'); // validates "return" state
-    expect(response.body.planId).toBe(planId); // validates the correct plan was deleted
+    expect(response.body.planId).toEqual(planId); // validates the correct plan was deleted
     expect(response.body.hasHabits).toEqual(false); // validates that associated habits were also deleted
   });
     

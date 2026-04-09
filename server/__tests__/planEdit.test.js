@@ -16,7 +16,7 @@ describe('Plan Edit API (POST /api/habits/plans)', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Plan successfully updated');
-    expect(response.body.planId).toBe(planId); //ensure correct plan was updated
+    expect(response.body.planId).toEqual(planId); //ensure correct plan was updated
     
     });
 
@@ -45,7 +45,7 @@ describe('Plan Edit API (POST /api/habits/plans)', () => {
             .send({ name: updatedName });
 
         expect(response.status).toBe(400);
-        expect(response.body.message).toBe('Invalid plan ID format');
+        expect(response.body.error).toBe('Invalid plan ID format');
     });
 
     //test case 4: error handling - missing name in request body
