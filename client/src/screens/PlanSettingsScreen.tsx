@@ -5,30 +5,21 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth } from '../config/firebase';
 
-export default function HabitSettingsScreen() {
+export default function PlanSettingsScreens() {
 
   const route = useRoute();
-  const { isEditing, habit, plans } = route.params as { isEditing: boolean; habit: any, plans: any[] };
+  const { isEditing, plan } = route.params as { isEditing: boolean; plan: any };
 
-  const [taskName, setTaskName] = useState(isEditing ? habit.title : '');
-  const [reminderTime, setReminderTime] = useState(isEditing ? habit.reminderTime : '');
+  const [planName, setPlanName] = useState(isEditing ? plan.name : '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedPlanId, setSelectedPlanId] = useState(isEditing ? habit.planID : 0);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   //Habit update
-  const handleUpdateHabit = async () => {
+  const handleUpdatePlan = async () => {
     // input validation
-    if (!taskName.trim() || !reminderTime.trim()) {
+    if (!planName.trim()) {
       setError('Please fill in all fields');
-      return;
-    }
-
-    // format validation for a valid 24-hour time 
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (!timeRegex.test(reminderTime)) {
-      setError('Please enter a valid 24-hour time (e.g., 14:30)');
       return;
     }
 
@@ -42,40 +33,31 @@ export default function HabitSettingsScreen() {
       return;
     }
     const token = await user.getIdToken();
-    if (!taskName.trim() || !reminderTime.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/${habit.id}`, {
+      const res = await fetch(`http://localhost:5000/api/habits/plans/${plan.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ title: taskName.trim(), reminderTime: reminderTime.trim(), planID: selectedPlanId }),
+        body: JSON.stringify({ name: planName.trim() }),
       });
       if (!res.ok) throw new Error('Update failed');
-      setTaskName('');
-      setReminderTime('');
+      setPlanName('');
       const updated = await res.json();
       navigation.navigate('Dashboard', { 
-        updatedHabit: updated.task,
-        successMessage: 'Habit updated successfully!'
+        updatedPlan: updated.planId,
+        successMessage: 'Plan updated successfully!'
       });
     } catch (err) {
-      console.error('Error updating habit', err);
+      console.error('Error updating plan', err);
     }finally {
       setLoading(false);
     }
   };
 
-  //New habit creation
-  const handleCreateHabit = async () => {
+  //New plan creation
+  const handleCreatePlan = async () => {
     // input validation
-    if (!taskName.trim() || !reminderTime.trim()) {
+    if (!planName.trim()) {
       setError('Please fill in all fields');
-      return;
-    }
-
-    // format validation for a valid 24-hour time 
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (!timeRegex.test(reminderTime)) {
-      setError('Please enter a valid 24-hour time (e.g., 14:30)');
       return;
     }
 
@@ -83,23 +65,22 @@ export default function HabitSettingsScreen() {
     setError('');
 
     // map data to backend variables
-    const newHabitPayload = {
-      taskName: taskName,
-      reminderTime: reminderTime,
-      planID: selectedPlanId, 
+    const newPlanPayload = {
+      name: planName.trim(),
+      id: Date.now(),
       // hardcoded for DEMO
       accountID: 1  
     };
 
     try {
       // send POST request to Express server
-      const response = await fetch('http://localhost:5000/api/habits', {
+      const response = await fetch('http://localhost:5000/api/habits/plans', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer valid-firebase-token' 
         },
-        body: JSON.stringify(newHabitPayload),
+        body: JSON.stringify(newPlanPayload),
       });
 
       const jsonResponse = await response.json();
@@ -107,14 +88,13 @@ export default function HabitSettingsScreen() {
       // handle backend response
       if (response.status === 201) {
         // clear form and navigate back to the Dashboard on success
-        setTaskName('');
-        setReminderTime('');
+        setPlanName('');
         navigation.navigate('Dashboard', { 
-            newHabit: jsonResponse.task,
-            successMessage: 'Habit added successfully!'
+            newPlan: jsonResponse.plan,
+            successMessage: 'Plan added successfully!'
         }); 
       } else {
-        setError(jsonResponse.error || 'Failed to create habit');
+        setError(jsonResponse.error || 'Failed to create plan');
       }
     } catch (err: any) {
       console.error(err);
@@ -128,7 +108,7 @@ export default function HabitSettingsScreen() {
     <View style={styles.mainContainer}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title={isEditing ? "Edit Habit" : "New Habit"} />
+        <Appbar.Content title={isEditing ? "Edit Plan" : "New Plan"} />
       </Appbar.Header>
 
       <KeyboardAvoidingView
@@ -138,59 +118,31 @@ export default function HabitSettingsScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
             <Text style={styles.title}>
-              {isEditing ? 'Modify a Habit' : 'Create a Habit'}
+              {isEditing ? 'Modify a Plan' : 'Create a Plan'}
             </Text>
             <Text style={styles.subtitle}>
-              {isEditing ? 'How would you like to modify this habit?' : 'What habit would you like to track?'}
+              {isEditing ? 'How would you like to modify this plan?' : 'What plan would you like to create?'}
             </Text>
 
             <TextInput
-              label="Habit Name"
-              placeholder={isEditing ? habit.title : "e.g., Drink Water"}
-              value={taskName}
-              onChangeText={setTaskName}
+              label="Plan Name"
+              placeholder={isEditing ? plan.name : "e.g., Workout Routine"}
+              value={planName}
+              onChangeText={setPlanName}
               mode="outlined"
               style={styles.input}
             />
-
-            <TextInput
-              label="Reminder Time"
-              placeholder={isEditing ? habit.reminderTime : "e.g., 08:00 AM"}
-              value={reminderTime}
-              onChangeText={setReminderTime}
-              mode="outlined"
-              style={styles.input}
-            />
-
-            <Text style={{ marginBottom: 8 }}>Assign to Plan:</Text>
-            <Button
-              mode={selectedPlanId === 0 ? "contained" : "outlined"}
-              onPress={() => setSelectedPlanId(0)}
-              style={styles.planButton}
-            >{'No Plan'}
-            </Button>
-            {plans && plans.map((plan) => (
-              <Button
-                key={plan.id}
-                mode={selectedPlanId === plan.id ? "contained" : "outlined"}
-                onPress={() => setSelectedPlanId(plan.id)}
-                style={styles.planButton}
-              >
-                {plan.name}
-              </Button>
-            ))}
-
 
             {error ? <HelperText type="error" visible={true}>{error}</HelperText> : null}
 
             <Button
               mode="contained"
-              onPress={isEditing ? handleUpdateHabit : handleCreateHabit}
+              onPress={isEditing ? handleUpdatePlan : handleCreatePlan}
               loading={loading}
               disabled={loading}
               style={styles.button}
             >
-              Save Habit
+              Save Plan
             </Button>
             
             <Button
@@ -235,9 +187,6 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
-  },
-  planButton: {
-    marginBottom: 8,
   },
   button: {
     marginTop: 16,

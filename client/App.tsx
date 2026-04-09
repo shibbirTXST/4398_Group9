@@ -8,6 +8,7 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import HabitSettingsScreen from './src/screens/HabitSettingsScreen';  
 import { View } from 'react-native';
+import PlanSettingsScreen from './src/screens/PlanSettingsScreen';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ function RootNavigation() {
         <>
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="HabitSettingsScreen" component={HabitSettingsScreen} />
+        <Stack.Screen name="PlanSettingsScreen" component={PlanSettingsScreen} />
         </>
       ) : (
         <>

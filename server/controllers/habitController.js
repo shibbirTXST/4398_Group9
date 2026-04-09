@@ -24,6 +24,11 @@ const createHabit = (req, res) => {
     return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
   }
 
+  //check if request body exists
+  if(!req.body) {
+    return res.status(400).json({ error: 'Error Message Return: Request body is required' });
+  }
+
   // class diagram variables
   const { taskName, reminderTime, accountID, planID } = req.body;
 
@@ -38,7 +43,7 @@ const createHabit = (req, res) => {
   if (!reminderTime) {
     return res.status(400).json({ error: 'Reminder time is required' });
   }
-  const newHabit = { id: Date.now(), title: taskName, completed: false, count: 0, reminderTime: reminderTime };
+  const newHabit = { id: Date.now(), title: taskName, completed: false, count: 0, reminderTime: reminderTime, planID: planID };
   habits.push(newHabit);
 
   // successful database save simulation
@@ -86,6 +91,11 @@ const updateHabit = (req, res) => {
   }
   //reading in
   const { id } = req.params;
+
+  //check if request body exists
+  if(!req.body) {
+    return res.status(400).json({ error: 'Error Message Return: Request body is required' });
+  }
   const { title, reminderTime, planID } = req.body;
 
   //error handling for invalid id format
@@ -94,9 +104,10 @@ const updateHabit = (req, res) => {
   }
 
   //error handling for missing title and reminder time
-  if(!title || !reminderTime) {
-    return res.status(400).json({ error: 'Error Message Return: Title and reminder time are required' });
+  if(!title || !reminderTime || !planID) {
+    return res.status(400).json({ error: 'Error Message Return: Title, reminder time, and PlanID are required' });
   }
+
   //error handling for id not found
   const index = habits.findIndex(h => h.id == id);
   if (index === -1) {
@@ -107,7 +118,7 @@ const updateHabit = (req, res) => {
   habits[index].title = title;
   habits[index].reminderTime = reminderTime;
   habits[index].planID = planID;
-  res.status(200).json(habits[index]);
+  res.status(200).json({habit: habits[index]});
 };
 
 //plan controller functions
@@ -117,6 +128,11 @@ const createPlan = (req, res) => {
   if (!req.headers.authorization) {
     return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
   }
+  //check if request body exists
+  if(!req.body) {
+    return res.status(400).json({ error: 'Error Message Return: Request body is required' });
+  }
+
   const { name } = req.body;
 
   // input validation
@@ -168,6 +184,10 @@ const updatePlan = (req, res) => {
   // authentication check
   if (!req.headers.authorization) {
     return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+  }
+  //check if request body exists
+  if(!req.body) {
+    return res.status(400).json({ error: 'Error Message Return: Request body is required' });
   }
 
   const { id } = req.params;

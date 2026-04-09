@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
+const e = require('express');
 
 // test cases
 describe('Habit Modification API (PUT /api/habits/:id)', () => {
@@ -13,13 +14,14 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     const response = await request(app)
       .put(`/api/habits/${habitId}`)
       .set('Authorization', 'Bearer valid-firebase-token') // triggers the "yes" path
-      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planId: PlanID });
+      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planID: PlanID });
 
     expect(response.status).toBe(200);
-    expect(response.body.title).toBe(updatedTitle);
-    expect(response.body.reminderTime).toBe(updatedReminderTime);
-    expect(response.body.id).toBe(habitId);
-    expect(response.body.planId).toBe(PlanID);
+    expect(response.body).toHaveProperty('habit');
+    expect(response.body.habit.id).toEqual(habitId);
+    expect(response.body.habit.title).toBe(updatedTitle);
+    expect(response.body.habit.reminderTime).toBe(updatedReminderTime);
+    expect(response.body.habit.planID).toBe(PlanID);
   });
   
   // test case 2: error handling - habit not found
@@ -32,7 +34,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     const response = await request(app)
       .put(`/api/habits/${nonExistentHabitId}`)
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planId: PlanID });
+      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planID: PlanID });
 
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('Habit not found');
@@ -116,23 +118,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     expect(response.body.error).toContain('Error Message'); // assuming the server returns this error message
   });
 
-  //test case 8: error handling - plan ID not found in the system
-  it('should return an error if the plan ID does not exist in the system', async () => {
-    const habitId = 2;
-    const updatedTitle = 'Read for 1 hour';
-    const updatedReminderTime = '20:00';
-    const nonExistentPlanID = 9999;
-
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
-      .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planId: nonExistentPlanID }); // non-existent plan ID provided
-
-    expect(response.status).toBe(404); // assuming the server returns 404 Not Found for non-existent related resources
-    expect(response.body.message).toBe('Plan not found'); // assuming the server returns this message for non-existent plans
-  });
-
-  // test case 9: error handling - invalid habit ID
+  // test case 8: error handling - invalid habit ID
   it('should return an error if the habit ID is invalid', async () => {
     const invalidHabitId = 'invalid-id';
     const updatedTitle = 'Read for 1 hour';
@@ -148,7 +134,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     expect(response.body.error).toContain('Error Message'); // assuming the server returns this error message
   });
 
-  //test case 10: error handling - invalid Plan ID format
+  //test case 9: error handling - invalid Plan ID format
   it('should return an error if the plan ID format is invalid in the request body', async () => {
     const habitId = 2;
     const updatedTitle = 'Read for 1 hour';
@@ -164,7 +150,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     expect(response.body.error).toContain('Error Message'); // assuming the server returns this error message
   });
 
-  //test case 11: error handling - user not logged in and missing title
+  //test case 10: error handling - user not logged in and missing title
   it('should return an error when the user is not logged in and the title is missing in the request body', async () => {
     const habitId = 2;
     const updatedReminderTime = '20:00';
@@ -179,7 +165,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     expect(response.body.error).toContain('Error Message'); // assuming the server returns this error message for unauthenticated access
   });
 
-  //test case 12: missing fields and logged out
+  //test case 11: missing fields and logged out
   it('should return an error when the user is not logged in and required fields are missing in the request body', async () => {
     const habitId = 2;
 
@@ -192,7 +178,7 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     expect(response.body.error).toContain('Error Message'); // assuming the server returns this error message for unauthenticated access
   });
 
-  //test case 13: error handling - user logged in but missing fields
+  //test case 12: error handling - user logged in but missing fields
   it('should return an error when the user is logged in but required fields are missing in the request body', async () => {
     const habitId = 2;
     

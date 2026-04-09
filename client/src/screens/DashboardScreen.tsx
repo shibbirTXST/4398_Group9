@@ -102,6 +102,29 @@ export default function DashboardScreen({route, navigation}: any) {
     }
   };
 
+  const deletePlan = async (id: string) => {
+    //check if user is authenticated before allowing delete
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
+    try {
+      const res = await fetch(`http://localhost:5000/api/habits/plans/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error('Delete failed');
+      setPlans(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      console.error('Error deleting plan', err);
+    }
+  };
+
+
   const openAccMenu = () => setAccMenuVisible(true);
   const closeAccMenu = () => setAccMenuVisible(false);
 
@@ -224,7 +247,9 @@ export default function DashboardScreen({route, navigation}: any) {
         <SafeAreaView style={styles.container}>
           <View style={styles.content}>
             <Text variant="headlineSmall" style={styles.title}>Your Habits Today</Text>
+
             {/* Independent Habits */}
+
               {habitsByPlan[0] && habitsByPlan[0].length > 0 && (
                 <List.Accordion
                   title="Independent Habits"
@@ -251,12 +276,11 @@ export default function DashboardScreen({route, navigation}: any) {
                           </Text>
                           <IconButton
                             icon="pencil"
-                            onPress={() =>
-                              navigation.navigate('HabitSettingsScreen', {
-                                isEditing: true,
-                                habit: habit,
-                              })
-                            }
+                            onPress={() => navigation.navigate('HabitSettingsScreen', {
+                              isEditing: true,
+                              habit: habit,
+                              plans: plans,
+                            })}
                           />
                           <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
                         </View>
@@ -266,7 +290,9 @@ export default function DashboardScreen({route, navigation}: any) {
                 ))}
                 </List.Accordion>
           )}
+
           {/* Plans (and their sub-habits) */}
+
             {plans.map((plan) => (
             <List.Accordion 
             key={plan.id}
@@ -276,8 +302,14 @@ export default function DashboardScreen({route, navigation}: any) {
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <IconButton
                         icon="pencil"
+                        onPress={() =>
+                          navigation.navigate('PlanSettingsScreen', {
+                            isEditing: true,
+                            plan: plan,
+                          })
+                        }
                       />
-                      <IconButton icon="delete" />
+                      <IconButton icon="delete" onPress={() => deletePlan(plan.id)}/>
                     </View>
                   )}
             >
@@ -317,6 +349,7 @@ export default function DashboardScreen({route, navigation}: any) {
               ))}
             </List.Accordion>
           ))}
+          <Button mode="contained" onPress={() => navigation.navigate('PlanSettingsScreen', {isEditing: false, plan: null})}>Add Plan</Button>
           </View>
           <FAB
             icon="plus"
