@@ -104,7 +104,7 @@ const updateHabit = (req, res) => {
   }
 
   //error handling for missing title and reminder time
-  if(!title || !reminderTime || !planID) {
+  if(!title || !reminderTime || (!planID && planID !== 0)) {
     return res.status(400).json({ error: 'Error Message Return: Title, reminder time, and PlanID are required' });
   }
 
