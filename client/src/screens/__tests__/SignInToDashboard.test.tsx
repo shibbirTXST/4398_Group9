@@ -1,13 +1,11 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import App from '../../../App';
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged, User } from 'firebase/auth';
 
-const mockSignInWithEmailAndPassword = jest.mocked(signInWithEmailAndPassword);
-const mockOnAuthStateChanged = jest.mocked(onAuthStateChanged);
-// 1. Better Mocking for React Native
-//jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-
+// Correctly cast the mocks
+const mockSignInWithEmailAndPassword = signInWithEmailAndPassword as jest.Mock;
+const mockOnAuthStateChanged = onAuthStateChanged as jest.Mock;
 
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(),
@@ -17,43 +15,50 @@ jest.mock('firebase/auth', () => ({
 }));
 
 describe('Sign In to Dashboard Flow', () => {
-  let authStateCallback;
+  // Define the type explicitly using Firebase's NextOrObserver type (or a simple function)
+  let authStateCallback: ((user: User | null) => void) | undefined;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+
+    // Reset the callback holder
+    authStateCallback = undefined;
+
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       authStateCallback = callback;
-      callback(null); // Initial state: logged out
-      return jest.fn(); // unsubscribe
+      // Emit initial logged-out state
+      callback(null);
+      // Return a mock unsubscribe function
+      return jest.fn();
     });
   });
 
   it('navigates to Dashboard after successful sign in', async () => {
-    // FIX: Destructure getAllByTestID
-    const { getByText, queryByText, getAllByTestId } = render(<App />);
+    const { getByText, getAllByTestId } = render(<App />);
 
     expect(getByText('Welcome Back')).toBeTruthy();
 
-    mockSignInWithEmailAndPassword.mockResolvedValue({
-      user: { uid: '123', email: 'test@example.com' },
-    });
+    // Mock the successful login API call
+    const mockUser = { uid: '123', email: 'test@example.com' } as User;
+    mockSignInWithEmailAndPassword.mockResolvedValue({ user: mockUser });
 
-    // Use the destructured method
     const inputs = getAllByTestId('text-input-outlined');
     fireEvent.changeText(inputs[0], 'test@example.com');
     fireEvent.changeText(inputs[1], 'password123');
 
+    // Press Sign In
     fireEvent.press(getByText('Sign In'));
 
-    // Trigger the auth change
+    // Wait for the Sign In promise to resolve AND the state to update
     await act(async () => {
-      if (authStateCallback) {
-        authStateCallback({ uid: '123', email: 'test@example.com' });
+      if (typeof authStateCallback === 'function') {
+        authStateCallback(mockUser);
+      } else {
+        throw new Error('authStateCallback was never initialized by onAuthStateChanged');
       }
     });
 
-    // Increase timeout if using complex navigation
+    // Verification
     await waitFor(() => {
       expect(getByText('Your Habits Today')).toBeTruthy();
     }, { timeout: 3000 });
