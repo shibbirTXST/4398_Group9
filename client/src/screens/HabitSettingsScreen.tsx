@@ -8,12 +8,13 @@ import { auth } from '../config/firebase';
 export default function HabitSettingsScreen() {
 
   const route = useRoute();
-  const { isEditing, habit } = route.params as { isEditing: boolean; habit: any };
+  const { isEditing, habit, plans } = route.params as { isEditing: boolean; habit: any, plans: any[] };
 
   const [taskName, setTaskName] = useState('');
   const [reminderTime, setReminderTime] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState(isEditing ? habit.planID : 0);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   //Habit update
@@ -46,7 +47,7 @@ export default function HabitSettingsScreen() {
       const res = await fetch(`http://localhost:5000/api/habits/${habit.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ title: taskName.trim(), reminderTime: reminderTime.trim() }),
+        body: JSON.stringify({ title: taskName.trim(), reminderTime: reminderTime.trim(), planID: selectedPlanId }),
       });
       if (!res.ok) throw new Error('Update failed');
       setTaskName('');
@@ -87,7 +88,7 @@ export default function HabitSettingsScreen() {
       reminderTime: reminderTime, 
       // hardcoded for DEMO
       accountID: 1, 
-      planID: 1     
+      planID: selectedPlanId     
     };
 
     try {
@@ -215,6 +216,13 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
+  },
+  picker: {
+    height: 50,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
   },
   button: {
     marginTop: 16,
