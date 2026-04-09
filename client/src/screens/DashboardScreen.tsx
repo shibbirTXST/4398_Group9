@@ -23,13 +23,8 @@ export default function DashboardScreen({route, navigation}: any) {
     { id: '3', title: 'Exercise', completed: false, count: 0 },
   ]);
   const [dialogVisible, setDialogVisible] = React.useState(false);
-  const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
-  const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
   const [title, setTitle] = React.useState('');
   const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [accMenuVisible, setAccMenuVisible] = React.useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   // state for the pop-up snackbar message
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -123,125 +118,9 @@ export default function DashboardScreen({route, navigation}: any) {
     setDialogVisible(true);
   };
 
-  const openAccMenu = () => setAccMenuVisible(true);
-  const closeAccMenu = () => setAccMenuVisible(false);
-
-  const showDeleteAccDialog = () => {
-    setDeleteAccDialogVisible(true);
-    closeAccMenu();
-  };
-
-  const hideDeleteAccDialog = () => setDeleteAccDialogVisible(false);
-
-  const deleteAccount = async () => {
-    try {
-
-      const user = auth.currentUser;
-
-      if (!user) throw new Error("No user logged in");
-
-      const credential = EmailAuthProvider.credential(email, password);
-
-      await reauthenticateWithCredential(user, credential);
-
-      const token = await user.getIdToken();
-
-      const res = await fetch("http://localhost:5000/api/delete-account", {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!res.ok) throw new Error("Failed to delete account");
-
-      confirmDelete();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  const confirmDelete = () => {
-    console.log("Proceeding with account deletion...");
-    hideDeleteAccDialog();
-    setDeleteSuccessDialogVisible(true);
-  }
-
-  const handleFinalLogout = () => {
-    setDeleteSuccessDialogVisible(false);
-    logout();
-  }
-
-  const handleDeleteAccount = () => {
-    console.log("Delete account pressed");
-    closeAccMenu();
-  }
-
   return (
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
-        <Appbar.Header>
-          <Appbar.Content title="Habit Tracker" />
-          <Appbar.Action icon="logout" onPress={logout} />
-          {/* Account Menu */}
-          <Menu
-            visible={accMenuVisible}
-            onDismiss={closeAccMenu}
-            anchor={
-              <Appbar.Action icon="account" onPress={openAccMenu} />
-            }
-          >
-            <Menu.Item
-              onPress={showDeleteAccDialog}
-              title="Delete account"
-              leadingIcon="delete"
-              titleStyle={{ color: 'red' }}
-            />
-          </Menu>
-          
-          {/* Delete Account Dialog */}
-          <Portal>
-            <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
-            <Dialog.Content>
-              <Text>
-                Please reenter your account details to delete your account. This action is permanent.
-              </Text>
-              <TextInput
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
-              />
-
-              <TextInput
-                label="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideDeleteAccDialog}>Cancel</Button>
-              <Button onPress={deleteAccount} textColor='red'>Delete</Button>
-            </Dialog.Actions>
-            </Dialog>
-          </Portal>
-
-          {/* Delete Account Success Dialog */}
-          <Portal>
-            <Dialog visible={deleteSuccessDialogVisible} onDismiss={handleFinalLogout}>
-            <Dialog.Title>Success</Dialog.Title>
-            <Dialog.Content>
-              <Text variant="bodyMedium">
-                Account successfully deleted.
-              </Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={handleFinalLogout}>OK</Button>
-            </Dialog.Actions>
-            </Dialog>
-          </Portal>
-        </Appbar.Header>
         <SafeAreaView style={styles.container}>
           <View style={styles.content}>
             <Text variant="headlineSmall" style={styles.title}>Your Habits Today</Text>

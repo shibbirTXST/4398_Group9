@@ -52,10 +52,10 @@ export default function HabitAdditionScreen() {
 
       // handle backend response
       if (response.status === 201) {
-        // clear form and navigate back to the Dashboard on success
+        // clear form and navigate back to the Home on success
         setTaskName('');
         setReminderTime('');
-        navigation.navigate('Dashboard', { 
+        navigation.navigate('Home', { 
             newHabit: jsonResponse.task,
             successMessage: 'Habit added successfully!'
         }); 
