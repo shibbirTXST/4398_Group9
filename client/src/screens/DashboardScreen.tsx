@@ -18,6 +18,7 @@ const theme = {
 export default function DashboardScreen({route, navigation}: any) {
   const { logout } = useAuth();
   const [habits, setHabits] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[]>([]);
   const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
   const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
   const [accMenuVisible, setAccMenuVisible] = React.useState(false);
@@ -40,15 +41,17 @@ export default function DashboardScreen({route, navigation}: any) {
     }
   }, [route.params?.newHabit]);
 
-  const toggleHabit = (id: string) => {
-    setHabits(habits.map(h => 
-      h.id === id ? { ...h, completed: !h.completed } : h
-    ));
-  };
-
   React.useEffect(() => {
-    // load habits from API
     const load = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/habits/plans');
+        if (!res.ok) throw new Error('Failed to fetch plans');
+        const data = await res.json();
+        // ensure ids are strings for list keys
+        setPlans(data.map((p: any) => ({ ...p, id: String(p.id) })));
+      } catch (err) {
+        console.warn('Could not load plans:', err);
+      }
       try {
         const res = await fetch('http://localhost:5000/api/habits');
         if (!res.ok) throw new Error('Failed to fetch habits');
@@ -61,6 +64,21 @@ export default function DashboardScreen({route, navigation}: any) {
     };
     load();
   }, []);
+
+  const habitsByPlan = React.useMemo(() => {
+  return habits.reduce((acc, habit) => {
+    const planId = habit.planID || 0; // Default of 0 for unassigned
+    if (!acc[planId]) acc[planId] = [];
+    acc[planId].push(habit);
+    return acc;
+  }, {} as Record<number, typeof habits>);
+}, [habits]);
+
+    const toggleHabit = (id: string) => {
+    setHabits(habits.map(h => 
+      h.id === id ? { ...h, completed: !h.completed } : h
+    ));
+  };
 
   const deleteHabit = async (id: string) => {
     //check if user is authenticated before allowing delete
@@ -206,35 +224,104 @@ export default function DashboardScreen({route, navigation}: any) {
         <SafeAreaView style={styles.container}>
           <View style={styles.content}>
             <Text variant="headlineSmall" style={styles.title}>Your Habits Today</Text>
-            
-            {habits.map((habit) => (
-              <List.Item
-                key={habit.id}
-                title={habit.title}
-                description={habit.completed ? "Done for today!" : "Not done yet"}
-                left={props => (
-                   <IconButton 
-                    {...props} 
-                    icon={habit.completed ? "check-circle" : "circle-outline"} 
-                    iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                    onPress={() => toggleHabit(habit.id)}
-                   />
-                )}
-                right={props => (
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text {...props} style={styles.count}>{habit.count}/1</Text>
-                    <IconButton icon="pencil" onPress={() => navigation.navigate('HabitSettingsScreen', { isEditing: true, habit: habit })} />
-                    <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
-                  </View>
-                )}
-                style={styles.habitItem}
-              />
-            ))}
+            {/* Independent Habits */}
+              {habitsByPlan[0] && habitsByPlan[0].length > 0 && (
+                <List.Accordion
+                  title="Independent Habits"
+                  style={styles.planItem}
+                  expanded={true}
+                >
+                {habitsByPlan[0].map((habit: any) => (
+                  <List.Item
+                    key={habit.id}
+                    title={habit.title}
+                    description={habit.completed ? "Done for today!" : "Not done yet"}
+                      left={(props) => (
+                        <IconButton
+                          {...props}
+                          icon={habit.completed ? "check-circle" : "circle-outline"}
+                          iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
+                          onPress={() => toggleHabit(habit.id)}
+                        />
+                      )}
+                      right={(props) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Text {...props} style={styles.count}>
+                            {habit.count}/1
+                          </Text>
+                          <IconButton
+                            icon="pencil"
+                            onPress={() =>
+                              navigation.navigate('HabitSettingsScreen', {
+                                isEditing: true,
+                                habit: habit,
+                              })
+                            }
+                          />
+                          <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
+                        </View>
+                      )}
+                    style={styles.habitItem}
+                  />
+                ))}
+                </List.Accordion>
+          )}
+          {/* Plans (and their sub-habits) */}
+            {plans.map((plan) => (
+            <List.Accordion 
+            key={plan.id}
+            title={plan.name}
+            style={styles.planItem}
+            right={(props) => (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <IconButton
+                        icon="pencil"
+                      />
+                      <IconButton icon="delete" />
+                    </View>
+                  )}
+            >
+              {habitsByPlan[plan.id]?.map((habit: any) => (
+                <List.Item
+                  key={habit.id}
+                  title={habit.title}
+                  description={habit.completed ? "Done for today!" : "Not done yet"}
+                  left={(props) => (
+                    <IconButton
+                      {...props}
+                      icon={habit.completed ? "check-circle" : "circle-outline"}
+                      iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
+                      onPress={() => toggleHabit(habit.id)}
+                    />
+                  )}
+                  right={(props) => (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text {...props} style={styles.count}>
+                        {habit.count}/1
+                      </Text>
+                      <IconButton
+                        icon="pencil"
+                        onPress={() =>
+                          navigation.navigate('HabitSettingsScreen', {
+                            isEditing: true,
+                            habit: habit,
+                            plans: plans,
+                          })
+                        }
+                      />
+                      <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
+                    </View>
+                  )}
+                  style={styles.habitItem}
+                />
+              ))}
+            </List.Accordion>
+          ))}
           </View>
           <FAB
             icon="plus"
             style={styles.fab}
-            onPress={() => navigation.navigate('HabitSettingsScreen', {isEditing: false, habit: null})}
+            onPress={() => navigation.navigate('HabitSettingsScreen', {isEditing: false, habit: null, plans: plans})}
             label="New Habit"
           />
 
@@ -268,6 +355,11 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: 16,
     fontWeight: 'bold',
+  },
+  planItem: {
+    backgroundColor: '#e0e0e0',
+    borderRadius: 8,
+    marginBottom: 8,
   },
   habitItem: {
     backgroundColor: 'white',
