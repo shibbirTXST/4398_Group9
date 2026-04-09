@@ -16,17 +16,12 @@ export default function SignInScreen() {
   const checkFirstSignIn = async (user: any) => {
     try {
       const tok = await user.getIdToken();
-      // create new user in database if not found  
-      await fetch('http://localhost:5000/api/users', {
+      await fetch('http://localhost:5000/api/auth/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${tok}`
+          Authorization: `Bearer ${tok}`,
         },
-        body: JSON.stringify({
-          firebaseUid: user.uid,
-          email: user.email,
-        }),
       });
     } catch (err) {
       console.error(err);

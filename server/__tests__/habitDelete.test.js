@@ -1,58 +1,76 @@
+jest.mock('../firebaseAdmin', () => ({
+  __esModule: true,
+  default: {
+    auth: () => ({
+      verifyIdToken: jest.fn().mockResolvedValue({
+        uid: 'test-uid',
+        email: 'user@test.com',
+      }),
+    }),
+  },
+}));
+
+jest.mock('../db/db.js', () => {
+  const userRow = {
+    userId: 1,
+    firebaseUid: 'test-uid',
+    email: 'user@test.com',
+    username: 'user',
+    createdAt: new Date(),
+    profilePicUrl: null,
+    activeStatus: null,
+  };
+  return {
+    __esModule: true,
+    default: {
+      user: {
+        upsert: jest.fn().mockResolvedValue(userRow),
+      },
+      habit: {
+        deleteMany: jest.fn().mockImplementation(({ where }) => {
+          if (where.habitId === 1) return Promise.resolve({ count: 1 });
+          return Promise.resolve({ count: 0 });
+        }),
+      },
+    },
+  };
+});
+
 const request = require('supertest');
 const app = require('../app');
 
-// test cases
-//delete habit test cases
 describe('Habit Deletion API (DELETE /api/habits/:id)', () => {
+  it('should delete the habit when the user is logged in', async () => {
+    const res = await request(app)
+      .delete('/api/habits/1')
+      .set('Authorization', 'Bearer valid-firebase-token');
 
-  // test case 1: correct path
-  it('should delete the habit and return success when the user is logged in', async () => {
-    const habitId = 1;
-
-    const response = await request(app)
-      .delete(`/api/habits/${habitId}`)
-      .set('Authorization', 'Bearer valid-firebase-token') // triggers the "yes" path
-      .send();
-
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Habit deleted');
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBe('Habit deleted');
   });
 
-  //test case 2: error handling - habit not found
-  it('should return 404 Not Found if the habit does not exist', async () => {
-  const nonExistentHabitId = 9999;
+  it('should return 404 if the habit does not exist', async () => {
+    const res = await request(app)
+      .delete('/api/habits/9999')
+      .set('Authorization', 'Bearer valid-firebase-token');
 
-  const response = await request(app)
-    .delete(`/api/habits/${nonExistentHabitId}`)
-    .set('Authorization', 'Bearer valid-firebase-token');
-
-  expect(response.status).toBe(404);
-  expect(response.body.message).toBe('Habit not found');
+    expect(res.status).toBe(404);
+    expect(res.body.message).toBe('Habit not found');
   });
 
-  // test case 3: error handling - user not logged in
-  it('should block the delete operation and return an error if the user is not logged in', async () => {
-    const habitId = 1;
+  it('should return 401 if the user is not logged in', async () => {
+    const res = await request(app).delete('/api/habits/1');
 
-    const response = await request(app)
-      .delete(`/api/habits/${habitId}`)
-      // intentionally trigger the "No" path by NOT setting the Authorization header
-      .send();
-
-    expect(response.status).toBe(401);
-    expect(response.body.error).toContain('Error Message Return'); // validates "Error Message Return" state
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('Unauthorized');
   });
 
-  // test case 4: error handling - invalid habit ID
-  it('should return an error if the habit ID is invalid', async () => {
-    const invalidHabitId = 'invalid-id';
+  it('should return 400 for an invalid habit ID', async () => {
+    const res = await request(app)
+      .delete('/api/habits/invalid-id')
+      .set('Authorization', 'Bearer valid-firebase-token');
 
-    const response = await request(app)
-      .delete(`/api/habits/${invalidHabitId}`)
-      .set('Authorization', 'Bearer valid-firebase-token')
-      .send();
-
-    expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for invalid IDs
-    expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Invalid habit ID');
   });
 });

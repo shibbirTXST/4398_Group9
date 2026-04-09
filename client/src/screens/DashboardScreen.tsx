@@ -43,9 +43,9 @@ export default function DashboardScreen({ route, navigation }: any) {
     }
   }, [route.params?.newHabit]);
 
-  const toggleHabit = (id: string) => {
+  const toggleHabit = (id: string | number) => {
     setHabits(habits.map(h =>
-      h.id === id ? { ...h, completed: !h.completed } : h
+      Number(h.habitId) === Number(id) ? { ...h, completed: !h.completed } : h
     ));
   };
 
@@ -60,8 +60,12 @@ export default function DashboardScreen({ route, navigation }: any) {
         if (!res.ok) throw new Error('Failed to fetch habits');
         const data = await res.json();
         console.log('Loaded habits:', data);
-        // ensure ids are strings for list keys
-        setHabits(data);
+        setHabits(
+          data.map((h: any) => ({
+            ...h,
+            completed: Boolean(h.completed),
+          }))
+        );
       } catch (err) {
         console.warn('Could not load habits:', err);
       }
@@ -86,7 +90,12 @@ export default function DashboardScreen({ route, navigation }: any) {
       });
       if (!res.ok) throw new Error('Update failed');
       const updated = await res.json();
-      setHabits(prev => prev.map(h => h.id === editingId ? { ...h, title: updated.title } : h));
+      const eid = Number(editingId);
+      setHabits(prev =>
+        prev.map(h =>
+          h.habitId === eid ? { ...h, habitName: updated.habitName } : h
+        )
+      );
       setTitle('');
       setDialogVisible(false);
       setEditingId(null);
@@ -95,7 +104,7 @@ export default function DashboardScreen({ route, navigation }: any) {
     }
   };
 
-  const deleteHabit = async (id: string) => {
+  const deleteHabit = async (id: string | number) => {
     //check if user is authenticated before allowing delete
     const user = auth.currentUser;
     if (!user) {
@@ -111,15 +120,17 @@ export default function DashboardScreen({ route, navigation }: any) {
         }
       });
       if (!res.ok) throw new Error('Delete failed');
-      setHabits(prev => prev.filter(h => h.id !== id));
+      setHabits(prev =>
+        prev.filter(h => Number(h.habitId) !== Number(id))
+      );
     } catch (err) {
       console.error('Error deleting habit', err);
     }
   };
 
   const openEditDialog = (habit: any) => {
-    setTitle(habit.title);
-    setEditingId(habit.id);
+    setTitle(habit.habitName ?? '');
+    setEditingId(String(habit.habitId));
     setDialogVisible(true);
   };
 
@@ -250,12 +261,12 @@ export default function DashboardScreen({ route, navigation }: any) {
               <List.Item
                 key={habit.habitId}
                 title={habit.habitName}
-                description={habit.status ? "Done for today!" : "Not done yet"}
+                description={habit.completed ? "Done for today!" : "Not done yet"}
                 left={props => (
                   <IconButton
                     {...props}
-                    icon={habit.status ? "check-circle" : "circle-outline"}
-                    iconColor={habit.status ? theme.colors.primary : theme.colors.outline}
+                    icon={habit.completed ? "check-circle" : "circle-outline"}
+                    iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
                     onPress={() => toggleHabit(habit.habitId)}
                   />
                 )}

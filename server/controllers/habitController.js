@@ -1,116 +1,148 @@
-import admin from '../firebaseAdmin.js';
 import db from '../db/db.js';
+import { upsertUserFromDecodedToken } from '../utils/resolveUser.js';
+
+const habitSelect = {
+  habitId: true,
+  habitName: true,
+  description: true,
+  targetGoal: true,
+  goalUnit: true,
+  status: true,
+  frequencyType: true,
+  createdAt: true,
+};
 
 const getHabits = async (req, res) => {
-
-  const rUserId = req.user.uid; // Assuming authCheck middleware attaches uid to req.user
-
-  const uid = await fetch(`http://localhost:5000/api/users/${rUserId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  });
-  const userData = await uid.json();
-  const userId = userData.userId;
-
-  // Fetch habits from the database for the authenticated user
-  const habits = await db.habit.findMany({
-    where: {
-      userId: userId,
-    },
-    select: {
-      habitId: true,
-      habitName: true,
-      status: true,
-      frequencyType: true,
-    }
-  });
-  res.status(200).json(habits);
+  try {
+    const user = await upsertUserFromDecodedToken(req.user);
+    const habits = await db.habit.findMany({
+      where: { userId: user.userId },
+      select: habitSelect,
+    });
+    res.status(200).json(habits);
+  } catch (error) {
+    console.error('Error fetching habits:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 const createHabit = async (req, res) => {
-  const rUserId = req.user.uid;
+  try {
+    const user = await upsertUserFromDecodedToken(req.user);
+    const {
+      habitName,
+      title,
+      frequencyType,
+      status,
+      description,
+      targetGoal,
+      goalUnit,
+    } = req.body;
 
-  // class diagram variables
-  const { userId, habitName, frequencyType, status } = req.body;
+    const name = habitName ?? title;
+    if (!name || !frequencyType || !status) {
+      return res.status(400).json({
+        error: 'habitName (or title), frequencyType, and status are required',
+      });
+    }
 
-  const newHabit = {
-    userId: userId,
-    habitName: habitName,
-    frequencyType: frequencyType,
-    status: status
-  };
+    const habit = await db.habit.create({
+      data: {
+        userId: user.userId,
+        habitName: name,
+        frequencyType,
+        status,
+        description: description ?? null,
+        targetGoal: targetGoal ?? null,
+        goalUnit: goalUnit ?? null,
+      },
+      select: habitSelect,
+    });
 
-  const addHabit = await db.habit.create({ data: newHabit });
-
-  // // input validation 
-  // if (!taskName && !reminderTime) {
-  //   return res.status(400).json({ error: 'Task name and reminder time are required' });
-  // }
-
-  // if (!taskName) {
-  //   return res.status(400).json({ error: 'Task name is required' });
-  // }
-  // if (!reminderTime) {
-  //   return res.status(400).json({ error: 'Reminder time is required' });
-  // }
-
-
-  // successful database save simulation
-  res.status(201).json({
-    message: 'Task successfully created',
-    task: addHabit
-  });
+    res.status(201).json({
+      message: 'Habit successfully created',
+      habit,
+    });
+  } catch (error) {
+    console.error('Error creating habit:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
-const deleteHabit = (req, res) => {
-  //authentication check
-  if (!req.headers.authorization) {
-    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
+const deleteHabit = async (req, res) => {
+  try {
+    const habitId = parseInt(req.params.id, 10);
+    if (Number.isNaN(habitId)) {
+      return res.status(400).json({ error: 'Invalid habit ID' });
+    }
+
+    const user = await upsertUserFromDecodedToken(req.user);
+    const result = await db.habit.deleteMany({
+      where: { habitId, userId: user.userId },
+    });
+
+    if (result.count === 0) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+
+    res.status(200).json({ message: 'Habit deleted' });
+  } catch (error) {
+    console.error('Error deleting habit:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-  //reading in
-  const { id } = req.params;
-  const index = habits.findIndex(h => h.id == id);
-  //error handling for invalid id format
-  if (id != parseInt(id)) {
-    return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
-  }
-  //error handling for habit not found
-  if (index === -1) {
-    return res.status(404).json({ message: 'Habit not found' });
-  }
-  //deletion operation
-  habits.splice(index, 1);
-  res.status(200).json({ message: 'Habit deleted' });
 };
 
-const updateHabit = (req, res) => {
-  //authentication check
-  if (!req.headers.authorization) {
-    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
-  }
-  //reading in
-  const { id } = req.params;
-  const { title } = req.body;
+const updateHabit = async (req, res) => {
+  try {
+    const habitId = parseInt(req.params.id, 10);
+    if (Number.isNaN(habitId)) {
+      return res.status(400).json({ error: 'Invalid habit ID' });
+    }
 
-  //error handling for invalid id format
-  if (id != parseInt(id)) {
-    return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
-  }
+    const user = await upsertUserFromDecodedToken(req.user);
+    const existing = await db.habit.findFirst({
+      where: { habitId, userId: user.userId },
+    });
 
-  //error handling for missing title
-  if (!title) {
-    return res.status(400).json({ error: 'Error Message Return: Title is required' });
+    if (!existing) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+
+    const {
+      habitName,
+      title,
+      description,
+      frequencyType,
+      status,
+      targetGoal,
+      goalUnit,
+    } = req.body;
+
+    const data = {};
+    if (habitName != null || title != null) {
+      data.habitName = habitName ?? title;
+    }
+    if (description !== undefined) data.description = description;
+    if (frequencyType !== undefined) data.frequencyType = frequencyType;
+    if (status !== undefined) data.status = status;
+    if (targetGoal !== undefined) data.targetGoal = targetGoal;
+    if (goalUnit !== undefined) data.goalUnit = goalUnit;
+
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({ error: 'No updatable fields provided' });
+    }
+
+    const habit = await db.habit.update({
+      where: { habitId },
+      data,
+      select: habitSelect,
+    });
+
+    res.status(200).json(habit);
+  } catch (error) {
+    console.error('Error updating habit:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-  //error handling for id not found
-  const index = habits.findIndex(h => h.id == id);
-  if (index === -1) {
-    return res.status(404).json({ message: 'Habit not found' });
-  }
-  //update operation
-  habits[index].title = title;
-  res.status(200).json(habits[index]);
 };
 
 export { getHabits, createHabit, deleteHabit, updateHabit };

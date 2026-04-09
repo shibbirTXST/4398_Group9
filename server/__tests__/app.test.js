@@ -1,6 +1,23 @@
+jest.mock('../firebaseAdmin', () => ({
+  __esModule: true,
+  default: {
+    auth: () => ({
+      verifyIdToken: jest.fn(),
+    }),
+  },
+}));
+
+jest.mock('../db/db.js', () => ({
+  __esModule: true,
+  default: {
+    $transaction: jest.fn(),
+    user: {},
+    habit: {},
+  },
+}));
+
 const request = require('supertest');
 const app = require('../app');
-const admin = require('firebase-admin');
 
 //test cases
 //simple test case for root endpoint

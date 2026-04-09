@@ -38,7 +38,7 @@ model Habit {
   status        String // e.g., 'Active', 'Archived'
 
   // Relations
-  user          User           @relation(fields: [userId], references: [userId])
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
   logs          Log[]
   reminders     Reminder[]
   routineHabits RoutineHabit[]
@@ -54,7 +54,7 @@ model Routine {
   status      String // e.g., 'Active', 'Archived'
 
   // Relations
-  user          User           @relation(fields: [userId], references: [userId])
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
   routineHabits RoutineHabit[]
 }
 
@@ -67,7 +67,7 @@ model Log {
   createdAt        DateTime  @default(now())
 
   // Relations
-  habit Habit @relation(fields: [habitId], references: [habitId])
+  habit Habit @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
 }
 
 model Reminder {
@@ -78,7 +78,7 @@ model Reminder {
   enabledStatus Boolean @default(true)
 
   // Relations
-  habit Habit @relation(fields: [habitId], references: [habitId])
+  habit Habit @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
 }
 
 // Explicit Join Table for many-to-many relation between Routine and Habit
@@ -90,6 +90,6 @@ model RoutineHabit {
   createdAt       DateTime @default(now())
 
   // Relations
-  routine Routine @relation(fields: [routineId], references: [routineId])
-  habit   Habit   @relation(fields: [habitId], references: [habitId])
+  routine Routine @relation(fields: [routineId], references: [routineId], onDelete: Cascade)
+  habit   Habit   @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
 }

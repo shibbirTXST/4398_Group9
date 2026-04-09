@@ -1,13 +1,10 @@
 import express from 'express';
-import { getUsers, getUserById, createUser } from '../controllers/userController.js';
+import authCheck from '../utils/authCheck.js';
+import { getCurrentUser, updateCurrentUser } from '../controllers/userController.js';
 
 const userRouter = express.Router();
 
-// Basic user CRUD
-userRouter.get('/', getUsers);
-userRouter.get('/:id', getUserById);
-userRouter.post('/', createUser);
-// userRouter.put('/:id',);
-// userRouter.delete('/:id',)
+userRouter.get('/me', authCheck, getCurrentUser);
+userRouter.patch('/me', authCheck, updateCurrentUser);
 
 export { userRouter };

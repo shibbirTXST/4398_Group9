@@ -1,141 +1,126 @@
+jest.mock('../firebaseAdmin', () => ({
+  __esModule: true,
+  default: {
+    auth: () => ({
+      verifyIdToken: jest.fn().mockResolvedValue({
+        uid: 'test-uid',
+        email: 'user@test.com',
+      }),
+    }),
+  },
+}));
+
+jest.mock('../db/db.js', () => {
+  const userRow = {
+    userId: 1,
+    firebaseUid: 'test-uid',
+    email: 'user@test.com',
+    username: 'user',
+    createdAt: new Date(),
+    profilePicUrl: null,
+    activeStatus: null,
+  };
+  const existingHabit = {
+    habitId: 2,
+    userId: 1,
+    habitName: 'Old name',
+    description: null,
+    targetGoal: null,
+    goalUnit: null,
+    frequencyType: 'Daily',
+    status: 'Active',
+    createdAt: new Date(),
+  };
+  return {
+    __esModule: true,
+    default: {
+      user: {
+        upsert: jest.fn().mockResolvedValue(userRow),
+      },
+      habit: {
+        findFirst: jest.fn().mockImplementation(({ where }) => {
+          if (where.habitId === 2 && where.userId === 1) {
+            return Promise.resolve({ ...existingHabit });
+          }
+          return Promise.resolve(null);
+        }),
+        update: jest.fn().mockImplementation(({ data }) =>
+          Promise.resolve({
+            habitId: 2,
+            habitName: data.habitName ?? existingHabit.habitName,
+            description: data.description ?? existingHabit.description,
+            targetGoal: data.targetGoal ?? existingHabit.targetGoal,
+            goalUnit: data.goalUnit ?? existingHabit.goalUnit,
+            frequencyType: data.frequencyType ?? existingHabit.frequencyType,
+            status: data.status ?? existingHabit.status,
+            createdAt: existingHabit.createdAt,
+          })
+        ),
+      },
+    },
+  };
+});
+
 const request = require('supertest');
 const app = require('../app');
 
-// test cases
 describe('Habit Modification API (PUT /api/habits/:id)', () => {
-  //title update test cases
-  // test case 1: correct path
-  it('should update the habit and return the updated habit when the user is logged in', async () => {
-    const habitId = 2;
-    const updatedTitle = 'Read for 1 hour';
-    const updatedReminderTime = '20:00';
-    const PlanID = 1;
-
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
-      .set('Authorization', 'Bearer valid-firebase-token') // triggers the "yes" path
-      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planId: PlanID });
-
-    expect(response.status).toBe(200);
-    expect(response.body.title).toBe(updatedTitle);
-    expect(response.body.reminderTime).toBe(updatedReminderTime);
-    expect(response.body.planId).toBe(PlanID);
-  });
-  
-  // test case 2: error handling - habit not found
-  it('should return 404 Not Found if the habit does not exist', async () => {
-    const nonExistentHabitId = 9999;
-    const updatedTitle = 'Some Title';
-
-    const response = await request(app)
-      .put(`/api/habits/${nonExistentHabitId}`)
+  it('should update habitName when the user is logged in', async () => {
+    const res = await request(app)
+      .put('/api/habits/2')
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle });
+      .send({ habitName: 'Read for 1 hour' });
 
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe('Habit not found');
-  });
-  
-  // test case 3: error handling - user not logged in
-  it('should block the update operation and return an error if the user is not logged in', async () => {
-    const habitId = 2;
-    const updatedTitle = 'Read for 1 hour';
-
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
-      // intentionally trigger the "No" path by NOT setting the Authorization header
-      .send({ title: updatedTitle });
-
-    expect(response.status).toBe(401);
-    expect(response.body.error).toContain('Error Message Return'); // validates "Error Message Return" state
+    expect(res.status).toBe(200);
+    expect(res.body.habitName).toBe('Read for 1 hour');
   });
 
-  // test case 4: error handling - missing title in request body
-  it('should return an error if the title is missing in the request body', async () => {
-    const habitId = 2;
-
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
+  it('should accept title as an alias for habitName', async () => {
+    const res = await request(app)
+      .put('/api/habits/2')
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({}); // no title provided
+      .send({ title: 'Via title' });
 
-    expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for missing fields
-    expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
+    expect(res.status).toBe(200);
+    expect(res.body.habitName).toBe('Via title');
   });
 
-  //test case 5: error handling - missing reminder time in request body
-  it('should return an error if the reminder time is missing in the request body', async () => {
-    const habitId = 2;
-    const updatedTitle = 'Read for 1 hour';
-    const PlanID = 1;
-
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
+  it('should return 404 if the habit does not exist', async () => {
+    const res = await request(app)
+      .put('/api/habits/9999')
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle, planId: PlanID }); // no reminder time provided
+      .send({ habitName: 'X' });
 
-    expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for missing fields
-    expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
+    expect(res.status).toBe(404);
+    expect(res.body.message).toBe('Habit not found');
   });
 
-  //test case 6: error handling - missing plan ID in request body
-  it('should return an error if the plan ID is missing in the request body', async () => {
-    const habitId = 2;
-    const updatedTitle = 'Read for 1 hour';
-    const updatedReminderTime = '20:00';
+  it('should return 401 if the user is not logged in', async () => {
+    const res = await request(app)
+      .put('/api/habits/2')
+      .send({ habitName: 'Read' });
 
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
-      .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle, reminderTime: updatedReminderTime }); // no plan ID provided
-
-    expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for missing fields
-    expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('Unauthorized');
   });
 
-  //test case 7: error handling - invalid plan ID in request body
-  it('should return an error if the plan ID is invalid in the request body', async () => {
-    const habitId = 2;
-    const updatedTitle = 'Read for 1 hour';
-    const updatedReminderTime = '20:00';
-    const invalidPlanID = 'invalid-plan-id';
-
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
+  it('should return 400 if no updatable fields are provided', async () => {
+    const res = await request(app)
+      .put('/api/habits/2')
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planId: invalidPlanID }); // invalid plan ID provided
+      .send({});
 
-    expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for invalid fields
-    expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('No updatable fields');
   });
 
-  //test case 8: error handling - plan ID not found in the system
-  it('should return an error if the plan ID does not exist in the system', async () => {
-    const habitId = 2;
-    const updatedTitle = 'Read for 1 hour';
-    const updatedReminderTime = '20:00';
-    const nonExistentPlanID = 9999;
-
-    const response = await request(app)
-      .put(`/api/habits/${habitId}`)
+  it('should return 400 for an invalid habit ID', async () => {
+    const res = await request(app)
+      .put('/api/habits/not-a-number')
       .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle, reminderTime: updatedReminderTime, planId: nonExistentPlanID }); // non-existent plan ID provided
+      .send({ habitName: 'Read' });
 
-    expect(response.status).toBe(404); // assuming the server returns 404 Not Found for non-existent related resources
-    expect(response.body.message).toBe('Plan not found'); // assuming the server returns this message for non-existent plans
-  });
-
-  // test case 9: error handling - invalid habit ID
-  it('should return an error if the habit ID is invalid', async () => {
-    const invalidHabitId = 'invalid-id';
-    const updatedTitle = 'Read for 1 hour';
-
-    const response = await request(app)
-      .put(`/api/habits/${invalidHabitId}`)
-      .set('Authorization', 'Bearer valid-firebase-token')
-      .send({ title: updatedTitle });
-
-    expect(response.status).toBe(400); // assuming the server returns 400 Bad Request for invalid IDs
-    expect(response.body.error).toContain('Error Message Return'); // assuming the server returns this error message
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('Invalid habit ID');
   });
 });

@@ -1,99 +1,101 @@
+jest.mock('../firebaseAdmin', () => ({
+  __esModule: true,
+  default: {
+    auth: () => ({
+      verifyIdToken: jest.fn().mockResolvedValue({
+        uid: 'test-uid',
+        email: 'user@test.com',
+      }),
+    }),
+  },
+}));
+
+jest.mock('../db/db.js', () => {
+  const userRow = {
+    userId: 1,
+    firebaseUid: 'test-uid',
+    email: 'user@test.com',
+    username: 'user',
+    createdAt: new Date(),
+    profilePicUrl: null,
+    activeStatus: null,
+  };
+  return {
+    __esModule: true,
+    default: {
+      user: {
+        upsert: jest.fn().mockResolvedValue(userRow),
+      },
+      habit: {
+        create: jest.fn().mockImplementation(({ data }) =>
+          Promise.resolve({
+            habitId: 42,
+            habitName: data.habitName,
+            description: data.description,
+            targetGoal: data.targetGoal,
+            goalUnit: data.goalUnit,
+            frequencyType: data.frequencyType,
+            status: data.status,
+            createdAt: new Date(),
+          })
+        ),
+      },
+    },
+  };
+});
+
 const request = require('supertest');
 const app = require('../app');
 
-// test cases
 describe('Habit Addition API (POST /api/habits)', () => {
-
-  // test case 1: correct path
-  it('should save the task and return success when the user is logged in', async () => {
-    const newTask = {
-      taskName: 'Drink Water',
-      reminderTime: '08:00 AM',
-      accountID: 1,
-      planID: 1
-    };
-
-    const response = await request(app)
+  it('should create a habit when the user is logged in', async () => {
+    const res = await request(app)
       .post('/api/habits')
-      .set('Authorization', 'Bearer valid-firebase-token') // triggers the "yes" path
-      .send(newTask);
+      .set('Authorization', 'Bearer valid-firebase-token')
+      .send({
+        habitName: 'Drink Water',
+        frequencyType: 'Daily',
+        status: 'Active',
+      });
 
-    expect(response.status).toBe(201);
-    expect(response.body.message).toBe('Task successfully created'); // validates "return" state
-    expect(response.body.task).toHaveProperty('taskID'); // validates class attributes
-    expect(response.body.task.taskName).toBe('Drink Water');
-    expect(response.body.task.isCompleted).toBe(false);
+    expect(res.status).toBe(201);
+    expect(res.body.message).toBe('Habit successfully created');
+    expect(res.body.habit).toHaveProperty('habitId');
+    expect(res.body.habit.habitName).toBe('Drink Water');
   });
 
-  // test case 2: error handling
-  it('should block the save operation and return an error if the user is not logged in', async () => {
-    const newTask = {
-      taskName: 'Read a Book',
-      reminderTime: '09:00 PM',
-      accountID: 2,
-      planID: 2
-    };
-
-    const response = await request(app)
+  it('should accept title as an alias for habitName', async () => {
+    const res = await request(app)
       .post('/api/habits')
-      // intentionally trigger the "No" path
-      .send(newTask);
+      .set('Authorization', 'Bearer valid-firebase-token')
+      .send({
+        title: 'Read',
+        frequencyType: 'Daily',
+        status: 'Active',
+      });
 
-    expect(response.status).toBe(401);
-    expect(response.body.error).toContain('Error Message Return'); // validates "Error Message Return" state
+    expect(res.status).toBe(201);
+    expect(res.body.habit.habitName).toBe('Read');
   });
 
-  // test case 3: input validation 
-  it('should return 400 Bad Request if the taskName is missing', async () => {
-    const incompleteTask = {
-      // intentionally leaving out taskName
-      reminderTime: '10:00 AM',
-      accountID: 1,
-      planID: 1
-    };
+  it('should return 401 if the user is not logged in', async () => {
+    const res = await request(app).post('/api/habits').send({
+      habitName: 'Read a Book',
+      frequencyType: 'Daily',
+      status: 'Active',
+    });
 
-    const response = await request(app)
-      .post('/api/habits')
-      .set('Authorization', 'Bearer valid-firebase-token') // user IS logged in
-      .send(incompleteTask);
-
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Task name is required'); 
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('Unauthorized');
   });
 
-  // test case 4: input validation 
-  it('should return 400 Bad Request if the reminderTime is missing', async () => {
-    const incompleteTask = {
-      // intentionally leaving out reminderTime 
-      taskName: 'Go to the gym',
-      accountID: 1,
-      planID: 1
-    };
-
-    const response = await request(app)
+  it('should return 400 if habitName, frequencyType, or status is missing', async () => {
+    const res = await request(app)
       .post('/api/habits')
-      .set('Authorization', 'Bearer valid-firebase-token') // user IS logged in
-      .send(incompleteTask);
+      .set('Authorization', 'Bearer valid-firebase-token')
+      .send({ frequencyType: 'Daily', status: 'Active' });
 
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Reminder time is required'); 
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain('required');
   });
-
-  // test case 5: input validation 
-  it('should return 400 Bad Request if the fields are missing', async () => {
-    const incompleteTask = {
-      // intentionally leaving out reminderTime and taskName
-      accountID: 1,
-      planID: 1
-    };
-
-    const response = await request(app)
-      .post('/api/habits')
-      .set('Authorization', 'Bearer valid-firebase-token') // user IS logged in
-      .send(incompleteTask);
-
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBe('Task name and reminder time are required'); 
-  });
-
 });
