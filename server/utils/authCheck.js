@@ -1,6 +1,6 @@
 import admin from '../firebaseAdmin.js';
 
-const checkAuth = async (req, res, next) => {
+const authCheck = async (req, res, next) => {
     const header = req.headers.authorization;
     if (!header || !header.startsWith('Bearer ')) {
         return res.status(401).send('Unauthorized');
@@ -17,4 +17,4 @@ const checkAuth = async (req, res, next) => {
     }
 };
 
-export default checkAuth;
+export default authCheck;

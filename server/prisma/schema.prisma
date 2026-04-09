@@ -13,7 +13,7 @@ datasource db {
 }
 
 model User {
-  user_id       Int       @id @default(autoincrement())
+  userId        Int       @id @default(autoincrement())
   username      String // Maps from VARCHAR
   email         String    @unique
   createdAt     DateTime  @default(now()) // Maps from TIMESTAMP
@@ -26,8 +26,8 @@ model User {
 }
 
 model Habit {
-  habit_id      Int      @id @default(autoincrement())
-  user_id       Int // Foreign Key
+  habitId       Int      @id @default(autoincrement())
+  userId        Int // Foreign Key
   habitName     String
   description   String?
   targetGoal    String?
@@ -37,15 +37,15 @@ model Habit {
   status        String // e.g., 'Active', 'Archived'
 
   // Relations
-  user          User           @relation(fields: [user_id], references: [user_id])
+  user          User           @relation(fields: [userId], references: [userId])
   logs          Log[]
   reminders     Reminder[]
   routineHabits RoutineHabit[]
 }
 
 model Routine {
-  routine_id  Int      @id @default(autoincrement())
-  user_id     Int // Foreign Key
+  routineId   Int      @id @default(autoincrement())
+  userId      Int // Foreign Key
   routineName String
   description String?
   targetTime  String? // e.g., 'Morning', 'Evening'
@@ -53,42 +53,42 @@ model Routine {
   status      String // e.g., 'Active', 'Archived'
 
   // Relations
-  user          User           @relation(fields: [user_id], references: [user_id])
+  user          User           @relation(fields: [userId], references: [userId])
   routineHabits RoutineHabit[]
 }
 
 model Log {
-  log_id           Int       @id @default(autoincrement())
-  habit_id         Int // Foreign Key
+  logId            Int       @id @default(autoincrement())
+  habitId          Int // Foreign Key
   logDate          DateTime
   completionStatus Json? // Maps from Boolean/Value (Flexible field)
   notes            DateTime? // Check image: Notes are listed as TIMESTAMP? Typically it's String.
   createdAt        DateTime  @default(now())
 
   // Relations
-  habit Habit @relation(fields: [habit_id], references: [habit_id])
+  habit Habit @relation(fields: [habitId], references: [habitId])
 }
 
 model Reminder {
-  reminder_id   Int     @id @default(autoincrement())
-  habit_id      Int // Foreign Key
+  reminderId    Int     @id @default(autoincrement())
+  habitId       Int // Foreign Key
   reminderTime  String? // Maps from (vARCHARRunday) - Non-standard format?
   daysOfWeek    Json? // Maps from BITMASK/JSON
   enabledStatus Boolean @default(true)
 
   // Relations
-  habit Habit @relation(fields: [habit_id], references: [habit_id])
+  habit Habit @relation(fields: [habitId], references: [habitId])
 }
 
 // Explicit Join Table for many-to-many relation between Routine and Habit
 model RoutineHabit {
   routineHabit_id Int      @id @default(autoincrement())
-  routine_id      Int // Foreign Key
-  habit_id        Int // Foreign Key
+  routineId       Int // Foreign Key
+  habitId         Int // Foreign Key
   orderIndex      Int
   createdAt       DateTime @default(now())
 
   // Relations
-  routine Routine @relation(fields: [routine_id], references: [routine_id])
-  habit   Habit   @relation(fields: [habit_id], references: [habit_id])
+  routine Routine @relation(fields: [routineId], references: [routineId])
+  habit   Habit   @relation(fields: [habitId], references: [habitId])
 }

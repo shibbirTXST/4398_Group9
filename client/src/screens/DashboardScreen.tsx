@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu} from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
@@ -15,13 +15,9 @@ const theme = {
   },
 };
 
-export default function DashboardScreen({route, navigation}: any) {
+export default function DashboardScreen({ route, navigation }: any) {
   const { logout } = useAuth();
-  const [habits, setHabits] = React.useState([
-    { id: '1', title: 'Drink Water', completed: false, count: 0 },
-    { id: '2', title: 'Read for 30 mins', completed: true, count: 1 },
-    { id: '3', title: 'Exercise', completed: false, count: 0 },
-  ]);
+  const [habits, setHabits] = React.useState<any[]>([]);
   const [dialogVisible, setDialogVisible] = React.useState(false);
   const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
   const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
@@ -48,7 +44,7 @@ export default function DashboardScreen({route, navigation}: any) {
   }, [route.params?.newHabit]);
 
   const toggleHabit = (id: string) => {
-    setHabits(habits.map(h => 
+    setHabits(habits.map(h =>
       h.id === id ? { ...h, completed: !h.completed } : h
     ));
   };
@@ -199,65 +195,65 @@ export default function DashboardScreen({route, navigation}: any) {
               titleStyle={{ color: 'red' }}
             />
           </Menu>
-          
+
           {/* Delete Account Dialog */}
           <Portal>
             <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
-            <Dialog.Content>
-              <Text>
-                Please reenter your account details to delete your account. This action is permanent.
-              </Text>
-              <TextInput
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
-              />
+              <Dialog.Content>
+                <Text>
+                  Please reenter your account details to delete your account. This action is permanent.
+                </Text>
+                <TextInput
+                  label="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                />
 
-              <TextInput
-                label="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideDeleteAccDialog}>Cancel</Button>
-              <Button onPress={deleteAccount} textColor='red'>Delete</Button>
-            </Dialog.Actions>
+                <TextInput
+                  label="Password"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={setPassword}
+                />
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideDeleteAccDialog}>Cancel</Button>
+                <Button onPress={deleteAccount} textColor='red'>Delete</Button>
+              </Dialog.Actions>
             </Dialog>
           </Portal>
 
           {/* Delete Account Success Dialog */}
           <Portal>
             <Dialog visible={deleteSuccessDialogVisible} onDismiss={handleFinalLogout}>
-            <Dialog.Title>Success</Dialog.Title>
-            <Dialog.Content>
-              <Text variant="bodyMedium">
-                Account successfully deleted.
-              </Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={handleFinalLogout}>OK</Button>
-            </Dialog.Actions>
+              <Dialog.Title>Success</Dialog.Title>
+              <Dialog.Content>
+                <Text variant="bodyMedium">
+                  Account successfully deleted.
+                </Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={handleFinalLogout}>OK</Button>
+              </Dialog.Actions>
             </Dialog>
           </Portal>
         </Appbar.Header>
         <SafeAreaView style={styles.container}>
           <View style={styles.content}>
             <Text variant="headlineSmall" style={styles.title}>Your Habits Today</Text>
-            
+
             {habits.map((habit) => (
               <List.Item
                 key={habit.id}
                 title={habit.title}
                 description={habit.completed ? "Done for today!" : "Not done yet"}
                 left={props => (
-                   <IconButton 
-                    {...props} 
-                    icon={habit.completed ? "check-circle" : "circle-outline"} 
+                  <IconButton
+                    {...props}
+                    icon={habit.completed ? "check-circle" : "circle-outline"}
                     iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
                     onPress={() => toggleHabit(habit.id)}
-                   />
+                  />
                 )}
                 right={props => (
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>

@@ -1,35 +1,44 @@
-let habits = [
-  { id: 1, title: 'Drink Water', completed: false, count: 0 },
-  { id: 2, title: 'Read for 30 mins', completed: true, count: 1 },
-  { id: 3, title: 'Exercise', completed: false, count: 0 },
-];
+import admin from '../firebaseAdmin.js';
+import db from '../db/db.js';
 
 const getHabits = (req, res) => {
+
+  const rUserId = req.user.uid; // Assuming authCheck middleware attaches uid to req.user
+
+  // Fetch habits from the database for the authenticated user
+  const habits = db.habits.findMany({
+    where: {
+      userId: rUserId,
+    },
+    select: {
+      habitId: true,
+      habitName: true,
+      status: true,
+      frequencyType: true,
+    }
+  });
   res.status(200).json(habits);
 };
 
 const createHabit = (req, res) => {
-  // authentication check
-  if (!req.headers.authorization) {
-    return res.status(401).json({ error: 'Error Message Return: Unauthorized access. Please log in.' });
-  }
+  const rUserId = req.user.uid;
 
   // class diagram variables
-  const { taskName, reminderTime, accountID, planID } = req.body;
+  const { habitName, userId, planID } = req.body;
 
-  // input validation 
-  if (!taskName && !reminderTime) {
-    return res.status(400).json({ error: 'Task name and reminder time are required' });
-  }
+  // // input validation 
+  // if (!taskName && !reminderTime) {
+  //   return res.status(400).json({ error: 'Task name and reminder time are required' });
+  // }
 
-  if (!taskName) {
-    return res.status(400).json({ error: 'Task name is required' });
-  }
-  if (!reminderTime) {
-    return res.status(400).json({ error: 'Reminder time is required' });
-  }
-  const newHabit = { id: Date.now(), title: taskName, completed: false, count: 0 };
-  habits.push(newHabit);
+  // if (!taskName) {
+  //   return res.status(400).json({ error: 'Task name is required' });
+  // }
+  // if (!reminderTime) {
+  //   return res.status(400).json({ error: 'Reminder time is required' });
+  // }
+
+
 
   // successful database save simulation
   res.status(201).json({

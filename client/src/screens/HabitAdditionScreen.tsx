@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { auth } from '../config/firebase';
 import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { TextInput, Button, Text, HelperText, Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -7,13 +8,16 @@ import { StackNavigationProp } from '@react-navigation/stack';
 export default function HabitAdditionScreen() {
   const [taskName, setTaskName] = useState('');
   const [reminderTime, setReminderTime] = useState('');
+  const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
+
+
   const handleCreateHabit = async () => {
     // input validation
-    if (!taskName.trim() || !reminderTime.trim()) {
+    if (!taskName.trim()) { //} || !reminderTime.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -31,19 +35,26 @@ export default function HabitAdditionScreen() {
     // map data to backend variables
     const newHabitPayload = {
       taskName: taskName,
-      reminderTime: reminderTime, 
+      reminderTime: reminderTime,
       // hardcoded for DEMO
-      accountID: 1, 
-      planID: 1     
+      accountID: 1,
+      planID: 1
     };
 
     try {
+      const user = auth.currentUser;
+      if (user) {
+        const token = await user.getIdToken();
+        setToken(token);
+      }
+
+
       // send POST request to Express server
       const response = await fetch('http://localhost:5000/api/habits', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer valid-firebase-token' 
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(newHabitPayload),
       });
@@ -55,10 +66,10 @@ export default function HabitAdditionScreen() {
         // clear form and navigate back to the Dashboard on success
         setTaskName('');
         setReminderTime('');
-        navigation.navigate('Dashboard', { 
-            newHabit: jsonResponse.task,
-            successMessage: 'Habit added successfully!'
-        }); 
+        navigation.navigate('Dashboard', {
+          newHabit: jsonResponse.task,
+          successMessage: 'Habit added successfully!'
+        });
       } else {
         setError(jsonResponse.error || 'Failed to create habit');
       }
@@ -115,7 +126,7 @@ export default function HabitAdditionScreen() {
             >
               Save Habit
             </Button>
-            
+
             <Button
               mode="text"
               onPress={() => navigation.goBack()}
