@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { Text, Title } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, List } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -8,17 +8,16 @@ export default function ProgressScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.content}>
-          <Title style={styles.title}>Your Progress</Title>
-          <Text style={styles.subtitle}>This is where your progress will be displayed (eventually)</Text>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <SafeAreaProvider>
+      <PaperProvider theme={theme}>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.content}>
+            <Text variant="headlineSmall" style={styles.title}>Your Streaks</Text>
+            
+          </View>
+        </SafeAreaView>
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 }
 
