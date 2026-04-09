@@ -61,8 +61,8 @@ jest.mock('../db/db.js', () => {
   };
 });
 
-const request = require('supertest');
-const app = require('../app');
+import request from 'supertest';
+import app from '../app';
 
 describe('Habit Modification API (PUT /api/habits/:id)', () => {
   it('should update habitName when the user is logged in', async () => {

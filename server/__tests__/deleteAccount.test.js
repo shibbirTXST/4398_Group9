@@ -12,9 +12,9 @@ jest.mock("../db/db.js", () => ({
   },
 }));
 
-const request = require("supertest");
-const app = require("../app");
-const admin = require("../firebaseAdmin");
+import request from "supertest";
+import app from "../app";
+import admin from "../firebaseAdmin";
 
 describe("DELETE /api/auth/delete-account", () => {
   beforeEach(() => {

@@ -16,8 +16,8 @@ jest.mock('../db/db.js', () => ({
   },
 }));
 
-const request = require('supertest');
-const app = require('../app');
+import request from 'supertest';
+import app from '../app';
 
 //test cases
 //simple test case for root endpoint

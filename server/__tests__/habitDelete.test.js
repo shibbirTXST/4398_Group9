@@ -36,8 +36,8 @@ jest.mock('../db/db.js', () => {
   };
 });
 
-const request = require('supertest');
-const app = require('../app');
+import request from 'supertest';
+import app from '../app';
 
 describe('Habit Deletion API (DELETE /api/habits/:id)', () => {
   it('should delete the habit when the user is logged in', async () => {
