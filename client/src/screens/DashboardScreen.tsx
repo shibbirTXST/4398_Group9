@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Appbar, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button, Menu} from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, FAB, List, IconButton, Snackbar, Portal, Dialog, TextInput, Button} from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext';
-import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 const theme = {
@@ -16,7 +14,6 @@ const theme = {
 };
 
 export default function DashboardScreen({route, navigation}: any) {
-  const { logout } = useAuth();
   const [habits, setHabits] = React.useState([
     { id: '1', title: 'Drink Water', completed: false, count: 0 },
     { id: '2', title: 'Read for 30 mins', completed: true, count: 1 },
