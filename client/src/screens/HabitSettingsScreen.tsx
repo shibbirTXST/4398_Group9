@@ -8,19 +8,19 @@ import { auth } from '../config/firebase';
 export default function HabitSettingsScreen() {
 
   const route = useRoute();
-  const { isEditing, habit, plans } = route.params as { isEditing: boolean; habit: any, plans: any[] };
+  const { isEditing, habit, routines } = route.params as { isEditing: boolean; habit: any, routines: any[] };
 
-  const [taskName, setTaskName] = useState(isEditing ? habit.title : '');
+  const [habitTitle, setHabitTitle] = useState(isEditing ? habit.title : '');
   const [reminderTime, setReminderTime] = useState(isEditing ? habit.reminderTime : '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedPlanId, setSelectedPlanId] = useState(isEditing ? habit.planID : 0);
+  const [selectedRoutineId, setSelectedRoutineId] = useState(isEditing ? habit.routineID : 0);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   //Habit update
   const handleUpdateHabit = async () => {
     // input validation
-    if (!taskName.trim() || !reminderTime.trim()) {
+    if (!habitTitle.trim() || !reminderTime.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -42,21 +42,20 @@ export default function HabitSettingsScreen() {
       return;
     }
     const token = await user.getIdToken();
-    if (!taskName.trim() || !reminderTime.trim()) return;
+    if (!habitTitle.trim() || !reminderTime.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/${habit.id}`, {
+      const res = await fetch(`http://localhost:5000/api/habits/${habit.ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ title: taskName.trim(), reminderTime: reminderTime.trim(), planID: selectedPlanId }),
+        body: JSON.stringify({ title: habitTitle.trim(), reminderTime: reminderTime.trim(), routineID: selectedRoutineId }),
       });
       if (!res.ok) throw new Error('Update failed');
-      setTaskName('');
+      setHabitTitle('');
       setReminderTime('');
       const updated = await res.json();
       navigation.navigate('Home', { 
         screen: 'Dashboard',
         params: {
-          updatedHabit: updated.task,
           successMessage: 'Habit updated successfully!'
         }
       });
@@ -70,7 +69,7 @@ export default function HabitSettingsScreen() {
   //New habit creation
   const handleCreateHabit = async () => {
     // input validation
-    if (!taskName.trim() || !reminderTime.trim()) {
+    if (!habitTitle.trim() || !reminderTime.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -87,9 +86,9 @@ export default function HabitSettingsScreen() {
 
     // map data to backend variables
     const newHabitPayload = {
-      taskName: taskName,
+      title: habitTitle,
       reminderTime: reminderTime,
-      planID: selectedPlanId, 
+      routineID: selectedRoutineId,
       // hardcoded for DEMO
       accountID: 1  
     };
@@ -110,11 +109,13 @@ export default function HabitSettingsScreen() {
       // handle backend response
       if (response.status === 201) {
         // clear form and navigate back to the Home on success
-        setTaskName('');
+        setHabitTitle('');
         setReminderTime('');
         navigation.navigate('Home', { 
-            newHabit: jsonResponse.task,
+          screen: 'Dashboard',
+          params: {
             successMessage: 'Habit added successfully!'
+          }
         }); 
       } else {
         setError(jsonResponse.error || 'Failed to create habit');
@@ -150,8 +151,8 @@ export default function HabitSettingsScreen() {
             <TextInput
               label="Habit Name"
               placeholder={isEditing ? habit.title : "e.g., Drink Water"}
-              value={taskName}
-              onChangeText={setTaskName}
+              value={habitTitle}
+              onChangeText={setHabitTitle}
               mode="outlined"
               style={styles.input}
             />
@@ -165,21 +166,21 @@ export default function HabitSettingsScreen() {
               style={styles.input}
             />
 
-            <Text style={{ marginBottom: 8 }}>Assign to Plan:</Text>
+            <Text style={{ marginBottom: 8 }}>Assign to Routine:</Text>
             <Button
-              mode={selectedPlanId === 0 ? "contained" : "outlined"}
-              onPress={() => setSelectedPlanId(0)}
-              style={styles.planButton}
-            >{'No Plan'}
+              mode={selectedRoutineId === 0 ? "contained" : "outlined"}
+              onPress={() => setSelectedRoutineId(0)}
+              style={styles.routineButton}
+            >{'No Routine'}
             </Button>
-            {plans && plans.map((plan) => (
+            {routines && routines.map((routine) => (
               <Button
-                key={plan.id}
-                mode={selectedPlanId === plan.id ? "contained" : "outlined"}
-                onPress={() => setSelectedPlanId(plan.id)}
-                style={styles.planButton}
+                key={routine.ID}
+                mode={selectedRoutineId === routine.ID ? "contained" : "outlined"}
+                onPress={() => setSelectedRoutineId(routine.ID)}
+                style={styles.routineButton}
               >
-                {plan.name}
+                {routine.title}
               </Button>
             ))}
 
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 16,
   },
-  planButton: {
+  routineButton: {
     marginBottom: 8,
   },
   button: {

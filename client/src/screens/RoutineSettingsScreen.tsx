@@ -8,17 +8,17 @@ import { auth } from '../config/firebase';
 export default function PlanSettingsScreens() {
 
   const route = useRoute();
-  const { isEditing, plan } = route.params as { isEditing: boolean; plan: any };
+  const { isEditing, routine } = route.params as { isEditing: boolean; routine: any };
 
-  const [planName, setPlanName] = useState(isEditing ? plan.name : '');
+  const [routineTitle, setRoutineTitle] = useState(isEditing ? routine.title : '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   //Habit update
-  const handleUpdatePlan = async () => {
+  const handleUpdateRoutine = async () => {
     // input validation
-    if (!planName.trim()) {
+    if (!routineTitle.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -34,32 +34,32 @@ export default function PlanSettingsScreens() {
     }
     const token = await user.getIdToken();
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/plans/${plan.id}`, {
+      const res = await fetch(`http://localhost:5000/api/habits/routines/${routine.ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ name: planName.trim() }),
+        body: JSON.stringify({ title: routineTitle.trim() }),
       });
       if (!res.ok) throw new Error('Update failed');
-      setPlanName('');
+      setRoutineTitle('');
       const updated = await res.json();
       navigation.navigate('Home', { 
         screen: 'Dashboard',
         params: {
-        updatedPlan: updated.planId,
-        successMessage: 'Plan updated successfully!'
+        updatedRoutine: updated.routineId,
+        successMessage: 'Routine updated successfully!'
         },
       });
     } catch (err) {
-      console.error('Error updating plan', err);
+      console.error('Error updating routine', err);
     }finally {
       setLoading(false);
     }
   };
 
-  //New plan creation
-  const handleCreatePlan = async () => {
+  //New routine creation
+  const handleCreateRoutine = async () => {
     // input validation
-    if (!planName.trim()) {
+    if (!routineTitle.trim()) {
       setError('Please fill in all fields');
       return;
     }
@@ -68,22 +68,22 @@ export default function PlanSettingsScreens() {
     setError('');
 
     // map data to backend variables
-    const newPlanPayload = {
-      name: planName.trim(),
-      id: Date.now(),
+    const newRoutinePayload = {
+      title: routineTitle.trim(),
+      ID: Date.now(),
       // hardcoded for DEMO
       accountID: 1  
     };
 
     try {
       // send POST request to Express server
-      const response = await fetch('http://localhost:5000/api/habits/plans', {
+      const response = await fetch('http://localhost:5000/api/habits/routines', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer valid-firebase-token' 
         },
-        body: JSON.stringify(newPlanPayload),
+        body: JSON.stringify(newRoutinePayload),
       });
 
       const jsonResponse = await response.json();
@@ -91,16 +91,16 @@ export default function PlanSettingsScreens() {
       // handle backend response
       if (response.status === 201) {
         // clear form and navigate back to the Dashboard on success
-        setPlanName('');
+        setRoutineTitle('');
         navigation.navigate('Home', { 
             screen: 'Dashboard',
             params: {
-                newPlan: jsonResponse.plan,
-                successMessage: 'Plan added successfully!'
+                newRoutine: jsonResponse.routine,
+                successMessage: 'Routine added successfully!'
             }
         }); 
       } else {
-        setError(jsonResponse.error || 'Failed to create plan');
+        setError(jsonResponse.error || 'Failed to create routine');
       }
     } catch (err: any) {
       console.error(err);
@@ -114,7 +114,7 @@ export default function PlanSettingsScreens() {
     <View style={styles.mainContainer}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title={isEditing ? "Edit Plan" : "New Plan"} />
+        <Appbar.Content title={isEditing ? "Edit Routine" : "New Routine"} />
       </Appbar.Header>
 
       <KeyboardAvoidingView
@@ -124,17 +124,17 @@ export default function PlanSettingsScreens() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
             <Text style={styles.title}>
-              {isEditing ? 'Modify a Plan' : 'Create a Plan'}
+              {isEditing ? 'Modify a Routine' : 'Create a Routine'}
             </Text>
             <Text style={styles.subtitle}>
-              {isEditing ? 'How would you like to modify this plan?' : 'What plan would you like to create?'}
+              {isEditing ? 'How would you like to modify this routine?' : 'What routine would you like to create?'}
             </Text>
 
             <TextInput
-              label="Plan Name"
-              placeholder={isEditing ? plan.name : "e.g., Workout Routine"}
-              value={planName}
-              onChangeText={setPlanName}
+              label="Routine Name"
+              placeholder={isEditing ? routine.title : "e.g., Workout Routine"}
+              value={routineTitle}
+              onChangeText={setRoutineTitle}
               mode="outlined"
               style={styles.input}
             />
@@ -143,12 +143,12 @@ export default function PlanSettingsScreens() {
 
             <Button
               mode="contained"
-              onPress={isEditing ? handleUpdatePlan : handleCreatePlan}
+              onPress={isEditing ? handleUpdateRoutine : handleCreateRoutine}
               loading={loading}
               disabled={loading}
               style={styles.button}
             >
-              Save Plan
+              Save Routine
             </Button>
             
             <Button

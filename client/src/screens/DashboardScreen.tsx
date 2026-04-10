@@ -18,7 +18,7 @@ const theme = {
 export default function DashboardScreen({route, navigation}: any) {
   const { logout } = useAuth();
   const [habits, setHabits] = useState<any[]>([]);
-  const [plans, setPlans] = useState<any[]>([]);
+  const [routines, setRoutines] = useState<any[]>([]);
   const [deleteAccDialogVisible, setDeleteAccDialogVisible] = React.useState(false);
   const [deleteSuccessDialogVisible, setDeleteSuccessDialogVisible] = React.useState(false);
   const [accMenuVisible, setAccMenuVisible] = React.useState(false);
@@ -32,38 +32,38 @@ export default function DashboardScreen({route, navigation}: any) {
   // listen for new habits coming back from the HabitSettingsScreen
   useEffect(() => {
     if (route.params?.newHabit) {
-      const { newHabit, successMessage } = route.params;
+      const {successMessage } = route.params;
       // trigger the pop-up message
       setSnackbarMessage(successMessage);
       setSnackbarVisible(true);
 
-      navigation.setParams({ newHabit: undefined, successMessage: undefined });
+      navigation.setParams({successMessage: undefined });
     }
   }, [route.params?.newHabit]);
 
-  const toggleHabit = (id: string) => {
+  const toggleHabit = (ID: string) => {
     setHabits(habits.map(h => 
-      h.id === id ? { ...h, completed: !h.completed, count: 1-h.count } : h
+      h.ID === ID ? { ...h, completed: !h.completed, count: 1-h.count } : h
     ));
   };
 
   React.useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/habits/plans');
-        if (!res.ok) throw new Error('Failed to fetch plans');
+        const res = await fetch('http://localhost:5000/api/habits/routines');
+        if (!res.ok) throw new Error('Failed to fetch routines');
         const data = await res.json();
         // ensure ids are strings for list keys
-        setPlans(data.map((p: any) => ({ ...p, id: String(p.id) })));
+        setRoutines(data.map((r: any) => ({ ...r, ID: String(r.ID) })));
       } catch (err) {
-        console.warn('Could not load plans:', err);
+        console.warn('Could not load routines:', err);
       }
       try {
         const res = await fetch('http://localhost:5000/api/habits');
         if (!res.ok) throw new Error('Failed to fetch habits');
         const data = await res.json();
         // ensure ids are strings for list keys
-        setHabits(data.map((h: any) => ({ ...h, id: String(h.id) })));
+        setHabits(data.map((h: any) => ({ ...h, ID: String(h.ID) })));
       } catch (err) {
         console.warn('Could not load habits:', err);
       }
@@ -71,16 +71,16 @@ export default function DashboardScreen({route, navigation}: any) {
     load();
   }, []);
 
-  const habitsByPlan = React.useMemo(() => {
+  const habitsByRoutine = React.useMemo(() => {
   return habits.reduce((acc, habit) => {
-    const planId = habit.planID || 0; // Default of 0 for unassigned
-    if (!acc[planId]) acc[planId] = [];
-    acc[planId].push(habit);
+    const routineId = habit.routineID || 0; // Default of 0 for unassigned
+    if (!acc[routineId]) acc[routineId] = [];
+    acc[routineId].push(habit);
     return acc;
   }, {} as Record<number, typeof habits>);
 }, [habits]);
 
-  const deleteHabit = async (id: string) => {
+  const deleteHabit = async (ID: string) => {
     //check if user is authenticated before allowing delete
     const user = auth.currentUser;
     if (!user) {
@@ -89,20 +89,20 @@ export default function DashboardScreen({route, navigation}: any) {
     }
     const token = await user.getIdToken();
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/habits/${ID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       if (!res.ok) throw new Error('Delete failed');
-      setHabits(prev => prev.filter(h => h.id !== id));
+      setHabits(prev => prev.filter(h => h.ID !== ID));
     } catch (err) {
       console.error('Error deleting habit', err);
     }
   };
 
-  const deletePlan = async (id: string) => {
+  const deleteRoutine = async (ID: string) => {
     //check if user is authenticated before allowing delete
     const user = auth.currentUser;
     if (!user) {
@@ -111,16 +111,16 @@ export default function DashboardScreen({route, navigation}: any) {
     }
     const token = await user.getIdToken();
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/plans/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/habits/routines/${ID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       if (!res.ok) throw new Error('Delete failed');
-      setPlans(prev => prev.filter(p => p.id !== id));
+      setRoutines(prev => prev.filter(r => r.ID !== ID));
     } catch (err) {
-      console.error('Error deleting plan', err);
+      console.error('Error deleting routine', err);
     }
   };
 
@@ -189,15 +189,15 @@ export default function DashboardScreen({route, navigation}: any) {
 
             {/* Independent Habits */}
 
-              {habitsByPlan[0] && habitsByPlan[0].length > 0 && (
+              {habitsByRoutine[0] && habitsByRoutine[0].length > 0 && (
                 <List.Accordion
                   title="Independent Habits"
-                  style={styles.planItem}
+                  style={styles.routineItem}
                   expanded={true}
                 >
-                {habitsByPlan[0].map((habit: any) => (
+                {habitsByRoutine[0].map((habit: any) => (
                   <List.Item
-                    key={habit.id}
+                    key={habit.ID}
                     title={habit.title}
                     description={habit.completed ? "Done for today!" : "Not done yet"}
                       left={(props) => (
@@ -205,7 +205,7 @@ export default function DashboardScreen({route, navigation}: any) {
                           {...props}
                           icon={habit.completed ? "check-circle" : "circle-outline"}
                           iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                          onPress={() => toggleHabit(habit.id)}
+                          onPress={() => toggleHabit(habit.ID)}
                         />
                       )}
                       right={(props) => (
@@ -218,10 +218,10 @@ export default function DashboardScreen({route, navigation}: any) {
                             onPress={() => navigation.navigate('HabitSettingsScreen', {
                               isEditing: true,
                               habit: habit,
-                              plans: plans,
+                              routines: routines,
                             })}
                           />
-                          <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
+                          <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
                         </View>
                       )}
                     style={styles.habitItem}
@@ -230,31 +230,31 @@ export default function DashboardScreen({route, navigation}: any) {
                 </List.Accordion>
           )}
 
-          {/* Plans (and their sub-habits) */}
+          {/* Routines (and their sub-habits) */}
 
-            {plans.map((plan) => (
+            {routines.map((routine) => (
             <List.Accordion 
-            key={plan.id}
-            title={plan.name}
-            style={styles.planItem}
+            key={routine.ID}
+            title={routine.title}
+            style={styles.routineItem}
             right={(props) => (
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <IconButton
                         icon="pencil"
                         onPress={() =>
-                          navigation.navigate('PlanSettingsScreen', {
+                          navigation.navigate('RoutineSettingsScreen', {
                             isEditing: true,
-                            plan: plan,
+                            routine: routine,
                           })
                         }
                       />
-                      <IconButton icon="delete" onPress={() => deletePlan(plan.id)}/>
+                      <IconButton icon="delete" onPress={() => deleteRoutine(routine.ID)}/>
                     </View>
                   )}
             >
-              {habitsByPlan[plan.id]?.map((habit: any) => (
+              {habitsByRoutine[routine.ID]?.map((habit: any) => (
                 <List.Item
-                  key={habit.id}
+                  key={habit.ID}
                   title={habit.title}
                   description={habit.completed ? "Done for today!" : "Not done yet"}
                   left={(props) => (
@@ -262,7 +262,7 @@ export default function DashboardScreen({route, navigation}: any) {
                       {...props}
                       icon={habit.completed ? "check-circle" : "circle-outline"}
                       iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                      onPress={() => toggleHabit(habit.id)}
+                      onPress={() => toggleHabit(habit.ID)}
                     />
                   )}
                   right={(props) => (
@@ -276,11 +276,11 @@ export default function DashboardScreen({route, navigation}: any) {
                           navigation.navigate('HabitSettingsScreen', {
                             isEditing: true,
                             habit: habit,
-                            plans: plans,
+                            routines: routines,
                           })
                         }
                       />
-                      <IconButton icon="delete" onPress={() => deleteHabit(habit.id)} />
+                      <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
                     </View>
                   )}
                   style={styles.habitItem}
@@ -288,12 +288,12 @@ export default function DashboardScreen({route, navigation}: any) {
               ))}
             </List.Accordion>
           ))}
-          <Button mode="contained" onPress={() => navigation.navigate('PlanSettingsScreen', {isEditing: false, plan: null})}>Add Plan</Button>
+          <Button mode="contained" onPress={() => navigation.navigate('RoutineSettingsScreen', {isEditing: false, routine: null})}>Add Routine</Button>
           </View>
           <FAB
             icon="plus"
             style={styles.fab}
-            onPress={() => navigation.navigate('HabitSettingsScreen', {isEditing: false, habit: null, plans: plans})}
+            onPress={() => navigation.navigate('HabitSettingsScreen', {isEditing: false, habit: null, routines: routines})}
             label="New Habit"
           />
 
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontWeight: 'bold',
   },
-  planItem: {
+  routineItem: {
     backgroundColor: '#e0e0e0',
     borderRadius: 8,
     marginBottom: 8,
