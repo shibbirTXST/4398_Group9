@@ -303,6 +303,55 @@ const deleteRoutine = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete routine' });
   }
 };
+const completeHabit = async (req, res) => {
+  const habitId = parseInt(req.params.id);
+
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const existingLog = await db.log.findFirst({
+      where: {
+        habitId,
+        logDate: { gte: startOfDay },
+        completionStatus: true,
+      },
+    });
+
+    if (existingLog) {
+      return res.status(400).json({ error: 'Habit already completed today' });
+    }
+
+    const habit = await db.habit.findUnique({ where: { habitId } });
+    if (!habit) return res.status(404).json({ error: 'Habit not found' });
+
+    const newStreak = habit.currentStreak + 1;
+    const newMaxStreak = Math.max(newStreak, habit.maxStreak);
+
+    const [log, updatedHabit] = await db.$transaction([
+      db.log.create({
+        data: {
+          habitId,
+          logDate: new Date(),
+          completionStatus: true,
+        },
+      }),
+      db.habit.update({
+        where: { habitId },
+        data: {
+          currentStreak: newStreak,
+          maxStreak: newMaxStreak,
+        },
+      }),
+    ]);
+
+    res.json({ ...updatedHabit, completed: true });
+  } catch (err) {
+    console.error('Error updating habit:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 const updateRoutine = async (req, res) => {
   const user = await requireDbUser(req, res);
@@ -341,4 +390,4 @@ const updateRoutine = async (req, res) => {
   }
 };
 
-export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine };
+export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine, completeHabit };

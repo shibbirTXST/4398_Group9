@@ -6,6 +6,15 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
 
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#6200ee',
+    secondary: '#03dac6',
+  },
+};
+
 export default function ProgressScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const [habits, setHabits] = React.useState<any[]>([]);
@@ -25,7 +34,9 @@ export default function ProgressScreen() {
           setHabits(
             data.map((h: any) => ({
               ...h,
-              completed: Boolean(h.completed),
+              id: String(h.habitId),
+              maxStreak: h.maxStreak ?? 0,
+              currentStreak: h.currentStreak ?? 0,
             }))
           );
         } catch (err) {
@@ -45,12 +56,12 @@ export default function ProgressScreen() {
             
             {habits.map((habit) => (
               <List.Item
-                key={habit.id}
+                key={habit.habitId}
                 title={habit.habitName}
                 right={props => (
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text {...props}>Longest Streak: 0 days</Text>
-                    <Text {...props}>Current Streak: 0 days</Text>
+                    <Text {...props}>Longest Streak: {habit.maxStreak} days</Text>
+                    <Text {...props}>Current Streak: {habit.currentStreak} days</Text>
                   </View>
                 )}
                 style={styles.habitItem}
@@ -66,20 +77,14 @@ export default function ProgressScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
   },
   content: {
-    padding: 20,
+    padding: 16,
   },
   title: {
-    fontSize: 28,
+    marginBottom: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
   },
   subtitle: {
     textAlign: 'center',
