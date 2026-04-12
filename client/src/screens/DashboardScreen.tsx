@@ -45,13 +45,18 @@ export default function DashboardScreen({ route, navigation }: any) {
     const habit = habits.find(h => String(h.habitId) === String(id));
     if (!habit || habit.completed) return;
 
-    setHabits(habits.map(h => String(h.habitId) === String(id) ? { ...h, completed: true } : h));
+    setHabits(prev => prev.map(h => String(h.habitId) === String(id) ? { ...h, completed: true } : h));
 
     try {
       const res = await fetch(`http://localhost:5000/api/habits/comp/${id}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
       });
+
+      if (res.status === 400) {
+        return;
+      }
+
       if (!res.ok) throw new Error('Failed to update habit');
       const updated = await res.json();
       setHabits(prev => prev.map(h => String(h.habitId) === String(updated.habitId) ? updated : h));
