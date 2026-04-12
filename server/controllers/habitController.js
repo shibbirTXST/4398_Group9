@@ -16,8 +16,38 @@ const habitSelect = {
   maxStreak: true,
 };
 
-const getRoutines = (req, res) => {
-  res.status(200).json(routines);
+const getHabits = async (req, res) => {
+  try {
+    const user = await upsertUserFromDecodedToken(req.user);
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const habits = await db.habit.findMany({
+      where: { userId: user.userId },
+      select: {
+        ...habitSelect,
+        logs: {
+          where: {
+            logDate: { gte: startOfDay },
+            completionStatus: true,
+          },
+          select: { logId: true },
+        },
+      },
+    });
+
+    const result = habits.map(h => ({
+      ...h,
+      completed: h.logs.length > 0,
+      logs: undefined,
+    }));
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching habits:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 // --- HABIT CONTROLLERS ---
