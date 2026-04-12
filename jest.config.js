@@ -8,7 +8,9 @@ module.exports = {
         "**/__tests__/**/*.(js|jsx|ts|tsx)",
         "**/?(*.)+(spec|test).(js|jsx|ts|tsx)"
       ],
-      transform: {}
+      transform: {
+        "\\.js$": "babel-jest"
+      }
     },
     {
       displayName: 'client',

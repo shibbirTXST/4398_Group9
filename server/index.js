@@ -1,11 +1,13 @@
-require('dotenv').config();
-const app = require('./app');
+import 'dotenv/config';
+import app from './app.js';
+import { startReminderCronJob } from './jobs/reminder.js';
 
-if (require.main === module) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}
+const PORT = process.env.PORT || 5000;
 
-module.exports = app;
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+  
+  // Start the background job
+  startReminderCronJob(); 
+  console.log('Background cron jobs initialized.');
+});

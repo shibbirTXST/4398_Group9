@@ -1,15 +1,28 @@
-const express = require('express');
-const router = express.Router();
-const { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine } = require('../controllers/habitController');
+import express from 'express';
+import authCheck from '../utils/authCheck.js';
+import { 
+  getHabits, 
+  getRoutines, 
+  createHabit, 
+  deleteHabit, 
+  updateHabit, 
+  createRoutine, 
+  deleteRoutine, 
+  updateRoutine 
+} from '../controllers/habitController.js';
 
-router.get('/', getHabits);
-router.post('/', createHabit);
-router.put('/:ID', updateHabit);
-router.delete('/:ID', deleteHabit);
+const habitRouter = express.Router();
 
-router.get('/routines', getRoutines);
-router.post('/routines', createRoutine);
-router.put('/routines/:ID', updateRoutine);
-router.delete('/routines/:ID', deleteRoutine);
+// --- HABIT ROUTES ---
+habitRouter.get('/', authCheck, getHabits);
+habitRouter.post('/', authCheck, createHabit);
+habitRouter.put('/:id', authCheck, updateHabit);
+habitRouter.delete('/:id', authCheck, deleteHabit);
 
-module.exports = router;
+// --- ROUTINE ROUTES ---
+habitRouter.get('/routines', authCheck, getRoutines);
+habitRouter.post('/routines', authCheck, createRoutine);
+habitRouter.put('/routines/:id', authCheck, updateRoutine);
+habitRouter.delete('/routines/:id', authCheck, deleteRoutine);
+
+export { habitRouter };

@@ -13,6 +13,21 @@ export default function SignInScreen() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
+  const checkFirstSignIn = async (user: any) => {
+    try {
+      const tok = await user.getIdToken();
+      await fetch('http://localhost:5000/api/auth/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${tok}`,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleSignIn = async () => {
     if (!email || !password) {
       setError('Please fill in all fields');
@@ -23,6 +38,7 @@ export default function SignInScreen() {
     setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      await checkFirstSignIn(auth.currentUser);
       // Auth state listener in AuthContext will handle redirection to AppStack
     } catch (err: any) {
       setError(err.message || 'Failed to sign in');

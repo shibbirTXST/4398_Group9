@@ -4,118 +4,124 @@ import { TextInput, Button, Text, HelperText, Appbar } from 'react-native-paper'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth } from '../config/firebase';
+import { API_BASE_URL } from '../config/API_base_url';
+import ReminderTimePicker from '../components/ReminderTimePicker';
 
 export default function HabitSettingsScreen() {
-
   const route = useRoute();
   const { isEditing, habit, routines } = route.params as { isEditing: boolean; habit: any, routines: any[] };
 
+  // Helper to parse saved "HH:MM" string back into a Date object for the Time Picker
+  const getInitialTime = () => {
+    const defaultDate = new Date();
+    defaultDate.setHours(9, 0, 0, 0);
+    if (isEditing && habit?.reminderTime) {
+      const [hours, minutes] = habit.reminderTime.split(':');
+      if (hours && minutes) {
+        defaultDate.setHours(Number(hours), Number(minutes), 0, 0);
+      }
+    }
+    return defaultDate;
+  };
+
   const [habitTitle, setHabitTitle] = useState(isEditing ? habit.title : '');
-  const [reminderTime, setReminderTime] = useState(isEditing ? habit.reminderTime : '');
+  const [reminderTime, setReminderTime] = useState<Date>(getInitialTime());
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedRoutineId, setSelectedRoutineId] = useState(isEditing ? habit.routineID : 0);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
-  //Habit update
+  // Habit update
   const handleUpdateHabit = async () => {
-    // input validation
-    if (!habitTitle.trim() || !reminderTime.trim()) {
+    if (!habitTitle.trim()) {
       setError('Please fill in all fields');
-      return;
-    }
-
-    // format validation for a valid 24-hour time 
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (!timeRegex.test(reminderTime)) {
-      setError('Please enter a valid 24-hour time (e.g., 14:30)');
       return;
     }
 
     setLoading(true);
     setError('');
 
-    //check if user is authenticated before allowing update
     const user = auth.currentUser;
     if (!user) {
       console.error('No authenticated user found');
+      setLoading(false);
       return;
     }
     const token = await user.getIdToken();
-    if (!habitTitle.trim() || !reminderTime.trim()) return;
+    
+    // Format the Date object into a 24-hour string for the backend
+    const formattedTime = `${reminderTime.getHours().toString().padStart(2, '0')}:${reminderTime.getMinutes().toString().padStart(2, '0')}`;
+
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/${habit.ID}`, {
+      const res = await fetch(`${API_BASE_URL}/api/habits/${habit.ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ title: habitTitle.trim(), reminderTime: reminderTime.trim(), routineID: selectedRoutineId }),
+        body: JSON.stringify({ 
+          title: habitTitle.trim(), 
+          reminderTime: formattedTime, 
+          routineID: selectedRoutineId 
+        }),
       });
       if (!res.ok) throw new Error('Update failed');
+      
       setHabitTitle('');
-      setReminderTime('');
-      const updated = await res.json();
       navigation.navigate('Home', { 
         screen: 'Dashboard',
-        params: {
-          successMessage: 'Habit updated successfully!'
-        }
+        params: { successMessage: 'Habit updated successfully!' }
       });
     } catch (err) {
       console.error('Error updating habit', err);
-    }finally {
+      setError('Failed to update habit');
+    } finally {
       setLoading(false);
     }
   };
 
-  //New habit creation
+  // New habit creation
   const handleCreateHabit = async () => {
-    // input validation
-    if (!habitTitle.trim() || !reminderTime.trim()) {
+    if (!habitTitle.trim()) {
       setError('Please fill in all fields');
-      return;
-    }
-
-    // format validation for a valid 24-hour time 
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (!timeRegex.test(reminderTime)) {
-      setError('Please enter a valid 24-hour time (e.g., 14:30)');
       return;
     }
 
     setLoading(true);
     setError('');
 
-    // map data to backend variables
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      setLoading(false);
+      return;
+    }
+    const token = await user.getIdToken();
+
+    // Format the Date object into a 24-hour string for the backend
+    const formattedTime = `${reminderTime.getHours().toString().padStart(2, '0')}:${reminderTime.getMinutes().toString().padStart(2, '0')}`;
+
     const newHabitPayload = {
-      title: habitTitle,
-      reminderTime: reminderTime,
+      title: habitTitle.trim(),
+      reminderTime: formattedTime,
       routineID: selectedRoutineId,
-      // hardcoded for DEMO
       accountID: 1  
     };
 
     try {
-      // send POST request to Express server
-      const response = await fetch('http://localhost:5000/api/habits', {
+      const response = await fetch(`${API_BASE_URL}/api/habits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer valid-firebase-token' 
+          'Authorization': `Bearer ${token}` 
         },
         body: JSON.stringify(newHabitPayload),
       });
 
       const jsonResponse = await response.json();
 
-      // handle backend response
       if (response.status === 201) {
-        // clear form and navigate back to the Home on success
         setHabitTitle('');
-        setReminderTime('');
         navigation.navigate('Home', { 
           screen: 'Dashboard',
-          params: {
-            successMessage: 'Habit added successfully!'
-          }
+          params: { successMessage: 'Habit added successfully!' }
         }); 
       } else {
         setError(jsonResponse.error || 'Failed to create habit');
@@ -157,21 +163,19 @@ export default function HabitSettingsScreen() {
               style={styles.input}
             />
 
-            <TextInput
-              label="Reminder Time"
-              placeholder={isEditing ? habit.reminderTime : "e.g., 08:00 AM"}
-              value={reminderTime}
-              onChangeText={setReminderTime}
-              mode="outlined"
-              style={styles.input}
+            {/* Custom Reminder Time Picker Injected Here */}
+            <ReminderTimePicker 
+              initialTime={reminderTime} 
+              onTimeChange={(newTime) => setReminderTime(newTime)} 
             />
 
-            <Text style={{ marginBottom: 8 }}>Assign to Routine:</Text>
+            <Text style={{ marginBottom: 8, marginTop: 16 }}>Assign to Routine:</Text>
             <Button
               mode={selectedRoutineId === 0 ? "contained" : "outlined"}
               onPress={() => setSelectedRoutineId(0)}
               style={styles.routineButton}
-            >{'No Routine'}
+            >
+              {'No Routine'}
             </Button>
             {routines && routines.map((routine) => (
               <Button
@@ -183,7 +187,6 @@ export default function HabitSettingsScreen() {
                 {routine.title}
               </Button>
             ))}
-
 
             {error ? <HelperText type="error" visible={true}>{error}</HelperText> : null}
 
@@ -212,42 +215,14 @@ export default function HabitSettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  content: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    textAlign: 'center',
-    marginBottom: 32,
-    color: '#666',
-  },
-  input: {
-    marginBottom: 16,
-  },
-  routineButton: {
-    marginBottom: 8,
-  },
-  button: {
-    marginTop: 16,
-    paddingVertical: 6,
-  },
-  linkButton: {
-    marginTop: 16,
-  },
+  mainContainer: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1 },
+  scrollContent: { flexGrow: 1, justifyContent: 'center' },
+  content: { padding: 20 },
+  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
+  subtitle: { textAlign: 'center', marginBottom: 32, color: '#666' },
+  input: { marginBottom: 16 },
+  routineButton: { marginBottom: 8 },
+  button: { marginTop: 16, paddingVertical: 6 },
+  linkButton: { marginTop: 16 },
 });

@@ -4,9 +4,9 @@ import { TextInput, Button, Text, HelperText, Appbar } from 'react-native-paper'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth } from '../config/firebase';
+import { API_BASE_URL } from '../config/API_base_url';
 
-export default function PlanSettingsScreens() {
-
+export default function RoutineSettingsScreen() {
   const route = useRoute();
   const { isEditing, routine } = route.params as { isEditing: boolean; routine: any };
 
@@ -15,9 +15,8 @@ export default function PlanSettingsScreens() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<any>>();
 
-  //Habit update
+  // Routine update
   const handleUpdateRoutine = async () => {
-    // input validation
     if (!routineTitle.trim()) {
       setError('Please fill in all fields');
       return;
@@ -26,39 +25,42 @@ export default function PlanSettingsScreens() {
     setLoading(true);
     setError('');
 
-    //check if user is authenticated before allowing update
     const user = auth.currentUser;
     if (!user) {
       console.error('No authenticated user found');
+      setLoading(false);
       return;
     }
     const token = await user.getIdToken();
+    
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/routines/${routine.ID}`, {
+      const res = await fetch(`${API_BASE_URL}/api/habits/routines/${routine.ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title: routineTitle.trim() }),
       });
+      
       if (!res.ok) throw new Error('Update failed');
-      setRoutineTitle('');
       const updated = await res.json();
+      setRoutineTitle('');
+      
       navigation.navigate('Home', { 
         screen: 'Dashboard',
         params: {
-        updatedRoutine: updated.routineId,
-        successMessage: 'Routine updated successfully!'
+          updatedRoutine: updated.routineId,
+          successMessage: 'Routine updated successfully!'
         },
       });
     } catch (err) {
       console.error('Error updating routine', err);
-    }finally {
+      setError('Failed to update routine');
+    } finally {
       setLoading(false);
     }
   };
 
-  //New routine creation
+  // New routine creation
   const handleCreateRoutine = async () => {
-    // input validation
     if (!routineTitle.trim()) {
       setError('Please fill in all fields');
       return;
@@ -67,30 +69,33 @@ export default function PlanSettingsScreens() {
     setLoading(true);
     setError('');
 
-    // map data to backend variables
     const newRoutinePayload = {
       title: routineTitle.trim(),
       ID: Date.now(),
-      // hardcoded for DEMO
       accountID: 1  
     };
 
     try {
-      // send POST request to Express server
-      const response = await fetch('http://localhost:5000/api/habits/routines', {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error('No authenticated user found');
+        setLoading(false);
+        return;
+      }
+      const token = await user.getIdToken();
+
+      const response = await fetch(`${API_BASE_URL}/api/habits/routines`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer valid-firebase-token' 
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(newRoutinePayload),
       });
 
       const jsonResponse = await response.json();
 
-      // handle backend response
       if (response.status === 201) {
-        // clear form and navigate back to the Dashboard on success
         setRoutineTitle('');
         navigation.navigate('Home', { 
             screen: 'Dashboard',
@@ -150,7 +155,7 @@ export default function PlanSettingsScreens() {
             >
               Save Routine
             </Button>
-            
+
             <Button
               mode="text"
               onPress={() => navigation.goBack()}
@@ -166,39 +171,13 @@ export default function PlanSettingsScreens() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  content: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    textAlign: 'center',
-    marginBottom: 32,
-    color: '#666',
-  },
-  input: {
-    marginBottom: 16,
-  },
-  button: {
-    marginTop: 16,
-    paddingVertical: 6,
-  },
-  linkButton: {
-    marginTop: 16,
-  },
+  mainContainer: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1 },
+  scrollContent: { flexGrow: 1, justifyContent: 'center' },
+  content: { padding: 20 },
+  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
+  subtitle: { textAlign: 'center', marginBottom: 32, color: '#666' },
+  input: { marginBottom: 16 },
+  button: { marginTop: 16, paddingVertical: 6 },
+  linkButton: { marginTop: 16 },
 });

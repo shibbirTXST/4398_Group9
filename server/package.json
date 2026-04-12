@@ -5,23 +5,29 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "npm --prefix .. run test:server"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
+    "expo-server-sdk": "^6.1.0",
     "express": "^5.2.1",
     "firebase-admin": "^13.7.0",
+    "node-cron": "^4.2.1",
     "pg": "^8.19.0",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
-    "jest": "^30.2.0",
+    "cross-env": "^10.1.0",
+    "jest": "^30.3.0",
     "nodemon": "^3.1.14",
+    "prisma": "^7.7.0",
     "supertest": "^7.2.2"
   }
 }

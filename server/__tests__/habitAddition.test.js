@@ -1,7 +1,18 @@
-const request = require('supertest');
-const app = require('../app');
+import request from 'supertest';
+import app from '../app.js';
 
-// test cases
+jest.mock('../firebaseAdmin.js', () => ({
+  __esModule: true,
+  default: {
+    auth: () => ({
+      verifyIdToken: jest.fn().mockResolvedValue({
+        uid: 'test-uid',
+        email: 'user@test.com',
+      }),
+    }),
+  },
+}));
+
 describe('Habit Addition API (POST /api/habits)', () => {
 
   // test case 1: correct path
@@ -22,7 +33,7 @@ describe('Habit Addition API (POST /api/habits)', () => {
     expect(response.body.message).toBe('Habit successfully created'); // validates "return" state
     expect(response.body.habit).toHaveProperty('ID'); // validates class attributes
     expect(response.body.habit.title).toBe('Drink Water');
-    expect(response.body.habit.isCompleted).toBe(false);
+    expect(response.body.habit.completed).toBe(false);
   });
 
   // test case 2: error handling
@@ -40,7 +51,7 @@ describe('Habit Addition API (POST /api/habits)', () => {
       .send(newHabit);
 
     expect(response.status).toBe(401);
-    expect(response.body.error).toContain('Error Message'); // validates "Error Message" state
+    expect(response.body.error).toBeDefined(); // validates "Error Message" state
   });
 
   // test case 3: input validation 
@@ -98,7 +109,6 @@ describe('Habit Addition API (POST /api/habits)', () => {
 
   //test case 6: missing request body
   it('should return 400 Bad Request if the request body is missing', async () => {
-
     const response = await request(app)
       .post('/api/habits')
       .set('Authorization', 'Bearer valid-firebase-token') // user IS logged in

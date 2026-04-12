@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  userId        Int       @id @default(autoincrement())
+  firebaseUid   String    @unique // Maps from VARCHAR, unique identifier from Firebase
+  username      String // Maps from VARCHAR
+  email         String    @unique
+  createdAt     DateTime  @default(now()) // Maps from TIMESTAMP
+  profilePicUrl DateTime? // Corresponds to TIMESTAMP? or perhaps should be String?
+  activeStatus  DateTime? // Corresponds to TIMESTAMP?
+  pushToken     String? // users might click "Deny" when the app asks for notification permissions
+
+  // Relations
+  habits   Habit[]
+  routines Routine[]
+}
+
+model Habit {
+  habitId       Int      @id @default(autoincrement())
+  userId        Int // Foreign Key
+  habitName     String
+  description   String?
+  targetGoal    String?
+  goalUnit      String? // Maps from GOALINIT
+  frequencyType String // e.g., 'Daily', 'Weekly'
+  createdAt     DateTime @default(now())
+  status        String // e.g., 'Active', 'Archived'
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  logs          Log[]
+  reminders     Reminder[]
+  routineHabits RoutineHabit[]
+}
+
+model Routine {
+  routineId   Int      @id @default(autoincrement())
+  userId      Int // Foreign Key
+  routineName String
+  description String?
+  targetTime  String? // e.g., 'Morning', 'Evening'
+  createdAt   DateTime @default(now())
+  status      String // e.g., 'Active', 'Archived'
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  routineHabits RoutineHabit[]
+}
+
+model Log {
+  logId            Int       @id @default(autoincrement())
+  habitId          Int // Foreign Key
+  logDate          DateTime
+  completionStatus Json? // Maps from Boolean/Value (Flexible field)
+  notes            DateTime? // Check image: Notes are listed as TIMESTAMP? Typically it's String.
+  createdAt        DateTime  @default(now())
+
+  // Relations
+  habit Habit @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
+}
+
+model Reminder {
+  reminderId    Int     @id @default(autoincrement())
+  habitId       Int // Foreign Key
+  reminderTime  String? // Maps from (vARCHARRunday) - Non-standard format?
+  daysOfWeek    Json? // Maps from BITMASK/JSON
+  enabledStatus Boolean @default(true)
+
+  // Relations
+  habit Habit @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
+}
+
+// Explicit Join Table for many-to-many relation between Routine and Habit
+model RoutineHabit {
+  routineHabit_id Int      @id @default(autoincrement())
+  routineId       Int // Foreign Key
+  habitId         Int // Foreign Key
+  orderIndex      Int
+  createdAt       DateTime @default(now())
+
+  // Relations
+  routine Routine @relation(fields: [routineId], references: [routineId], onDelete: Cascade)
+  habit   Habit   @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
+}
