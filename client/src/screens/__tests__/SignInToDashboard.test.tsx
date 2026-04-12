@@ -17,12 +17,12 @@ jest.mock('firebase/auth', () => ({
 }));
 
 describe('Sign In to Dashboard Flow', () => {
-  let authStateCallback;
+  let authStateCallback: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((auth, callback: any) => {
       authStateCallback = callback;
       callback(null); // Initial state: logged out
       return jest.fn(); // unsubscribe
@@ -37,7 +37,7 @@ describe('Sign In to Dashboard Flow', () => {
 
     mockSignInWithEmailAndPassword.mockResolvedValue({
       user: { uid: '123', email: 'test@example.com' },
-    });
+    } as any);
 
     // Use the destructured method
     const inputs = getAllByTestId('text-input-outlined');
