@@ -3,25 +3,31 @@ import { StyleSheet, View } from 'react-native';
 import { MD3LightTheme as DefaultTheme, PaperProvider, Text, List } from 'react-native-paper';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { auth } from '../config/firebase';
 
 export default function ProgressScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const [habits, setHabits] = React.useState([
-    { id: '1', title: 'Drink Water', completed: false, count: 1 },
-    { id: '2', title: 'Read for 30 mins', completed: true, count: 1 },
-    { id: '3', title: 'Exercise', completed: false, count: 0 },
-  ]);
+  const [habits, setHabits] = React.useState<any[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       // load habits from API
       const load = async () => {
         try {
-          const res = await fetch('http://localhost:5000/api/habits');
+          const tok = await auth.currentUser?.getIdToken();
+          const res = await fetch('http://localhost:5000/api/habits', {
+            headers: { 'Authorization': `Bearer ${tok}` }
+          });
           if (!res.ok) throw new Error('Failed to fetch habits');
           const data = await res.json();
-          // ensure ids are strings for list keys
-          setHabits(data.map((h: any) => ({ ...h, id: String(h.id) })));
+          console.log('Loaded habits:', data);
+          setHabits(
+            data.map((h: any) => ({
+              ...h,
+              completed: Boolean(h.completed),
+            }))
+          );
         } catch (err) {
           console.warn('Could not load habits:', err);
         }
@@ -40,7 +46,7 @@ export default function ProgressScreen() {
             {habits.map((habit) => (
               <List.Item
                 key={habit.id}
-                title={habit.title}
+                title={habit.habitName}
                 right={props => (
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text {...props}>Longest Streak: 0 days</Text>
