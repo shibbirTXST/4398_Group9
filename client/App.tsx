@@ -15,6 +15,7 @@ import ProgressScreen from './src/screens/ProgressScreen';
 import { View } from 'react-native';
 import RoutineSettingsScreen from './src/screens/RoutineSettingsScreen';
 import { ComponentProps } from 'react';
+import { API_BASE_URL } from './src/config/API_base_url';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -59,7 +60,7 @@ function HomeAppbar({ route, navigation }: any) {
 
       const token = await user.getIdToken();
 
-      const res = await fetch("http://localhost:5000/api/delete-account", {
+      const res = await fetch(`${API_BASE_URL}/api/delete-account`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
