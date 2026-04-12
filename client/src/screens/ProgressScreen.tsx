@@ -25,7 +25,9 @@ export default function ProgressScreen() {
           setHabits(
             data.map((h: any) => ({
               ...h,
-              completed: Boolean(h.completed),
+              id: String(h.habitId),
+              maxStreak: h.maxStreak ?? 0,
+              currentStreak: h.currentStreak ?? 0,
             }))
           );
         } catch (err) {
@@ -45,12 +47,12 @@ export default function ProgressScreen() {
             
             {habits.map((habit) => (
               <List.Item
-                key={habit.id}
+                key={habit.habitId}
                 title={habit.habitName}
                 right={props => (
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text {...props}>Longest Streak: 0 days</Text>
-                    <Text {...props}>Current Streak: 0 days</Text>
+                    <Text {...props}>Longest Streak: {habit.maxStreak} days</Text>
+                    <Text {...props}>Current Streak: {habit.currentStreak} days</Text>
                   </View>
                 )}
                 style={styles.habitItem}

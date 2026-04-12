@@ -35,10 +35,30 @@ export default function DashboardScreen({ route, navigation }: any) {
     }
   }, [route.params?.newHabit]);
 
-  const toggleHabit = (id: string) => {
-    setHabits(habits.map(h => 
-      h.id === id ? { ...h, completed: !h.completed, count: 1-h.count } : h
-    ));
+  const completeHabit = async (id: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
+    const habit = habits.find(h => String(h.habitId) === String(id));
+    if (!habit || habit.completed) return;
+
+    setHabits(habits.map(h => String(h.habitId) === String(id) ? { ...h, completed: true } : h));
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/habits/comp/${id}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to update habit');
+      const updated = await res.json();
+      setHabits(prev => prev.map(h => String(h.habitId) === String(updated.habitId) ? updated : h));
+    } catch (err) {
+      console.warn('Could not update habit:', err);
+      setHabits(prev => prev.map(h => String(h.habitId) === String(id) ? habit : h));
+    }
   };
 
   React.useEffect(() => {

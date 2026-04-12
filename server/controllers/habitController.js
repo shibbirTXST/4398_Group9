@@ -3,14 +3,17 @@ export let routines = [
   { ID: 1, title: 'Morning Routine' }
 ];
 
-export let habits = [
-  { ID: 1, title: 'Drink Water', completed: false, count: 0, reminderTime: '08:00', routineID: 1 },
-  { ID: 2, title: 'Read for 30 mins', completed: true, count: 1, reminderTime: '18:00', routineID: 0 },
-  { ID: 3, title: 'Exercise', completed: false, count: 0, reminderTime: '19:00', routineID: 1 },
-];
-
-const getHabits = (req, res) => {
-  res.status(200).json(habits);
+const habitSelect = {
+  habitId: true,
+  habitName: true,
+  description: true,
+  targetGoal: true,
+  goalUnit: true,
+  status: true,
+  frequencyType: true,
+  createdAt: true,
+  currentStreak: true,
+  maxStreak: true,
 };
 
 const getRoutines = (req, res) => {
@@ -144,6 +147,55 @@ const deleteRoutine = (req, res) => {
   
   res.status(200).json({ message: 'Routine deleted' });
 };
+const completeHabit = async (req, res) => {
+  const habitId = parseInt(req.params.id);
+
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const existingLog = await db.log.findFirst({
+      where: {
+        habitId,
+        logDate: { gte: startOfDay },
+        completionStatus: true,
+      },
+    });
+
+    if (existingLog) {
+      return res.status(400).json({ error: 'Habit already completed today' });
+    }
+
+    const habit = await db.habit.findUnique({ where: { habitId } });
+    if (!habit) return res.status(404).json({ error: 'Habit not found' });
+
+    const newStreak = habit.currentStreak + 1;
+    const newMaxStreak = Math.max(newStreak, habit.maxStreak);
+
+    const [log, updatedHabit] = await db.$transaction([
+      db.log.create({
+        data: {
+          habitId,
+          logDate: new Date(),
+          completionStatus: true,
+        },
+      }),
+      db.habit.update({
+        where: { habitId },
+        data: {
+          currentStreak: newStreak,
+          maxStreak: newMaxStreak,
+        },
+      }),
+    ]);
+
+    res.json({ ...updatedHabit, completed: true });
+  } catch (err) {
+    console.error('Error updating habit:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 const updateRoutine = (req, res) => {
   if (!req.headers.authorization) {
@@ -162,3 +214,4 @@ const updateRoutine = (req, res) => {
 };
 
 export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine };
+export { getHabits, createHabit, deleteHabit, updateHabit, completeHabit };

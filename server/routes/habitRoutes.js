@@ -12,10 +12,12 @@ import {
 } from '../controllers/habitController.js';
 
 const habitRouter = express.Router();
+import { getHabits, createHabit, deleteHabit, updateHabit, completeHabit } from '../controllers/habitController.js';
 
 // --- HABIT ROUTES ---
 habitRouter.get('/', authCheck, getHabits);
 habitRouter.post('/', authCheck, createHabit);
+habitRouter.put('/comp/:id', authCheck, completeHabit);
 habitRouter.put('/:id', authCheck, updateHabit);
 habitRouter.delete('/:id', authCheck, deleteHabit);
 
