@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { API_BASE_URL } from '../config/API_base_url';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ export default function SignInScreen() {
   const checkFirstSignIn = async (user: any) => {
     try {
       const tok = await user.getIdToken();
-      await fetch('http://localhost:5000/api/auth/sync', {
+      await fetch(`${API_BASE_URL}/api/auth/sync`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

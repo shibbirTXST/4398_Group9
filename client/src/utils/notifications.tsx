@@ -45,7 +45,7 @@ export async function registerForPushNotificationsAsync(): Promise<PushTokenResu
 
       // Generate the actual string token to save to the database
       token = (await Notifications.getExpoPushTokenAsync({
-        projectId,
+        projectId: 'Habit-tracker-app',
       })).data;
       
       console.log("Successfully generated Expo Push Token:", token);
