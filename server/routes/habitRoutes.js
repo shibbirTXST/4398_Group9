@@ -8,11 +8,11 @@ import {
   updateHabit, 
   createRoutine, 
   deleteRoutine, 
-  updateRoutine 
+  updateRoutine,
+  completeHabit,
 } from '../controllers/habitController.js';
 
 const habitRouter = express.Router();
-import { getHabits, createHabit, deleteHabit, updateHabit, completeHabit } from '../controllers/habitController.js';
 
 // --- HABIT ROUTES ---
 habitRouter.get('/', authCheck, getHabits);

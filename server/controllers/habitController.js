@@ -72,6 +72,10 @@ const getRoutines = async (req, res) => {
   res.status(200).json(rows.map(routineToDto));
 };
 
+const getRoutines = (req, res) => {
+  res.status(200).json(routines);
+};
+
 // --- HABIT CONTROLLERS ---
 const createHabit = async (req, res) => {
   const user = await requireDbUser(req, res);
