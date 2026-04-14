@@ -48,7 +48,7 @@ export default function DashboardScreen({ route, navigation }: any) {
     setHabits(prev => prev.map(h => String(h.habitId) === String(id) ? { ...h, completed: true } : h));
 
     try {
-      const res = await fetch(`http://localhost:5000/api/habits/comp/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/habits/comp/${id}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
       });

@@ -5,6 +5,16 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
+import { API_BASE_URL } from '../config/API_base_url';
+
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#6200ee',
+    secondary: '#03dac6',
+  },
+};
 
 export default function ProgressScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -18,7 +28,7 @@ export default function ProgressScreen() {
         setLoading(true);
         try {
           const tok = await auth.currentUser?.getIdToken();
-          const res = await fetch('http://localhost:5000/api/habits', {
+          const res = await fetch(`${API_BASE_URL}/api/habits/`, {
             headers: { 'Authorization': `Bearer ${tok}` }
           });
           if (!res.ok) throw new Error('Failed to fetch habits');

@@ -1,6 +1,15 @@
+import db from '../db/db.js';
+import { upsertUserFromDecodedToken } from '../utils/resolveUser.js';
+
 // Exporting the arrays so your Notification Cron Job can import and read them!
 export let routines = [
   { ID: 1, title: 'Morning Routine' }
+];
+
+export let habits = [
+  { ID: 1, title: 'Drink Water', completed: false, count: 0, reminderTime: '08:00', routineID: 1 },
+  { ID: 2, title: 'Read for 30 mins', completed: true, count: 1, reminderTime: '18:00', routineID: 0 },
+  { ID: 3, title: 'Exercise', completed: false, count: 0, reminderTime: '19:00', routineID: 1 },
 ];
 
 const habitSelect = {
@@ -23,7 +32,7 @@ const getHabits = async (req, res) => {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    const habits = await db.habit.findMany({
+    const selection = await db.habit.findMany({
       where: { userId: user.userId },
       select: {
         ...habitSelect,
@@ -37,17 +46,21 @@ const getHabits = async (req, res) => {
       },
     });
 
-    const result = habits.map(h => ({
+    const habits = selection.map(h => ({
       ...h,
       completed: h.logs.length > 0,
       logs: undefined,
     }));
 
-    res.status(200).json(result);
+    res.status(200).json(habits);
   } catch (error) {
     console.error('Error fetching habits:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+};
+
+const getRoutines = (req, res) => {
+  res.status(200).json(routines);
 };
 
 // --- HABIT CONTROLLERS ---
@@ -243,5 +256,4 @@ const updateRoutine = (req, res) => {
   res.status(200).json({ message: 'Routine successfully updated' });
 };
 
-export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine };
-export { getHabits, createHabit, deleteHabit, updateHabit, completeHabit };
+export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, completeHabit, createRoutine, deleteRoutine, updateRoutine };
