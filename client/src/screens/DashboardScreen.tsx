@@ -42,10 +42,10 @@ export default function DashboardScreen({ route, navigation }: any) {
       return;
     }
     const token = await user.getIdToken();
-    const habit = habits.find(h => String(h.habitId) === String(id));
+    const habit = habits.find(h => String(h.ID) === String(id));
     if (!habit || habit.completed) return;
 
-    setHabits(prev => prev.map(h => String(h.habitId) === String(id) ? { ...h, completed: true } : h));
+    setHabits(prev => prev.map(h => String(h.ID) === String(id) ? { ...h, completed: true } : h));
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/habits/comp/${id}`, {
@@ -59,10 +59,10 @@ export default function DashboardScreen({ route, navigation }: any) {
 
       if (!res.ok) throw new Error('Failed to update habit');
       const updated = await res.json();
-      setHabits(prev => prev.map(h => String(h.habitId) === String(updated.habitId) ? updated : h));
+      setHabits(prev => prev.map(h => String(h.ID) === String(updated.ID) ? updated : h));
     } catch (err) {
       console.warn('Could not update habit:', err);
-      setHabits(prev => prev.map(h => String(h.habitId) === String(id) ? habit : h));
+      setHabits(prev => prev.map(h => String(h.ID) === String(id) ? habit : h));
     }
   };
 
@@ -199,7 +199,7 @@ export default function DashboardScreen({ route, navigation }: any) {
                         {...props}
                         icon={habit.completed ? "check-circle" : "circle-outline"}
                         iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                        onPress={() => toggleHabit(habit.ID)}
+                        onPress={() => completeHabit(habit.ID)}
                       />
                     )}
                     right={(props) => (
@@ -255,7 +255,7 @@ export default function DashboardScreen({ route, navigation }: any) {
                         {...props}
                         icon={habit.completed ? "check-circle" : "circle-outline"}
                         iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                        onPress={() => toggleHabit(habit.ID)}
+                        onPress={() => completeHabit(habit.ID)}
                       />
                     )}
                     right={(props) => (

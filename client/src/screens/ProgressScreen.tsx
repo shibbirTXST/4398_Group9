@@ -16,15 +16,6 @@ const theme = {
   },
 };
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#6200ee',
-    secondary: '#03dac6',
-  },
-};
-
 export default function ProgressScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const [loading, setLoading] = useState(false);
@@ -75,8 +66,8 @@ export default function ProgressScreen() {
             ) : (
               habits.map((habit) => (
                 <List.Item
-                  key={habit.habitId}
-                  title={habit.habitName}
+                  key={habit.ID}
+                  title={habit.title}
                   right={props => (
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <Text {...props}>Longest Streak: {formatDays(habit.maxStreak)}</Text>
