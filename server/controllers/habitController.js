@@ -13,23 +13,41 @@ async function requireDbUser(req, res) {
   return user;
 }
 
+function getTodayRange() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+}
+
 /** Map Prisma habit (+ relations) to the JSON shape the mobile client expects. */
 function habitToDto(habit) {
   const reminder = habit.reminders?.[0];
   const link = habit.routineHabits?.[0];
+
+  const { start, end } = getTodayRange();
+
+  const completedToday = habit.logs.length > 0;
+
   return {
     ID: String(habit.habitId),
     title: habit.habitName,
-    completed: false,
-    count: 0,
+    completed: completedToday,
+    count: completedToday ? 1 : 0,
     reminderTime: reminder?.reminderTime ?? '09:00',
     routineID: link ? link.routineId : 0,
+    maxStreak: habit.maxStreak,
+    currentStreak: habit.currentStreak,
   };
 }
 
 const habitInclude = {
   reminders: true,
   routineHabits: { include: { routine: true } },
+  logs: true,
 };
 
 /** Normalize to HH:mm so the reminder cron (server/jobs/reminder.js) can match the current minute. */
@@ -53,9 +71,23 @@ const getHabits = async (req, res) => {
   const user = await requireDbUser(req, res);
   if (!user) return;
 
+  const { start, end } = getTodayRange();
+
   const rows = await db.habit.findMany({
     where: { userId: user.userId, status: 'Active' },
-    include: habitInclude,
+     include: {
+      reminders: true,
+      routineHabits: { include: { routine: true } },
+      logs: {
+        where: {
+          logDate: {
+            gte: start,
+            lte: end,
+          },
+          completionStatus: true,
+        },
+      },
+    },
     orderBy: { habitId: 'asc' },
   });
   res.status(200).json(rows.map(habitToDto));
@@ -303,17 +335,25 @@ const deleteRoutine = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete routine' });
   }
 };
+
 const completeHabit = async (req, res) => {
-  const habitId = parseInt(req.params.id);
+  const user = await requireDbUser(req, res);
+  if (!user) return;
+
+  const id = req.params.ID || req.params.id;
+  if (isNaN(parseInt(id, 10))) {
+    return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
+  }
+
+  const habitId = parseInt(id, 10);
 
   try {
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const { start } = getTodayRange;
 
     const existingLog = await db.log.findFirst({
       where: {
         habitId,
-        logDate: { gte: startOfDay },
+        logDate: { gte: start },
         completionStatus: true,
       },
     });

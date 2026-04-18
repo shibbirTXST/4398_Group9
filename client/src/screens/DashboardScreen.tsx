@@ -122,12 +122,6 @@ export default function DashboardScreen({ route, navigation }: any) {
     })();
   }, []);
 
-  const toggleHabit = (ID: string) => {
-    setHabits(habits.map(h =>
-      h.ID === ID ? { ...h, completed: !h.completed, count: 1 - h.count } : h
-    ));
-  };
-
   const habitsByRoutine = React.useMemo(() => {
     return habits.reduce((acc, habit) => {
       const routineId = habit.routineID || 0; // Default of 0 for unassigned

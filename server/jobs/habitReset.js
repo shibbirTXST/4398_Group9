@@ -2,9 +2,11 @@ import cron from 'node-cron';
 import db from '../db/db.js';
 
 export const resetHabitsCronJob = () => {
-    cron.schedule('7 15 * * *', async () => {
+    cron.schedule('59 23 * * *', async () => {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999)
 
     try {
         // Find all active habits that were NOT completed today
@@ -13,7 +15,10 @@ export const resetHabitsCronJob = () => {
             status: 'Active',
             logs: {
                 none: {
-                    logDate: { gte: startOfDay },
+                    logDate: {
+                        gte: startOfDay,
+                        lte: endOfDay,
+                    },
                     completionStatus: true,
                 },
             },
