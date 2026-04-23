@@ -15,10 +15,10 @@ async function requireDbUser(req, res) {
 
 function getTodayRange() {
   const start = new Date();
-  start.setHours(0, 0, 0, 0);
+  start.setUTCHours(0, 0, 0, 0);
 
   const end = new Date();
-  end.setHours(23, 59, 59, 999);
+  end.setUTCHours(23, 59, 59, 999);
 
   return { start, end };
 }
@@ -28,9 +28,7 @@ function habitToDto(habit) {
   const reminder = habit.reminders?.[0];
   const link = habit.routineHabits?.[0];
 
-  const { start, end } = getTodayRange();
-
-  const completedToday = habit.logs.length > 0;
+  const completedToday = habit.logs?.length > 0;
 
   return {
     ID: String(habit.habitId),
@@ -68,29 +66,34 @@ function routineToDto(routine) {
 }
 
 const getHabits = async (req, res) => {
-  const user = await requireDbUser(req, res);
-  if (!user) return;
+  try {
+    const user = await requireDbUser(req, res);
+    if (!user) return;
 
-  const { start, end } = getTodayRange();
+    const { start, end } = getTodayRange();
 
-  const rows = await db.habit.findMany({
-    where: { userId: user.userId, status: 'Active' },
-     include: {
-      reminders: true,
-      routineHabits: { include: { routine: true } },
-      logs: {
-        where: {
-          logDate: {
-            gte: start,
-            lte: end,
+    const rows = await db.habit.findMany({
+      where: { userId: user.userId, status: 'Active' },
+      include: {
+        reminders: true,
+        routineHabits: { include: { routine: true } },
+        logs: {
+          where: {
+            logDate: {
+              gte: start,
+              lte: end,
+            },
+            completionStatus: true,
           },
-          completionStatus: true,
         },
       },
-    },
-    orderBy: { habitId: 'asc' },
-  });
-  res.status(200).json(rows.map(habitToDto));
+      orderBy: { habitId: 'asc' },
+    });
+    return res.status(200).json(rows.map(habitToDto));
+  } catch (err) {
+    console.error('Error fetching habits:', err);
+    return res.status(500).json({ error: 'Failed to fetch habits' });
+  }
 };
 
 const getRoutines = async (req, res) => {
@@ -337,58 +340,119 @@ const deleteRoutine = async (req, res) => {
 };
 
 const completeHabit = async (req, res) => {
-  const user = await requireDbUser(req, res);
-  if (!user) return;
-
-  const id = req.params.ID || req.params.id;
-  if (isNaN(parseInt(id, 10))) {
-    return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
-  }
-
-  const habitId = parseInt(id, 10);
-
   try {
-    const { start } = getTodayRange;
+    const user = await requireDbUser(req, res);
+    if (!user) return;
 
+    const habitId = Number(req.params.id);
+    if (!habitId) {
+      return res.status(400).json({ error: 'Invalid habit ID' });
+    }
+
+    // Verify habit belongs to user
+    const habit = await db.habit.findFirst({
+      where: {
+        habitId,
+        userId: user.userId,
+      },
+    });
+
+    if (!habit) {
+      return res.status(404).json({ error: 'Habit not found' });
+    }
+
+    const { start: startOfDay, end: endOfDay } = getTodayRange();
+
+    // ===== Prevent duplicate completion =====
     const existingLog = await db.log.findFirst({
       where: {
         habitId,
-        logDate: { gte: start },
-        completionStatus: true,
+        logDate: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
       },
     });
 
     if (existingLog) {
-      return res.status(400).json({ error: 'Habit already completed today' });
+      return res.status(400).json({ error: 'Already completed today' });
     }
 
-    const habit = await db.habit.findUnique({ where: { habitId } });
-    if (!habit) return res.status(404).json({ error: 'Habit not found' });
+    // ===== Create today's log =====
+    await db.log.create({
+      data: {
+        habitId,
+        logDate: new Date(),
+        completionStatus: true,
+      },
+    });
 
-    const newStreak = habit.currentStreak + 1;
-    const newMaxStreak = Math.max(newStreak, habit.maxStreak);
+    // ===== Fetch all completed logs (newest first) =====
+    const logs = await db.log.findMany({
+      where: {
+        habitId,
+        completionStatus: true,
+      },
+      orderBy: {
+        logDate: 'desc',
+      },
+    });
 
-    const [log, updatedHabit] = await db.$transaction([
-      db.log.create({
-        data: {
-          habitId,
-          logDate: new Date(),
-          completionStatus: true,
+    // ===== Calculate streak =====
+    const calculateStreak = (logs) => {
+      if (!logs.length) return 0;
+
+      let streak = 0;
+
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+
+      let currentDay = new Date(today);
+
+      for (const log of logs) {
+        const logDay = new Date(log.logDate);
+        logDay.setUTCHours(0, 0, 0, 0);
+
+        if (logDay.getTime() === currentDay.getTime()) {
+          streak++;
+          currentDay.setUTCDate(currentDay.getUTCDate() - 1);
+        } else if (logDay.getTime() < currentDay.getTime()) {
+          break; // gap → streak broken
+        }
+      }
+
+      return streak;
+    };
+
+    const newStreak = calculateStreak(logs);
+
+    // ===== Update habit =====
+    const updatedHabit = await db.habit.update({
+      where: { habitId },
+      data: {
+        currentStreak: newStreak,
+        maxStreak: Math.max(newStreak, habit.maxStreak),
+      },
+      include: {
+        reminders: true,
+        routineHabits: { include: { routine: true } },
+        logs: {
+          where: {
+            logDate: {
+              gte: startOfDay,
+              lte: endOfDay,
+            },
+            completionStatus: true,
+          },
         },
-      }),
-      db.habit.update({
-        where: { habitId },
-        data: {
-          currentStreak: newStreak,
-          maxStreak: newMaxStreak,
-        },
-      }),
-    ]);
+      },
+    });
 
-    res.json({ ...updatedHabit, completed: true });
+    return res.status(200).json(habitToDto(updatedHabit));
+
   } catch (err) {
-    console.error('Error updating habit:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error completing habit:', err);
+    return res.status(500).json({ error: 'Failed to complete habit' });
   }
 };
 
