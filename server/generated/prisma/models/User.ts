@@ -42,6 +42,7 @@ export type UserMinAggregateOutputType = {
   createdAt: Date | null
   profilePicUrl: Date | null
   activeStatus: Date | null
+  pushToken: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -52,6 +53,7 @@ export type UserMaxAggregateOutputType = {
   createdAt: Date | null
   profilePicUrl: Date | null
   activeStatus: Date | null
+  pushToken: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -62,6 +64,7 @@ export type UserCountAggregateOutputType = {
   createdAt: number
   profilePicUrl: number
   activeStatus: number
+  pushToken: number
   _all: number
 }
 
@@ -82,6 +85,7 @@ export type UserMinAggregateInputType = {
   createdAt?: true
   profilePicUrl?: true
   activeStatus?: true
+  pushToken?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -92,6 +96,7 @@ export type UserMaxAggregateInputType = {
   createdAt?: true
   profilePicUrl?: true
   activeStatus?: true
+  pushToken?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -102,6 +107,7 @@ export type UserCountAggregateInputType = {
   createdAt?: true
   profilePicUrl?: true
   activeStatus?: true
+  pushToken?: true
   _all?: true
 }
 
@@ -199,6 +205,7 @@ export type UserGroupByOutputType = {
   createdAt: Date
   profilePicUrl: Date | null
   activeStatus: Date | null
+  pushToken: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -232,6 +239,7 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   profilePicUrl?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   activeStatus?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  pushToken?: Prisma.StringNullableFilter<"User"> | string | null
   habits?: Prisma.HabitListRelationFilter
   routines?: Prisma.RoutineListRelationFilter
 }
@@ -244,6 +252,7 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   activeStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  pushToken?: Prisma.SortOrderInput | Prisma.SortOrder
   habits?: Prisma.HabitOrderByRelationAggregateInput
   routines?: Prisma.RoutineOrderByRelationAggregateInput
 }
@@ -259,6 +268,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   profilePicUrl?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   activeStatus?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  pushToken?: Prisma.StringNullableFilter<"User"> | string | null
   habits?: Prisma.HabitListRelationFilter
   routines?: Prisma.RoutineListRelationFilter
 }, "userId" | "firebaseUid" | "email">
@@ -271,6 +281,7 @@ export type UserOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   activeStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  pushToken?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -289,6 +300,7 @@ export type UserScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   profilePicUrl?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   activeStatus?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  pushToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
@@ -298,6 +310,7 @@ export type UserCreateInput = {
   createdAt?: Date | string
   profilePicUrl?: Date | string | null
   activeStatus?: Date | string | null
+  pushToken?: string | null
   habits?: Prisma.HabitCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
 }
@@ -310,6 +323,7 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   profilePicUrl?: Date | string | null
   activeStatus?: Date | string | null
+  pushToken?: string | null
   habits?: Prisma.HabitUncheckedCreateNestedManyWithoutUserInput
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
 }
@@ -321,6 +335,7 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   habits?: Prisma.HabitUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
 }
@@ -333,6 +348,7 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   habits?: Prisma.HabitUncheckedUpdateManyWithoutUserNestedInput
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -345,6 +361,7 @@ export type UserCreateManyInput = {
   createdAt?: Date | string
   profilePicUrl?: Date | string | null
   activeStatus?: Date | string | null
+  pushToken?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -354,6 +371,7 @@ export type UserUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -364,6 +382,7 @@ export type UserUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -374,6 +393,7 @@ export type UserCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrder
   activeStatus?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -388,6 +408,7 @@ export type UserMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrder
   activeStatus?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -398,6 +419,7 @@ export type UserMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   profilePicUrl?: Prisma.SortOrder
   activeStatus?: Prisma.SortOrder
+  pushToken?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -419,6 +441,10 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -464,6 +490,7 @@ export type UserCreateWithoutHabitsInput = {
   createdAt?: Date | string
   profilePicUrl?: Date | string | null
   activeStatus?: Date | string | null
+  pushToken?: string | null
   routines?: Prisma.RoutineCreateNestedManyWithoutUserInput
 }
 
@@ -475,6 +502,7 @@ export type UserUncheckedCreateWithoutHabitsInput = {
   createdAt?: Date | string
   profilePicUrl?: Date | string | null
   activeStatus?: Date | string | null
+  pushToken?: string | null
   routines?: Prisma.RoutineUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -501,6 +529,7 @@ export type UserUpdateWithoutHabitsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   routines?: Prisma.RoutineUpdateManyWithoutUserNestedInput
 }
 
@@ -512,6 +541,7 @@ export type UserUncheckedUpdateWithoutHabitsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   routines?: Prisma.RoutineUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -522,6 +552,7 @@ export type UserCreateWithoutRoutinesInput = {
   createdAt?: Date | string
   profilePicUrl?: Date | string | null
   activeStatus?: Date | string | null
+  pushToken?: string | null
   habits?: Prisma.HabitCreateNestedManyWithoutUserInput
 }
 
@@ -533,6 +564,7 @@ export type UserUncheckedCreateWithoutRoutinesInput = {
   createdAt?: Date | string
   profilePicUrl?: Date | string | null
   activeStatus?: Date | string | null
+  pushToken?: string | null
   habits?: Prisma.HabitUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -559,6 +591,7 @@ export type UserUpdateWithoutRoutinesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   habits?: Prisma.HabitUpdateManyWithoutUserNestedInput
 }
 
@@ -570,6 +603,7 @@ export type UserUncheckedUpdateWithoutRoutinesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   profilePicUrl?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   activeStatus?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   habits?: Prisma.HabitUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -621,6 +655,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   profilePicUrl?: boolean
   activeStatus?: boolean
+  pushToken?: boolean
   habits?: boolean | Prisma.User$habitsArgs<ExtArgs>
   routines?: boolean | Prisma.User$routinesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -634,6 +669,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   profilePicUrl?: boolean
   activeStatus?: boolean
+  pushToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -644,6 +680,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   profilePicUrl?: boolean
   activeStatus?: boolean
+  pushToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -654,9 +691,10 @@ export type UserSelectScalar = {
   createdAt?: boolean
   profilePicUrl?: boolean
   activeStatus?: boolean
+  pushToken?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "firebaseUid" | "username" | "email" | "createdAt" | "profilePicUrl" | "activeStatus", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "firebaseUid" | "username" | "email" | "createdAt" | "profilePicUrl" | "activeStatus" | "pushToken", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   habits?: boolean | Prisma.User$habitsArgs<ExtArgs>
   routines?: boolean | Prisma.User$routinesArgs<ExtArgs>
@@ -679,6 +717,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdAt: Date
     profilePicUrl: Date | null
     activeStatus: Date | null
+    pushToken: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1111,6 +1150,7 @@ export interface UserFieldRefs {
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly profilePicUrl: Prisma.FieldRef<"User", 'DateTime'>
   readonly activeStatus: Prisma.FieldRef<"User", 'DateTime'>
+  readonly pushToken: Prisma.FieldRef<"User", 'String'>
 }
     
 

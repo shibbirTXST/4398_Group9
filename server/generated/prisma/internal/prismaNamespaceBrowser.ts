@@ -82,7 +82,8 @@ export const UserScalarFieldEnum = {
   email: 'email',
   createdAt: 'createdAt',
   profilePicUrl: 'profilePicUrl',
-  activeStatus: 'activeStatus'
+  activeStatus: 'activeStatus',
+  pushToken: 'pushToken'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -97,7 +98,9 @@ export const HabitScalarFieldEnum = {
   goalUnit: 'goalUnit',
   frequencyType: 'frequencyType',
   createdAt: 'createdAt',
-  status: 'status'
+  status: 'status',
+  currentStreak: 'currentStreak',
+  maxStreak: 'maxStreak'
 } as const
 
 export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]

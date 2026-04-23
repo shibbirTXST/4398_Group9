@@ -37,6 +37,8 @@ model Habit {
   frequencyType String // e.g., 'Daily', 'Weekly'
   createdAt     DateTime @default(now())
   status        String // e.g., 'Active', 'Archived'
+  currentStreak Int      @default(0)
+  maxStreak     Int      @default(0)
 
   // Relations
   user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
@@ -63,8 +65,8 @@ model Log {
   logId            Int       @id @default(autoincrement())
   habitId          Int // Foreign Key
   logDate          DateTime
-  completionStatus Json? // Maps from Boolean/Value (Flexible field)
-  notes            DateTime? // Check image: Notes are listed as TIMESTAMP? Typically it's String.
+  completionStatus Boolean   @default(false)
+  notes            String?
   createdAt        DateTime  @default(now())
 
   // Relations

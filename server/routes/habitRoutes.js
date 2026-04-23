@@ -8,7 +8,8 @@ import {
   updateHabit, 
   createRoutine, 
   deleteRoutine, 
-  updateRoutine 
+  updateRoutine,
+  completeHabit,
 } from '../controllers/habitController.js';
 
 const habitRouter = express.Router();
@@ -16,6 +17,7 @@ const habitRouter = express.Router();
 // --- HABIT ROUTES ---
 habitRouter.get('/', authCheck, getHabits);
 habitRouter.post('/', authCheck, createHabit);
+habitRouter.put('/comp/:id', authCheck, completeHabit);
 habitRouter.put('/:id', authCheck, updateHabit);
 habitRouter.delete('/:id', authCheck, deleteHabit);
 

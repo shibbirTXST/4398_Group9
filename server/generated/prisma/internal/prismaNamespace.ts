@@ -899,7 +899,8 @@ export const UserScalarFieldEnum = {
   email: 'email',
   createdAt: 'createdAt',
   profilePicUrl: 'profilePicUrl',
-  activeStatus: 'activeStatus'
+  activeStatus: 'activeStatus',
+  pushToken: 'pushToken'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -914,7 +915,9 @@ export const HabitScalarFieldEnum = {
   goalUnit: 'goalUnit',
   frequencyType: 'frequencyType',
   createdAt: 'createdAt',
-  status: 'status'
+  status: 'status',
+  currentStreak: 'currentStreak',
+  maxStreak: 'maxStreak'
 } as const
 
 export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]
@@ -1057,6 +1060,13 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -1067,13 +1077,6 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 

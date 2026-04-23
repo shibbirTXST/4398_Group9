@@ -13,23 +13,39 @@ async function requireDbUser(req, res) {
   return user;
 }
 
+function getTodayRange() {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setUTCHours(23, 59, 59, 999);
+
+  return { start, end };
+}
+
 /** Map Prisma habit (+ relations) to the JSON shape the mobile client expects. */
 function habitToDto(habit) {
   const reminder = habit.reminders?.[0];
   const link = habit.routineHabits?.[0];
+
+  const completedToday = habit.logs?.length > 0;
+
   return {
     ID: String(habit.habitId),
     title: habit.habitName,
-    completed: false,
-    count: 0,
+    completed: completedToday,
+    count: completedToday ? 1 : 0,
     reminderTime: reminder?.reminderTime ?? '09:00',
     routineID: link ? link.routineId : 0,
+    maxStreak: habit.maxStreak,
+    currentStreak: habit.currentStreak,
   };
 }
 
 const habitInclude = {
   reminders: true,
   routineHabits: { include: { routine: true } },
+  logs: true,
 };
 
 /** Normalize to HH:mm so the reminder cron (server/jobs/reminder.js) can match the current minute. */
@@ -50,15 +66,34 @@ function routineToDto(routine) {
 }
 
 const getHabits = async (req, res) => {
-  const user = await requireDbUser(req, res);
-  if (!user) return;
+  try {
+    const user = await requireDbUser(req, res);
+    if (!user) return;
 
-  const rows = await db.habit.findMany({
-    where: { userId: user.userId, status: 'Active' },
-    include: habitInclude,
-    orderBy: { habitId: 'asc' },
-  });
-  res.status(200).json(rows.map(habitToDto));
+    const { start, end } = getTodayRange();
+
+    const rows = await db.habit.findMany({
+      where: { userId: user.userId, status: 'Active' },
+      include: {
+        reminders: true,
+        routineHabits: { include: { routine: true } },
+        logs: {
+          where: {
+            logDate: {
+              gte: start,
+              lte: end,
+            },
+            completionStatus: true,
+          },
+        },
+      },
+      orderBy: { habitId: 'asc' },
+    });
+    return res.status(200).json(rows.map(habitToDto));
+  } catch (err) {
+    console.error('Error fetching habits:', err);
+    return res.status(500).json({ error: 'Failed to fetch habits' });
+  }
 };
 
 const getRoutines = async (req, res) => {
@@ -304,6 +339,124 @@ const deleteRoutine = async (req, res) => {
   }
 };
 
+const completeHabit = async (req, res) => {
+  try {
+    const user = await requireDbUser(req, res);
+    if (!user) return;
+
+    const habitId = Number(req.params.id);
+    if (!habitId) {
+      return res.status(400).json({ error: 'Invalid habit ID' });
+    }
+
+    // Verify habit belongs to user
+    const habit = await db.habit.findFirst({
+      where: {
+        habitId,
+        userId: user.userId,
+      },
+    });
+
+    if (!habit) {
+      return res.status(404).json({ error: 'Habit not found' });
+    }
+
+    const { start: startOfDay, end: endOfDay } = getTodayRange();
+
+    // ===== Prevent duplicate completion =====
+    const existingLog = await db.log.findFirst({
+      where: {
+        habitId,
+        logDate: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    });
+
+    if (existingLog) {
+      return res.status(400).json({ error: 'Already completed today' });
+    }
+
+    // ===== Create today's log =====
+    await db.log.create({
+      data: {
+        habitId,
+        logDate: new Date(),
+        completionStatus: true,
+      },
+    });
+
+    // ===== Fetch all completed logs (newest first) =====
+    const logs = await db.log.findMany({
+      where: {
+        habitId,
+        completionStatus: true,
+      },
+      orderBy: {
+        logDate: 'desc',
+      },
+    });
+
+    // ===== Calculate streak =====
+    const calculateStreak = (logs) => {
+      if (!logs.length) return 0;
+
+      let streak = 0;
+
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+
+      let currentDay = new Date(today);
+
+      for (const log of logs) {
+        const logDay = new Date(log.logDate);
+        logDay.setUTCHours(0, 0, 0, 0);
+
+        if (logDay.getTime() === currentDay.getTime()) {
+          streak++;
+          currentDay.setUTCDate(currentDay.getUTCDate() - 1);
+        } else if (logDay.getTime() < currentDay.getTime()) {
+          break; // gap → streak broken
+        }
+      }
+
+      return streak;
+    };
+
+    const newStreak = calculateStreak(logs);
+
+    // ===== Update habit =====
+    const updatedHabit = await db.habit.update({
+      where: { habitId },
+      data: {
+        currentStreak: newStreak,
+        maxStreak: Math.max(newStreak, habit.maxStreak),
+      },
+      include: {
+        reminders: true,
+        routineHabits: { include: { routine: true } },
+        logs: {
+          where: {
+            logDate: {
+              gte: startOfDay,
+              lte: endOfDay,
+            },
+            completionStatus: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(habitToDto(updatedHabit));
+
+  } catch (err) {
+    console.error('Error completing habit:', err);
+    return res.status(500).json({ error: 'Failed to complete habit' });
+  }
+};
+
+
 const updateRoutine = async (req, res) => {
   const user = await requireDbUser(req, res);
   if (!user) return;
@@ -341,4 +494,4 @@ const updateRoutine = async (req, res) => {
   }
 };
 
-export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine };
+export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine, completeHabit };

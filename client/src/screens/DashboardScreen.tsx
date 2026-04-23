@@ -35,8 +35,39 @@ export default function DashboardScreen({ route, navigation }: any) {
     }
   }, [route.params?.newHabit]);
 
-  // Load routines and habits from API securely
-  useEffect(() => {
+  const completeHabit = async (id: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
+    const habit = habits.find(h => String(h.ID) === String(id));
+    if (!habit || habit.completed) return;
+
+    setHabits(prev => prev.map(h => String(h.ID) === String(id) ? { ...h, completed: true } : h));
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/habits/comp/${id}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (res.status === 400) {
+        return;
+      }
+
+      if (!res.ok) throw new Error('Failed to update habit');
+      const updated = await res.json();
+      setHabits(prev => prev.map(h => String(h.ID) === String(updated.ID) ? updated : h));
+    } catch (err) {
+      console.warn('Could not update habit:', err);
+      setHabits(prev => prev.map(h => String(h.ID) === String(id) ? habit : h));
+    }
+  };
+
+  React.useEffect(() => {
+    // load habits from API
     const load = async () => {
       try {
         const tok = await auth.currentUser?.getIdToken();
@@ -90,12 +121,6 @@ export default function DashboardScreen({ route, navigation }: any) {
       }
     })();
   }, []);
-
-  const toggleHabit = (ID: string) => {
-    setHabits(habits.map(h =>
-      h.ID === ID ? { ...h, completed: !h.completed, count: 1 - h.count } : h
-    ));
-  };
 
   const habitsByRoutine = React.useMemo(() => {
     return habits.reduce((acc, habit) => {
@@ -168,7 +193,7 @@ export default function DashboardScreen({ route, navigation }: any) {
                         {...props}
                         icon={habit.completed ? "check-circle" : "circle-outline"}
                         iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                        onPress={() => toggleHabit(habit.ID)}
+                        onPress={() => completeHabit(habit.ID)}
                       />
                     )}
                     right={(props) => (
@@ -224,7 +249,7 @@ export default function DashboardScreen({ route, navigation }: any) {
                         {...props}
                         icon={habit.completed ? "check-circle" : "circle-outline"}
                         iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                        onPress={() => toggleHabit(habit.ID)}
+                        onPress={() => completeHabit(habit.ID)}
                       />
                     )}
                     right={(props) => (

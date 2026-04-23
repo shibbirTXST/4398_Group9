@@ -40,7 +40,8 @@ export type LogMinAggregateOutputType = {
   logId: number | null
   habitId: number | null
   logDate: Date | null
-  notes: Date | null
+  completionStatus: boolean | null
+  notes: string | null
   createdAt: Date | null
 }
 
@@ -48,7 +49,8 @@ export type LogMaxAggregateOutputType = {
   logId: number | null
   habitId: number | null
   logDate: Date | null
-  notes: Date | null
+  completionStatus: boolean | null
+  notes: string | null
   createdAt: Date | null
 }
 
@@ -77,6 +79,7 @@ export type LogMinAggregateInputType = {
   logId?: true
   habitId?: true
   logDate?: true
+  completionStatus?: true
   notes?: true
   createdAt?: true
 }
@@ -85,6 +88,7 @@ export type LogMaxAggregateInputType = {
   logId?: true
   habitId?: true
   logDate?: true
+  completionStatus?: true
   notes?: true
   createdAt?: true
 }
@@ -189,8 +193,8 @@ export type LogGroupByOutputType = {
   logId: number
   habitId: number
   logDate: Date
-  completionStatus: runtime.JsonValue | null
-  notes: Date | null
+  completionStatus: boolean
+  notes: string | null
   createdAt: Date
   _count: LogCountAggregateOutputType | null
   _avg: LogAvgAggregateOutputType | null
@@ -221,8 +225,8 @@ export type LogWhereInput = {
   logId?: Prisma.IntFilter<"Log"> | number
   habitId?: Prisma.IntFilter<"Log"> | number
   logDate?: Prisma.DateTimeFilter<"Log"> | Date | string
-  completionStatus?: Prisma.JsonNullableFilter<"Log">
-  notes?: Prisma.DateTimeNullableFilter<"Log"> | Date | string | null
+  completionStatus?: Prisma.BoolFilter<"Log"> | boolean
+  notes?: Prisma.StringNullableFilter<"Log"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Log"> | Date | string
   habit?: Prisma.XOR<Prisma.HabitScalarRelationFilter, Prisma.HabitWhereInput>
 }
@@ -231,7 +235,7 @@ export type LogOrderByWithRelationInput = {
   logId?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   logDate?: Prisma.SortOrder
-  completionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  completionStatus?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   habit?: Prisma.HabitOrderByWithRelationInput
@@ -244,8 +248,8 @@ export type LogWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.LogWhereInput | Prisma.LogWhereInput[]
   habitId?: Prisma.IntFilter<"Log"> | number
   logDate?: Prisma.DateTimeFilter<"Log"> | Date | string
-  completionStatus?: Prisma.JsonNullableFilter<"Log">
-  notes?: Prisma.DateTimeNullableFilter<"Log"> | Date | string | null
+  completionStatus?: Prisma.BoolFilter<"Log"> | boolean
+  notes?: Prisma.StringNullableFilter<"Log"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Log"> | Date | string
   habit?: Prisma.XOR<Prisma.HabitScalarRelationFilter, Prisma.HabitWhereInput>
 }, "logId">
@@ -254,7 +258,7 @@ export type LogOrderByWithAggregationInput = {
   logId?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   logDate?: Prisma.SortOrder
-  completionStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  completionStatus?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.LogCountOrderByAggregateInput
@@ -271,15 +275,15 @@ export type LogScalarWhereWithAggregatesInput = {
   logId?: Prisma.IntWithAggregatesFilter<"Log"> | number
   habitId?: Prisma.IntWithAggregatesFilter<"Log"> | number
   logDate?: Prisma.DateTimeWithAggregatesFilter<"Log"> | Date | string
-  completionStatus?: Prisma.JsonNullableWithAggregatesFilter<"Log">
-  notes?: Prisma.DateTimeNullableWithAggregatesFilter<"Log"> | Date | string | null
+  completionStatus?: Prisma.BoolWithAggregatesFilter<"Log"> | boolean
+  notes?: Prisma.StringNullableWithAggregatesFilter<"Log"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Log"> | Date | string
 }
 
 export type LogCreateInput = {
   logDate: Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Date | string | null
+  completionStatus?: boolean
+  notes?: string | null
   createdAt?: Date | string
   habit: Prisma.HabitCreateNestedOneWithoutLogsInput
 }
@@ -288,15 +292,15 @@ export type LogUncheckedCreateInput = {
   logId?: number
   habitId: number
   logDate: Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Date | string | null
+  completionStatus?: boolean
+  notes?: string | null
   createdAt?: Date | string
 }
 
 export type LogUpdateInput = {
   logDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   habit?: Prisma.HabitUpdateOneRequiredWithoutLogsNestedInput
 }
@@ -305,8 +309,8 @@ export type LogUncheckedUpdateInput = {
   logId?: Prisma.IntFieldUpdateOperationsInput | number
   habitId?: Prisma.IntFieldUpdateOperationsInput | number
   logDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -314,15 +318,15 @@ export type LogCreateManyInput = {
   logId?: number
   habitId: number
   logDate: Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Date | string | null
+  completionStatus?: boolean
+  notes?: string | null
   createdAt?: Date | string
 }
 
 export type LogUpdateManyMutationInput = {
   logDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -330,8 +334,8 @@ export type LogUncheckedUpdateManyInput = {
   logId?: Prisma.IntFieldUpdateOperationsInput | number
   habitId?: Prisma.IntFieldUpdateOperationsInput | number
   logDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -363,6 +367,7 @@ export type LogMaxOrderByAggregateInput = {
   logId?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   logDate?: Prisma.SortOrder
+  completionStatus?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -371,6 +376,7 @@ export type LogMinOrderByAggregateInput = {
   logId?: Prisma.SortOrder
   habitId?: Prisma.SortOrder
   logDate?: Prisma.SortOrder
+  completionStatus?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -422,18 +428,22 @@ export type LogUncheckedUpdateManyWithoutHabitNestedInput = {
   deleteMany?: Prisma.LogScalarWhereInput | Prisma.LogScalarWhereInput[]
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type LogCreateWithoutHabitInput = {
   logDate: Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Date | string | null
+  completionStatus?: boolean
+  notes?: string | null
   createdAt?: Date | string
 }
 
 export type LogUncheckedCreateWithoutHabitInput = {
   logId?: number
   logDate: Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Date | string | null
+  completionStatus?: boolean
+  notes?: string | null
   createdAt?: Date | string
 }
 
@@ -470,39 +480,39 @@ export type LogScalarWhereInput = {
   logId?: Prisma.IntFilter<"Log"> | number
   habitId?: Prisma.IntFilter<"Log"> | number
   logDate?: Prisma.DateTimeFilter<"Log"> | Date | string
-  completionStatus?: Prisma.JsonNullableFilter<"Log">
-  notes?: Prisma.DateTimeNullableFilter<"Log"> | Date | string | null
+  completionStatus?: Prisma.BoolFilter<"Log"> | boolean
+  notes?: Prisma.StringNullableFilter<"Log"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Log"> | Date | string
 }
 
 export type LogCreateManyHabitInput = {
   logId?: number
   logDate: Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Date | string | null
+  completionStatus?: boolean
+  notes?: string | null
   createdAt?: Date | string
 }
 
 export type LogUpdateWithoutHabitInput = {
   logDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LogUncheckedUpdateWithoutHabitInput = {
   logId?: Prisma.IntFieldUpdateOperationsInput | number
   logDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LogUncheckedUpdateManyWithoutHabitInput = {
   logId?: Prisma.IntFieldUpdateOperationsInput | number
   logDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  completionStatus?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  notes?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completionStatus?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -567,8 +577,8 @@ export type $LogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     logId: number
     habitId: number
     logDate: Date
-    completionStatus: runtime.JsonValue | null
-    notes: Date | null
+    completionStatus: boolean
+    notes: string | null
     createdAt: Date
   }, ExtArgs["result"]["log"]>
   composites: {}
@@ -997,8 +1007,8 @@ export interface LogFieldRefs {
   readonly logId: Prisma.FieldRef<"Log", 'Int'>
   readonly habitId: Prisma.FieldRef<"Log", 'Int'>
   readonly logDate: Prisma.FieldRef<"Log", 'DateTime'>
-  readonly completionStatus: Prisma.FieldRef<"Log", 'Json'>
-  readonly notes: Prisma.FieldRef<"Log", 'DateTime'>
+  readonly completionStatus: Prisma.FieldRef<"Log", 'Boolean'>
+  readonly notes: Prisma.FieldRef<"Log", 'String'>
   readonly createdAt: Prisma.FieldRef<"Log", 'DateTime'>
 }
     

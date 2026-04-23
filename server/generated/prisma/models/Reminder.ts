@@ -400,10 +400,6 @@ export type ReminderUncheckedUpdateManyWithoutHabitNestedInput = {
   deleteMany?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type ReminderCreateWithoutHabitInput = {
   reminderTime?: string | null
   daysOfWeek?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
