@@ -1,6 +1,5 @@
 import { jest } from '@jest/globals';
 
-// Mock modules FIRST
 jest.unstable_mockModule('../db/db.js', () => ({
   default: {
     log: {
@@ -20,7 +19,6 @@ jest.unstable_mockModule('../utils/resolveUser.js', () => ({
   findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1 }),
 }));
 
-// THEN import after mocks
 const db = (await import('../db/db.js')).default;
 const { completeHabit, getHabits } = await import('../controllers/habitController.js');
 
