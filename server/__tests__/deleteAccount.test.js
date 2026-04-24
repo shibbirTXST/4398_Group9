@@ -1,6 +1,12 @@
-jest.mock("../firebaseAdmin");
-jest.mock("../db/db.js", () => ({
-  __esModule: true,
+import { jest } from '@jest/globals';
+
+jest.unstable_mockModule("../firebaseAdmin.js", () => ({
+  default: {
+    auth: jest.fn(),
+  },
+}));
+
+jest.unstable_mockModule("../db/db.js", () => ({
   default: {
     $transaction: jest.fn(async (fn) =>
       fn({
@@ -12,9 +18,9 @@ jest.mock("../db/db.js", () => ({
   },
 }));
 
-const request = require("supertest");
-const app = require("../app");
-const admin = require("../firebaseAdmin");
+const request = (await import("supertest")).default;
+const app = (await import("../app.js")).default;
+const admin = (await import("../firebaseAdmin.js")).default;
 
 describe("DELETE /api/auth/delete-account", () => {
   beforeEach(() => {
@@ -22,7 +28,7 @@ describe("DELETE /api/auth/delete-account", () => {
   });
 
   test("should delete a user when given a valid token", async () => {
-    admin.auth = jest.fn().mockReturnValue({
+    admin.auth.mockReturnValue({
       verifyIdToken: jest.fn().mockResolvedValue({ uid: "testUID" }),
       deleteUser: jest.fn().mockResolvedValue(),
     });
@@ -42,7 +48,7 @@ describe("DELETE /api/auth/delete-account", () => {
   });
 
   test("should return 500 if Firebase throws an error", async () => {
-    admin.auth = jest.fn().mockReturnValue({
+    admin.auth.mockReturnValue({
       verifyIdToken: jest.fn().mockRejectedValue(new Error("Invalid token")),
     });
 
