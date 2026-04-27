@@ -1,5 +1,6 @@
 import db from '../db/db.js';
 import { findUserByFirebaseUid } from '../utils/resolveUser.js';
+import { generateRoutineFromAI } from '../utils/aiGenerator.js';
 
 const USER_NOT_FOUND_MESSAGE =
   'User account not found. Sign in again or POST /api/auth/sync to create your profile.';
@@ -482,4 +483,99 @@ const updateRoutine = async (req, res) => {
   }
 };
 
-export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, completeHabit, createRoutine, deleteRoutine, updateRoutine };
+const generateAIRoutine = async (req, res) => {
+  // Authentication Check 
+  const user = await requireDbUser(req, res);
+  if (!user) return;
+
+  const { 
+    routineName, 
+    focusArea, 
+    timesOfDay, 
+    startTime,
+    timeCommitment, 
+    difficulty, 
+    additionalDetails 
+  } = req.body;
+
+  // Strict Input Validation (The 6-Question Survey)
+  if (
+    !routineName || 
+    !focusArea || 
+    !timesOfDay || !timesOfDay.length || 
+    !startTime || 
+    !timeCommitment || 
+    !difficulty || 
+    additionalDetails === undefined
+  ) {
+    return res.status(400).json({ 
+      error: 'Missing required survey fields. All 7 parameters must be provided.' 
+    });
+  }
+
+  try {
+    // Call the AI utility
+    const generatedHabits = await generateRoutineFromAI({
+      routineName, focusArea, timesOfDay, startTime, timeCommitment, difficulty, additionalDetails
+    });
+
+    // Prisma Transaction: Create Routine, Habits, Reminders, and Links safely
+    const createdRoutine = await db.$transaction(async (tx) => {
+      // Create the parent Routine
+      const routine = await tx.routine.create({
+        data: {
+          userId: user.userId,
+          routineName: String(routineName).trim(),
+          status: 'Active',
+        },
+      });
+
+      // Loop through AI-generated habits and create them in their separate tables
+      for (let i = 0; i < generatedHabits.length; i++) {
+        const aiHabit = generatedHabits[i];
+
+        // Create the Habit
+        const habit = await tx.habit.create({
+          data: {
+            userId: user.userId,
+            habitName: String(aiHabit.title).trim(),
+            frequencyType: 'Daily',
+            status: 'Active',
+          }
+        });
+
+        // Create the Reminder 
+        await tx.reminder.create({
+          data: {
+            habitId: habit.habitId,
+            reminderTime: normalizeReminderTimeForCron(aiHabit.reminderTime), 
+            enabledStatus: true,
+          }
+        });
+
+        // Link the Habit to the Routine using RoutineHabit join table
+        await tx.routineHabit.create({
+          data: {
+            habitId: habit.habitId,
+            routineId: routine.routineId,
+            orderIndex: i, // Maintains the AI's suggested order
+          }
+        });
+      }
+
+      return routine;
+    });
+
+    // 5. Return Success
+    return res.status(201).json({ 
+      message: 'Routine successfully generated!',
+      routine: routineToDto(createdRoutine) 
+    });
+
+  } catch (error) {
+    console.error('AI Generation or DB Error:', error);
+    return res.status(500).json({ error: 'Failed to generate and save routine.' });
+  }
+};
+
+export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine, completeHabit, generateAIRoutine };
