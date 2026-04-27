@@ -204,6 +204,8 @@ export default function ReminderTimePicker({ initialTime, onTimeChange }: Props)
                 value={time}
                 mode="time"
                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                themeVariant="light"
+                textColor="#000000"
                 onChange={handleChangeMobile}
                 is24Hour={false}
               />

@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { auth } from '../config/firebase';
 import { API_BASE_URL } from '../config/API_base_url';
+import AiRoutineWizard from './AiRoutineScreen';
 
 export default function RoutineSettingsScreen() {
   const route = useRoute();
@@ -14,6 +15,7 @@ export default function RoutineSettingsScreen() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<any>>();
+  const [showAiWizard, setShowAiWizard] = useState(false);
 
   // Routine update
   const handleUpdateRoutine = async () => {
@@ -115,6 +117,20 @@ export default function RoutineSettingsScreen() {
     }
   };
 
+  // Callback function for when the AI finishes successfully
+  const handleAiSuccess = (newRoutineFromAi: any) => {
+    setShowAiWizard(false); // Close the modal
+    
+    // Send the user directly back to the dashboard with the new AI routine
+    navigation.navigate('Home', { 
+      screen: 'Dashboard',
+      params: {
+        newRoutine: newRoutineFromAi,
+        successMessage: 'AI Routine generated successfully!'
+      }
+    }); 
+  };
+
   return (
     <View style={styles.mainContainer}>
       <Appbar.Header>
@@ -146,6 +162,19 @@ export default function RoutineSettingsScreen() {
 
             {error ? <HelperText type="error" visible={true}>{error}</HelperText> : null}
 
+            {/* Only show the AI button if they are CREATING a new routine */}
+            {!isEditing && (
+              <Button
+                mode="outlined"
+                icon="robot-outline"
+                onPress={() => setShowAiWizard(true)}
+                style={styles.aiButton}
+                labelStyle={styles.aiButtonText}
+              >
+                Auto-Generate with AI
+              </Button>
+            )}
+
             <Button
               mode="contained"
               onPress={isEditing ? handleUpdateRoutine : handleCreateRoutine}
@@ -166,6 +195,13 @@ export default function RoutineSettingsScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Render the invisible Modal that waits to be triggered */}
+      <AiRoutineWizard 
+        visible={showAiWizard} 
+        onClose={() => setShowAiWizard(false)} 
+        onSuccess={handleAiSuccess} 
+      />
     </View>
   );
 }
@@ -178,6 +214,18 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
   subtitle: { textAlign: 'center', marginBottom: 32, color: '#666' },
   input: { marginBottom: 16 },
+  
+  aiButton: {
+    marginBottom: 16,
+    borderColor: '#6200ee',
+    borderWidth: 2,
+    borderStyle: 'dashed',
+  },
+  aiButtonText: {
+    color: '#6200ee',
+    fontWeight: 'bold',
+  },
+
   button: { marginTop: 16, paddingVertical: 6 },
   linkButton: { marginTop: 16 },
 });
