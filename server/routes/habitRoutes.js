@@ -10,6 +10,7 @@ import {
   deleteRoutine, 
   updateRoutine,
   completeHabit,
+  generateAIRoutine
 } from '../controllers/habitController.js';
 
 const habitRouter = express.Router();
@@ -24,6 +25,7 @@ habitRouter.delete('/:id', authCheck, deleteHabit);
 // --- ROUTINE ROUTES ---
 habitRouter.get('/routines', authCheck, getRoutines);
 habitRouter.post('/routines', authCheck, createRoutine);
+habitRouter.post('/routines/generate', authCheck, generateAIRoutine);
 habitRouter.put('/routines/:id', authCheck, updateRoutine);
 habitRouter.delete('/routines/:id', authCheck, deleteRoutine);
 
