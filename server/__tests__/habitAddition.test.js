@@ -1,8 +1,8 @@
 import request from 'supertest';
-import app from '../app.js';
+import { jest } from '@jest/globals';
 
-jest.mock('../firebaseAdmin.js', () => ({
-  __esModule: true,
+// 1. Mock Firebase Auth
+jest.unstable_mockModule('../firebaseAdmin.js', () => ({
   default: {
     auth: () => ({
       verifyIdToken: jest.fn().mockResolvedValue({
@@ -12,6 +12,41 @@ jest.mock('../firebaseAdmin.js', () => ({
     }),
   },
 }));
+
+// 2. Mock User Resolver
+jest.unstable_mockModule('../utils/resolveUser.js', () => ({
+  findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' }),
+  upsertUserFromDecodedToken: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' })
+}));
+
+// 3. Mock the Database to bypass Prisma TypeScript errors
+jest.unstable_mockModule('../db/db.js', () => ({
+  default: {
+    routine: {
+      findFirst: jest.fn().mockResolvedValue({ routineId: 1, userId: 1 }) // Mocks routine validation
+    },
+    $transaction: jest.fn().mockImplementation(async (callback) => {
+      const tx = {
+        habit: { create: jest.fn().mockResolvedValue({ habitId: 10, habitName: 'Drink Water' }) },
+        reminder: { create: jest.fn().mockResolvedValue({}) },
+        routineHabit: { create: jest.fn().mockResolvedValue({}) },
+      };
+      return callback(tx);
+    }),
+    habit: {
+      findFirst: jest.fn().mockResolvedValue({
+        habitId: 10,
+        habitName: 'Drink Water',
+        reminders: [{ reminderTime: '08:00 AM' }],
+        routineHabits: [{ routineId: 1 }],
+        logs: [] // Empty logs means completed: false
+      })
+    }
+  }
+}));
+
+// 4. Dynamically import app.js AFTER mocks
+const { default: app } = await import('../app.js');
 
 describe('Habit Addition API (POST /api/habits)', () => {
 
