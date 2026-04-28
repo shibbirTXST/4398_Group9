@@ -164,12 +164,15 @@ export default function HabitSettingsScreen() {
             />
 
             {/* Custom Reminder Time Picker Injected Here */}
-            <ReminderTimePicker 
-              initialTime={reminderTime} 
-              onTimeChange={(newTime) => setReminderTime(newTime)} 
-            />
+            <View style={{ marginBottom: 16, maxWidth: 800, alignSelf: 'center', width: '100%' }}>
+              <ReminderTimePicker 
+                initialTime={reminderTime} 
+                onTimeChange={(newTime) => setReminderTime(newTime)} 
+              />
+            </View>
 
-            <Text style={{ marginBottom: 8, marginTop: 16 }}>Assign to Routine:</Text>
+
+            <Text style={styles.subtitle}>Assign to Routine:</Text>
             <Button
               mode={selectedRoutineId === 0 ? "contained" : "outlined"}
               onPress={() => setSelectedRoutineId(0)}
@@ -221,8 +224,29 @@ const styles = StyleSheet.create({
   content: { padding: 20 },
   title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
   subtitle: { textAlign: 'center', marginBottom: 32, color: '#666' },
-  input: { marginBottom: 16 },
-  routineButton: { marginBottom: 8 },
-  button: { marginTop: 16, paddingVertical: 6 },
-  linkButton: { marginTop: 16 },
+  input: {
+    marginBottom: 16,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%'
+  },
+  routineButton: { 
+    marginBottom: 8,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  button: { 
+    marginTop: 16, 
+    paddingVertical: 6,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  linkButton: { 
+    marginTop: 16,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+  },
 });

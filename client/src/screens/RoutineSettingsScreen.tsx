@@ -213,7 +213,12 @@ const styles = StyleSheet.create({
   content: { padding: 20 },
   title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
   subtitle: { textAlign: 'center', marginBottom: 32, color: '#666' },
-  input: { marginBottom: 16 },
+  input: { 
+    marginBottom: 16,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+  },
   
   aiButton: {
     marginBottom: 16,
@@ -226,6 +231,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  button: { marginTop: 16, paddingVertical: 6 },
-  linkButton: { marginTop: 16 },
+  button: { 
+    marginTop: 16, 
+    paddingVertical: 6,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  linkButton: { 
+    marginTop: 16,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
+  },
 });

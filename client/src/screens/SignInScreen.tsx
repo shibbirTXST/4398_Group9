@@ -132,12 +132,21 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
   },
   button: {
     marginTop: 16,
     paddingVertical: 6,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
   },
   linkButton: {
     marginTop: 16,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
   },
 });
