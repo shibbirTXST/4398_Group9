@@ -11,8 +11,8 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#05668D',
-    secondary: '#03dac6',
+    primary: '#D3AF37',
+    secondary: '#6BA292',
   },
 };
 
@@ -202,6 +202,9 @@ export default function DashboardScreen({ route, navigation }: any) {
                           {habit.count}/1
                         </Text>
                         <IconButton
+                          icon="bell"
+                        />
+                        <IconButton
                           icon="pencil"
                           onPress={() => navigation.navigate('HabitSettingsScreen', {
                             isEditing: true,
@@ -257,6 +260,9 @@ export default function DashboardScreen({ route, navigation }: any) {
                         <Text {...props} style={styles.count}>
                           {habit.count}/1
                         </Text>
+                        <IconButton
+                          icon="bell"
+                        />
                         <IconButton
                           icon="pencil"
                           onPress={() =>
@@ -333,6 +339,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
+    backgroundColor: '#D3AF37',
     margin: 16,
     right: 0,
     bottom: 0,

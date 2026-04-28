@@ -136,7 +136,7 @@ export default function HabitSettingsScreen() {
 
   return (
     <View style={styles.mainContainer}>
-      <Appbar.Header>
+      <Appbar.Header style={{ backgroundColor: '#f5f5f5' }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title={isEditing ? "Edit Habit" : "New Habit"} />
       </Appbar.Header>
@@ -215,7 +215,7 @@ export default function HabitSettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, backgroundColor: '#fff' },
+  mainContainer: { flex: 1, backgroundColor: '#f5f5f5' },
   container: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center' },
   content: { padding: 20 },

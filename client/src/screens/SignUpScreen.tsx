@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import { TextInput, Button, Text, Title, HelperText } from 'react-native-paper';
+import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { MaterialIcons } from '@react-native-vector-icons/material-icons';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
@@ -46,7 +47,9 @@ export default function SignUpScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Title style={styles.title}>Create Account</Title>
+          <MaterialIcons name="account-circle" size={100} color="#666" style={{alignSelf: 'center', marginBottom: 5}} />
+
+          <Text variant="titleLarge" style={styles.title}>Create Account</Text>
           <Text style={styles.subtitle}>Start your journey towards better habits</Text>
 
           <TextInput
