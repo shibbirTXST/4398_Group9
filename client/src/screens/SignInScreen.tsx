@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import { TextInput, Button, Text, Title, HelperText } from 'react-native-paper';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
@@ -56,6 +56,10 @@ export default function SignInScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
+          <Image
+            source={require('../../assets/favicon.png')}
+            style={{ width: 100, height: 100, alignSelf: 'center', marginBottom: 20 }}
+          />
           <Title style={styles.title}>Welcome Back</Title>
           <Text style={styles.subtitle}>Sign in to continue tracking your habits</Text>
 
@@ -106,7 +110,7 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
   scrollContent: {
     flexGrow: 1,
