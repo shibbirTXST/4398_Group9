@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
-import { TextInput, Button, Text, Title, HelperText } from 'react-native-paper';
+import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useNavigation } from '@react-navigation/native';
@@ -60,7 +60,7 @@ export default function SignInScreen() {
             source={require('../../assets/favicon.png')}
             style={{ width: 100, height: 100, alignSelf: 'center', marginBottom: 20 }}
           />
-          <Title style={styles.title}>Welcome Back</Title>
+          <Text variant="titleLarge" style={styles.title}>Welcome back to Goaldn</Text>
           <Text style={styles.subtitle}>Sign in to continue tracking your habits</Text>
 
           <TextInput

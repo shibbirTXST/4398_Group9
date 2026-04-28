@@ -12,7 +12,7 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import HabitSettingsScreen from './src/screens/HabitSettingsScreen';
 import ProgressScreen from './src/screens/ProgressScreen';  
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import RoutineSettingsScreen from './src/screens/RoutineSettingsScreen';
 import { ComponentProps } from 'react';
 import { API_BASE_URL } from './src/config/API_base_url';
@@ -24,8 +24,8 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#05668D',
-    secondary: '#03dac6',
+    primary: '#D3AF37',
+    secondary: '#6BA292',
   },
 };
 
@@ -87,14 +87,18 @@ function HomeAppbar({ route, navigation }: any) {
   }
 
   return (
-    <Appbar.Header>
+    <Appbar.Header style={{ backgroundColor: '#f5f5f5' }}>
+      <Image
+        source={require('./assets/goldMonoIcon.png')}
+        style={{ width: 30, height: 30, marginRight: 10 }}
+      />
       <Appbar.Content title={route.name} />
       {/* Account Menu */}
           <Menu
             visible={accMenuVisible}
             onDismiss={closeAccMenu}
             anchor={
-              <Appbar.Action icon="account" onPress={openAccMenu} />
+              <Appbar.Action icon="account-cog" onPress={openAccMenu} />
             }
           >
             <Menu.Item
