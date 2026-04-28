@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Modal, View, Text, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 import { auth } from '../config/firebase';
 import { API_BASE_URL } from '../config/API_base_url';
 import ReminderTimePicker from '../components/ReminderTimePicker';
@@ -121,8 +121,7 @@ export default function AiRoutineWizard({ visible, onClose, onSuccess }: AiRouti
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
-      {/* 1. Dismiss keyboard when tapping anywhere outside an input */}
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      
         <View style={styles.modalOverlay}>
           
           {/* 2. Invisible button covering the background to close the modal when tapped */}
@@ -132,8 +131,14 @@ export default function AiRoutineWizard({ visible, onClose, onSuccess }: AiRouti
             onPress={onClose} 
           />
 
+          {/* KeyboardAvoidingView */}
+          <KeyboardAvoidingView 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.keyboardAvoid}
+          >
+
           <View style={styles.modalContent}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
               <Text style={styles.headerTitle}>AI Routine Builder</Text>
 
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -222,8 +227,8 @@ export default function AiRoutineWizard({ visible, onClose, onSuccess }: AiRouti
 
             </ScrollView>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }
@@ -231,6 +236,7 @@ export default function AiRoutineWizard({ visible, onClose, onSuccess }: AiRouti
 // Styles specific to the AI Routine Wizard
 const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+  keyboardAvoid: { width: '100%', justifyContent: 'center', alignItems: 'center' },
   modalContent: { backgroundColor: '#fff', borderRadius: 12, padding: 20, maxHeight: '90%' },
   headerTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
   errorText: { color: 'red', marginBottom: 10, textAlign: 'center' },
