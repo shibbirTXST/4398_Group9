@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { MD3LightTheme as DefaultTheme, PaperProvider, Text, List } from 'react-native-paper';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -59,26 +59,28 @@ export default function ProgressScreen() {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <SafeAreaView style={styles.container}>
-          <View style={styles.content}>
-            <Text variant="headlineSmall" style={styles.title}>Your Streaks</Text>
-            {loading ? null : habits.length === 0 ? (
-              <Text style={styles.emptyMessage}>Add habits on your dashboard</Text>
-            ) : (
-              habits.map((habit) => (
-                <List.Item
-                  key={habit.ID}
-                  title={habit.title}
-                  right={props => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text {...props}>Longest Streak: {formatDays(habit.maxStreak)}</Text>
-                      <Text {...props}>Current Streak: {formatDays(habit.currentStreak)}</Text>
-                    </View>
-                  )}
-                  style={styles.habitItem}
-                />
-              ))
-            )}
-          </View>
+          <ScrollView>
+            <View style={styles.content}>
+              <Text variant="headlineSmall" style={styles.title}>Your Streaks</Text>
+              {loading ? null : habits.length === 0 ? (
+                <Text style={styles.emptyMessage}>Add habits on your dashboard</Text>
+              ) : (
+                habits.map((habit) => (
+                  <List.Item
+                    key={habit.ID}
+                    title={habit.title}
+                    right={props => (
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text {...props}>Longest Streak: {formatDays(habit.maxStreak)}</Text>
+                        <Text {...props}>Current Streak: {formatDays(habit.currentStreak)}</Text>
+                      </View>
+                    )}
+                    style={styles.habitItem}
+                  />
+                ))
+              )}
+            </View>
+          </ScrollView>
         </SafeAreaView>
       </PaperProvider>
     </SafeAreaProvider>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { MD3LightTheme as DefaultTheme, PaperProvider, Text, FAB, List, IconButton, Snackbar, Button } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
@@ -173,116 +173,118 @@ export default function DashboardScreen({ route, navigation }: any) {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <SafeAreaView style={styles.container}>
-          <View style={styles.content}>
-            <Text variant="headlineSmall" style={styles.title}>Your Habits Today</Text>
+          <ScrollView>
+            <View style={styles.content}>
+              <Text variant="headlineSmall" style={styles.title}>Your Habits Today</Text>
 
-            {/* Independent Habits */}
-            {habitsByRoutine[0] && habitsByRoutine[0].length > 0 && (
-              <List.Accordion
-                title="Independent Habits"
-                style={styles.routineItem}
-                expanded={true}
-              >
-                {habitsByRoutine[0].map((habit: any) => (
-                  <List.Item
-                    key={habit.ID}
-                    title={habit.title}
-                    description={habit.completed ? "Done for today!" : "Not done yet"}
-                    left={(props) => (
-                      <IconButton
-                        {...props}
-                        icon={habit.completed ? "check-circle" : "circle-outline"}
-                        iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                        onPress={() => completeHabit(habit.ID)}
-                      />
-                    )}
-                    right={(props) => (
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text {...props} style={styles.count}>
-                          {habit.count}/1
-                        </Text>
+              {/* Independent Habits */}
+              {habitsByRoutine[0] && habitsByRoutine[0].length > 0 && (
+                <List.Accordion
+                  title="Independent Habits"
+                  style={styles.routineItem}
+                  expanded={true}
+                >
+                  {habitsByRoutine[0].map((habit: any) => (
+                    <List.Item
+                      key={habit.ID}
+                      title={habit.title}
+                      description={habit.completed ? "Done for today!" : "Not done yet"}
+                      left={(props) => (
                         <IconButton
-                          icon="bell"
+                          {...props}
+                          icon={habit.completed ? "check-circle" : "circle-outline"}
+                          iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
+                          onPress={() => completeHabit(habit.ID)}
                         />
-                        <IconButton
-                          icon="pencil"
-                          onPress={() => navigation.navigate('HabitSettingsScreen', {
-                            isEditing: true,
-                            habit: habit,
-                            routines: routines,
-                          })}
-                        />
-                        <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
-                      </View>
-                    )}
-                    style={styles.habitItem}
-                  />
-                ))}
-              </List.Accordion>
-            )}
-
-            {/* Routines (and their sub-habits) */}
-            {routines.map((routine) => (
-              <List.Accordion
-                key={routine.ID}
-                title={routine.title}
-                style={styles.routineItem}
-                right={(props) => (
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <IconButton
-                      icon="pencil"
-                      onPress={() =>
-                        navigation.navigate('RoutineSettingsScreen', {
-                          isEditing: true,
-                          routine: routine,
-                        })
-                      }
-                    />
-                    <IconButton icon="delete" onPress={() => deleteRoutine(routine.ID)} />
-                  </View>
-                )}
-              >
-                {habitsByRoutine[routine.ID]?.map((habit: any) => (
-                  <List.Item
-                    key={habit.ID}
-                    title={habit.title}
-                    description={habit.completed ? "Done for today!" : "Not done yet"}
-                    left={(props) => (
-                      <IconButton
-                        {...props}
-                        icon={habit.completed ? "check-circle" : "circle-outline"}
-                        iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                        onPress={() => completeHabit(habit.ID)}
-                      />
-                    )}
-                    right={(props) => (
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text {...props} style={styles.count}>
-                          {habit.count}/1
-                        </Text>
-                        <IconButton
-                          icon="bell"
-                        />
-                        <IconButton
-                          icon="pencil"
-                          onPress={() =>
-                            navigation.navigate('HabitSettingsScreen', {
+                      )}
+                      right={(props) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Text {...props} style={styles.count}>
+                            {habit.count}/1
+                          </Text>
+                          <IconButton
+                            icon="bell"
+                          />
+                          <IconButton
+                            icon="pencil"
+                            onPress={() => navigation.navigate('HabitSettingsScreen', {
                               isEditing: true,
                               habit: habit,
                               routines: routines,
-                            })
-                          }
+                            })}
+                          />
+                          <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
+                        </View>
+                      )}
+                      style={styles.habitItem}
+                    />
+                  ))}
+                </List.Accordion>
+              )}
+
+              {/* Routines (and their sub-habits) */}
+              {routines.map((routine) => (
+                <List.Accordion
+                  key={routine.ID}
+                  title={routine.title}
+                  style={styles.routineItem}
+                  right={(props) => (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <IconButton
+                        icon="pencil"
+                        onPress={() =>
+                          navigation.navigate('RoutineSettingsScreen', {
+                            isEditing: true,
+                            routine: routine,
+                          })
+                        }
+                      />
+                      <IconButton icon="delete" onPress={() => deleteRoutine(routine.ID)} />
+                    </View>
+                  )}
+                >
+                  {habitsByRoutine[routine.ID]?.map((habit: any) => (
+                    <List.Item
+                      key={habit.ID}
+                      title={habit.title}
+                      description={habit.completed ? "Done for today!" : "Not done yet"}
+                      left={(props) => (
+                        <IconButton
+                          {...props}
+                          icon={habit.completed ? "check-circle" : "circle-outline"}
+                          iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
+                          onPress={() => completeHabit(habit.ID)}
                         />
-                        <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
-                      </View>
-                    )}
-                    style={styles.habitItem}
-                  />
-                ))}
-              </List.Accordion>
-            ))}
-            <Button mode="contained" onPress={() => navigation.navigate('RoutineSettingsScreen', { isEditing: false, routine: null })}>Add Routine</Button>
-          </View>
+                      )}
+                      right={(props) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Text {...props} style={styles.count}>
+                            {habit.count}/1
+                          </Text>
+                          <IconButton
+                            icon="bell"
+                          />
+                          <IconButton
+                            icon="pencil"
+                            onPress={() =>
+                              navigation.navigate('HabitSettingsScreen', {
+                                isEditing: true,
+                                habit: habit,
+                                routines: routines,
+                              })
+                            }
+                          />
+                          <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
+                        </View>
+                      )}
+                      style={styles.habitItem}
+                    />
+                  ))}
+                </List.Accordion>
+              ))}
+              <Button mode="contained" onPress={() => navigation.navigate('RoutineSettingsScreen', { isEditing: false, routine: null })}>Add Routine</Button>
+            </View>
+          </ScrollView>
           <FAB
             icon="plus"
             style={styles.fab}
