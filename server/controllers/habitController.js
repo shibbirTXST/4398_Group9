@@ -271,6 +271,84 @@ const updateHabit = async (req, res) => {
   }
 };
 
+const completeHabit = async (req, res) => {
+  try {
+    const user = await requireDbUser(req, res);
+    if (!user) return;
+
+    const habitId = Number(req.params.id);
+    if (!habitId) {
+      return res.status(400).json({ error: 'Invalid habit ID' });
+    }
+
+    // Verify habit belongs to user
+    const habit = await db.habit.findFirst({
+      where: {
+        habitId,
+        userId: user.userId,
+      },
+    });
+
+    if (!habit) {
+      return res.status(404).json({ error: 'Habit not found' });
+    }
+
+    const { start: startOfDay, end: endOfDay } = getTodayRange();
+
+    // ===== Prevent duplicate completion =====
+    const existingLog = await db.log.findFirst({
+      where: {
+        habitId,
+        logDate: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    });
+
+    if (existingLog) {
+      return res.status(400).json({ error: 'Already completed today' });
+    }
+
+    // ===== Create today's log =====
+    await db.log.create({
+      data: {
+        habitId,
+        logDate: new Date(),
+        completionStatus: true,
+      },
+    });
+
+    // ===== Increment streak =====
+    const updatedHabit = await db.habit.update({
+      where: { habitId },
+      data: {
+        currentStreak: habit.currentStreak + 1,
+        maxStreak: Math.max(habit.currentStreak + 1, habit.maxStreak),
+      },
+      include: {
+        reminders: true,
+        routineHabits: { include: { routine: true } },
+        logs: {
+          where: {
+            logDate: {
+              gte: startOfDay,
+              lte: endOfDay,
+            },
+            completionStatus: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(habitToDto(updatedHabit));
+
+  } catch (err) {
+    console.error('Error completing habit:', err);
+    return res.status(500).json({ error: 'Failed to complete habit' });
+  }
+};
+
 // --- ROUTINE CONTROLLERS ---
 
 const createRoutine = async (req, res) => {
@@ -339,123 +417,6 @@ const deleteRoutine = async (req, res) => {
   }
 };
 
-const completeHabit = async (req, res) => {
-  try {
-    const user = await requireDbUser(req, res);
-    if (!user) return;
-
-    const habitId = Number(req.params.id);
-    if (!habitId) {
-      return res.status(400).json({ error: 'Invalid habit ID' });
-    }
-
-    // Verify habit belongs to user
-    const habit = await db.habit.findFirst({
-      where: {
-        habitId,
-        userId: user.userId,
-      },
-    });
-
-    if (!habit) {
-      return res.status(404).json({ error: 'Habit not found' });
-    }
-
-    const { start: startOfDay, end: endOfDay } = getTodayRange();
-
-    // ===== Prevent duplicate completion =====
-    const existingLog = await db.log.findFirst({
-      where: {
-        habitId,
-        logDate: {
-          gte: startOfDay,
-          lte: endOfDay,
-        },
-      },
-    });
-
-    if (existingLog) {
-      return res.status(400).json({ error: 'Already completed today' });
-    }
-
-    // ===== Create today's log =====
-    await db.log.create({
-      data: {
-        habitId,
-        logDate: new Date(),
-        completionStatus: true,
-      },
-    });
-
-    // ===== Fetch all completed logs (newest first) =====
-    const logs = await db.log.findMany({
-      where: {
-        habitId,
-        completionStatus: true,
-      },
-      orderBy: {
-        logDate: 'desc',
-      },
-    });
-
-    // ===== Calculate streak =====
-    const calculateStreak = (logs) => {
-      if (!logs.length) return 0;
-
-      let streak = 0;
-
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0);
-
-      let currentDay = new Date(today);
-
-      for (const log of logs) {
-        const logDay = new Date(log.logDate);
-        logDay.setUTCHours(0, 0, 0, 0);
-
-        if (logDay.getTime() === currentDay.getTime()) {
-          streak++;
-          currentDay.setUTCDate(currentDay.getUTCDate() - 1);
-        } else if (logDay.getTime() < currentDay.getTime()) {
-          break; // gap → streak broken
-        }
-      }
-
-      return streak;
-    };
-
-    const newStreak = calculateStreak(logs);
-
-    // ===== Update habit =====
-    const updatedHabit = await db.habit.update({
-      where: { habitId },
-      data: {
-        currentStreak: newStreak,
-        maxStreak: Math.max(newStreak, habit.maxStreak),
-      },
-      include: {
-        reminders: true,
-        routineHabits: { include: { routine: true } },
-        logs: {
-          where: {
-            logDate: {
-              gte: startOfDay,
-              lte: endOfDay,
-            },
-            completionStatus: true,
-          },
-        },
-      },
-    });
-
-    return res.status(200).json(habitToDto(updatedHabit));
-
-  } catch (err) {
-    console.error('Error completing habit:', err);
-    return res.status(500).json({ error: 'Failed to complete habit' });
-  }
-};
-
 
 const updateRoutine = async (req, res) => {
   const user = await requireDbUser(req, res);
@@ -494,4 +455,4 @@ const updateRoutine = async (req, res) => {
   }
 };
 
-export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, createRoutine, deleteRoutine, updateRoutine, completeHabit };
+export { getHabits, getRoutines, createHabit, deleteHabit, updateHabit, completeHabit, createRoutine, deleteRoutine, updateRoutine };

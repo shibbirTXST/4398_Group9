@@ -39,6 +39,8 @@ model Habit {
   status        String // e.g., 'Active', 'Archived'
   currentStreak Int      @default(0)
   maxStreak     Int      @default(0)
+  streakShields Int      @default(0)
+  lastCompletedAt DateTime?
 
   // Relations
   user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
