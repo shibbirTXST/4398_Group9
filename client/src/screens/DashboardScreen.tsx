@@ -213,7 +213,10 @@ export default function DashboardScreen({ route, navigation }: any) {
                               routines: routines,
                             })}
                           />
-                          <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
+                          <IconButton icon="delete" onPressIn={(e) => {
+                            e.stopPropagation();
+                            deleteHabit(habit.ID);
+                          }} />
                         </View>
                       )}
                       style={styles.habitItem}
@@ -239,10 +242,10 @@ export default function DashboardScreen({ route, navigation }: any) {
                           })
                         }
                       />
-                      <IconButton icon="delete" onPress={(e: any) => { 
-                        e.stopPropagation(); // Prevent accordion toggle
+                      <IconButton icon="delete" onPressIn={(e) => {
+                        e.stopPropagation();
                         deleteRoutine(routine.ID);
-                        }} 
+                      }}
                       />
                     </View>
                   )}
@@ -278,7 +281,10 @@ export default function DashboardScreen({ route, navigation }: any) {
                               })
                             }
                           />
-                          <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
+                          <IconButton icon="delete" onPressIn={(e) => {
+                            e.stopPropagation();
+                            deleteHabit(habit.ID);
+                          }} />
                         </View>
                       )}
                       style={styles.habitItem}
