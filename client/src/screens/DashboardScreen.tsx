@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, FAB, List, IconButton, Snackbar, Button } from 'react-native-paper';
+import { StyleSheet, View, ScrollView, Pressable } from 'react-native';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, FAB, List, IconButton, Snackbar, Button, Icon } from 'react-native-paper';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
@@ -20,6 +20,8 @@ export default function DashboardScreen({ route, navigation }: any) {
   const { logout } = useAuth();
   const [habits, setHabits] = useState<any[]>([]);
   const [routines, setRoutines] = useState<any[]>([]);
+  const [IndependentExpanded, setIndependentExpanded] = React.useState(true);
+  const [RoutineExpanded, setRoutineExpanded] = useState<Record<string, boolean>>({});
 
   // state for the pop-up snackbar message
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -182,7 +184,8 @@ export default function DashboardScreen({ route, navigation }: any) {
                 <List.Accordion
                   title="Independent Habits"
                   style={styles.routineItem}
-                  expanded={true}
+                  expanded={IndependentExpanded}
+                  onPress={() => setIndependentExpanded(!IndependentExpanded)}
                 >
                   {habitsByRoutine[0].map((habit: any) => (
                     <List.Item
@@ -223,65 +226,77 @@ export default function DashboardScreen({ route, navigation }: any) {
               )}
 
               {/* Routines (and their sub-habits) */}
-              {routines.map((routine) => (
-                <List.Accordion
-                  key={routine.ID}
-                  title={routine.title}
-                  style={styles.routineItem}
-                  right={(props) => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <IconButton
-                        icon="pencil"
-                        onPress={() =>
-                          navigation.navigate('RoutineSettingsScreen', {
-                            isEditing: true,
-                            routine: routine,
-                          })
-                        }
-                      />
-                      <IconButton icon="delete" onPress={() => deleteRoutine(routine.ID)} />
-                    </View>
-                  )}
-                >
-                  {habitsByRoutine[routine.ID]?.map((habit: any) => (
-                    <List.Item
-                      key={habit.ID}
-                      title={habit.title}
-                      description={habit.completed ? "Done for today!" : "Not done yet"}
-                      left={(props) => (
-                        <IconButton
-                          {...props}
-                          icon={habit.completed ? "check-circle" : "circle-outline"}
-                          iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
-                          onPress={() => completeHabit(habit.ID)}
-                        />
-                      )}
-                      right={(props) => (
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                          <Text {...props} style={styles.count}>
-                            {habit.count}/1
-                          </Text>
-                          <IconButton
-                            icon="bell"
-                          />
+              <List.Section>
+                {routines.map((routine) => {
+                  const isExpanded = RoutineExpanded[routine.ID] ?? false;
+                  return (
+                    <View key={routine.ID}>
+                      <Pressable
+                        style={styles.routineItem}
+                        onPress={() => setRoutineExpanded(prev => ({ ...prev, [routine.ID]: !prev[routine.ID] }))}
+                      >
+                        <View style={styles.accordionHeader}>
+                          <Text variant="titleMedium" style={styles.routineTitle}>{routine.title}</Text>
                           <IconButton
                             icon="pencil"
-                            onPress={() =>
-                              navigation.navigate('HabitSettingsScreen', {
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              navigation.navigate('RoutineSettingsScreen', {
                                 isEditing: true,
-                                habit: habit,
-                                routines: routines,
+                                routine: routine,
                               })
-                            }
+                            }}
                           />
-                          <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
+                          <IconButton icon="delete" onPress={(e) => {
+                            e.stopPropagation();
+                            deleteRoutine(routine.ID);
+                          }} />
+                          <IconButton
+                            icon={isExpanded ? 'chevron-up' : 'chevron-down'}
+                          />
+                        </View>
+                      </Pressable>
+                      {isExpanded && (
+                        <View style={styles.accordionContent}>
+                          {habitsByRoutine[routine.ID]?.map((habit: any) => (
+                            <List.Item
+                              key={habit.ID}
+                              title={habit.title}
+                              description={habit.completed ? "Done for today!" : "Not done yet"}
+                              left={(props) => (
+                                <IconButton
+                                  {...props}
+                                  icon={habit.completed ? "check-circle" : "circle-outline"}
+                                  iconColor={habit.completed ? theme.colors.primary : theme.colors.outline}
+                                  onPress={() => completeHabit(habit.ID)}
+                                />
+                              )}
+                              right={(props) => (
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                  <Text {...props} style={styles.count}>
+                                    {habit.count}/1
+                                  </Text>
+                                  <IconButton icon="bell" />
+                                  <IconButton
+                                    icon="pencil"
+                                    onPress={() => navigation.navigate('HabitSettingsScreen', {
+                                      isEditing: true,
+                                      habit: habit,
+                                      routines: routines,
+                                    })}
+                                  />
+                                  <IconButton icon="delete" onPress={() => deleteHabit(habit.ID)} />
+                                </View>
+                              )}
+                              style={styles.habitItem}
+                            />
+                          ))}
                         </View>
                       )}
-                      style={styles.habitItem}
-                    />
-                  ))}
-                </List.Accordion>
-              ))}
+                    </View>
+                  );
+                })}
+              </List.Section>
               <Button mode="contained" onPress={() => navigation.navigate('RoutineSettingsScreen', { isEditing: false, routine: null })}>Add Routine</Button>
             </View>
           </ScrollView>
@@ -327,6 +342,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     borderRadius: 8,
     marginBottom: 8,
+  },
+  accordionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 8,
+  },
+  accordionContent: {
+    backgroundColor: '#f5f5f5',
+    paddingLeft: 16,
+  },
+  routineActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    backgroundColor: '#e0e0e0',
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    marginBottom: 8,
+  },
+  routineTitle: {
+    flex: 1,
+    paddingLeft: 16,
+    paddingVertical: 8,
   },
   habitItem: {
     backgroundColor: 'white',
