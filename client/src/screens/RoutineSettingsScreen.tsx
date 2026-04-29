@@ -222,12 +222,15 @@ const styles = StyleSheet.create({
   
   aiButton: {
     marginBottom: 16,
-    borderColor: '#6200ee',
+    borderColor: '#6BA292',
     borderWidth: 2,
     borderStyle: 'dashed',
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%',
   },
   aiButtonText: {
-    color: '#6200ee',
+    color: '#6BA292',
     fontWeight: 'bold',
   },
 
