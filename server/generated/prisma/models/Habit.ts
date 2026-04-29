@@ -31,6 +31,7 @@ export type HabitAvgAggregateOutputType = {
   userId: number | null
   currentStreak: number | null
   maxStreak: number | null
+  streakShields: number | null
 }
 
 export type HabitSumAggregateOutputType = {
@@ -38,6 +39,7 @@ export type HabitSumAggregateOutputType = {
   userId: number | null
   currentStreak: number | null
   maxStreak: number | null
+  streakShields: number | null
 }
 
 export type HabitMinAggregateOutputType = {
@@ -52,6 +54,8 @@ export type HabitMinAggregateOutputType = {
   status: string | null
   currentStreak: number | null
   maxStreak: number | null
+  streakShields: number | null
+  lastCompletedAt: Date | null
 }
 
 export type HabitMaxAggregateOutputType = {
@@ -66,6 +70,8 @@ export type HabitMaxAggregateOutputType = {
   status: string | null
   currentStreak: number | null
   maxStreak: number | null
+  streakShields: number | null
+  lastCompletedAt: Date | null
 }
 
 export type HabitCountAggregateOutputType = {
@@ -80,6 +86,8 @@ export type HabitCountAggregateOutputType = {
   status: number
   currentStreak: number
   maxStreak: number
+  streakShields: number
+  lastCompletedAt: number
   _all: number
 }
 
@@ -89,6 +97,7 @@ export type HabitAvgAggregateInputType = {
   userId?: true
   currentStreak?: true
   maxStreak?: true
+  streakShields?: true
 }
 
 export type HabitSumAggregateInputType = {
@@ -96,6 +105,7 @@ export type HabitSumAggregateInputType = {
   userId?: true
   currentStreak?: true
   maxStreak?: true
+  streakShields?: true
 }
 
 export type HabitMinAggregateInputType = {
@@ -110,6 +120,8 @@ export type HabitMinAggregateInputType = {
   status?: true
   currentStreak?: true
   maxStreak?: true
+  streakShields?: true
+  lastCompletedAt?: true
 }
 
 export type HabitMaxAggregateInputType = {
@@ -124,6 +136,8 @@ export type HabitMaxAggregateInputType = {
   status?: true
   currentStreak?: true
   maxStreak?: true
+  streakShields?: true
+  lastCompletedAt?: true
 }
 
 export type HabitCountAggregateInputType = {
@@ -138,6 +152,8 @@ export type HabitCountAggregateInputType = {
   status?: true
   currentStreak?: true
   maxStreak?: true
+  streakShields?: true
+  lastCompletedAt?: true
   _all?: true
 }
 
@@ -239,6 +255,8 @@ export type HabitGroupByOutputType = {
   status: string
   currentStreak: number
   maxStreak: number
+  streakShields: number
+  lastCompletedAt: Date | null
   _count: HabitCountAggregateOutputType | null
   _avg: HabitAvgAggregateOutputType | null
   _sum: HabitSumAggregateOutputType | null
@@ -276,6 +294,8 @@ export type HabitWhereInput = {
   status?: Prisma.StringFilter<"Habit"> | string
   currentStreak?: Prisma.IntFilter<"Habit"> | number
   maxStreak?: Prisma.IntFilter<"Habit"> | number
+  streakShields?: Prisma.IntFilter<"Habit"> | number
+  lastCompletedAt?: Prisma.DateTimeNullableFilter<"Habit"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   logs?: Prisma.LogListRelationFilter
   reminders?: Prisma.ReminderListRelationFilter
@@ -294,6 +314,8 @@ export type HabitOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   currentStreak?: Prisma.SortOrder
   maxStreak?: Prisma.SortOrder
+  streakShields?: Prisma.SortOrder
+  lastCompletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   logs?: Prisma.LogOrderByRelationAggregateInput
   reminders?: Prisma.ReminderOrderByRelationAggregateInput
@@ -315,6 +337,8 @@ export type HabitWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Habit"> | string
   currentStreak?: Prisma.IntFilter<"Habit"> | number
   maxStreak?: Prisma.IntFilter<"Habit"> | number
+  streakShields?: Prisma.IntFilter<"Habit"> | number
+  lastCompletedAt?: Prisma.DateTimeNullableFilter<"Habit"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   logs?: Prisma.LogListRelationFilter
   reminders?: Prisma.ReminderListRelationFilter
@@ -333,6 +357,8 @@ export type HabitOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   currentStreak?: Prisma.SortOrder
   maxStreak?: Prisma.SortOrder
+  streakShields?: Prisma.SortOrder
+  lastCompletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.HabitCountOrderByAggregateInput
   _avg?: Prisma.HabitAvgOrderByAggregateInput
   _max?: Prisma.HabitMaxOrderByAggregateInput
@@ -355,6 +381,8 @@ export type HabitScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"Habit"> | string
   currentStreak?: Prisma.IntWithAggregatesFilter<"Habit"> | number
   maxStreak?: Prisma.IntWithAggregatesFilter<"Habit"> | number
+  streakShields?: Prisma.IntWithAggregatesFilter<"Habit"> | number
+  lastCompletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Habit"> | Date | string | null
 }
 
 export type HabitCreateInput = {
@@ -367,6 +395,8 @@ export type HabitCreateInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
@@ -385,6 +415,8 @@ export type HabitUncheckedCreateInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
@@ -400,6 +432,8 @@ export type HabitUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
@@ -418,6 +452,8 @@ export type HabitUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
@@ -435,6 +471,8 @@ export type HabitCreateManyInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
 }
 
 export type HabitUpdateManyMutationInput = {
@@ -447,6 +485,8 @@ export type HabitUpdateManyMutationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type HabitUncheckedUpdateManyInput = {
@@ -461,6 +501,8 @@ export type HabitUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type HabitListRelationFilter = {
@@ -485,6 +527,8 @@ export type HabitCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   currentStreak?: Prisma.SortOrder
   maxStreak?: Prisma.SortOrder
+  streakShields?: Prisma.SortOrder
+  lastCompletedAt?: Prisma.SortOrder
 }
 
 export type HabitAvgOrderByAggregateInput = {
@@ -492,6 +536,7 @@ export type HabitAvgOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   currentStreak?: Prisma.SortOrder
   maxStreak?: Prisma.SortOrder
+  streakShields?: Prisma.SortOrder
 }
 
 export type HabitMaxOrderByAggregateInput = {
@@ -506,6 +551,8 @@ export type HabitMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   currentStreak?: Prisma.SortOrder
   maxStreak?: Prisma.SortOrder
+  streakShields?: Prisma.SortOrder
+  lastCompletedAt?: Prisma.SortOrder
 }
 
 export type HabitMinOrderByAggregateInput = {
@@ -520,6 +567,8 @@ export type HabitMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   currentStreak?: Prisma.SortOrder
   maxStreak?: Prisma.SortOrder
+  streakShields?: Prisma.SortOrder
+  lastCompletedAt?: Prisma.SortOrder
 }
 
 export type HabitSumOrderByAggregateInput = {
@@ -527,6 +576,7 @@ export type HabitSumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   currentStreak?: Prisma.SortOrder
   maxStreak?: Prisma.SortOrder
+  streakShields?: Prisma.SortOrder
 }
 
 export type HabitScalarRelationFilter = {
@@ -628,6 +678,8 @@ export type HabitCreateWithoutUserInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
@@ -644,6 +696,8 @@ export type HabitUncheckedCreateWithoutUserInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
@@ -690,6 +744,8 @@ export type HabitScalarWhereInput = {
   status?: Prisma.StringFilter<"Habit"> | string
   currentStreak?: Prisma.IntFilter<"Habit"> | number
   maxStreak?: Prisma.IntFilter<"Habit"> | number
+  streakShields?: Prisma.IntFilter<"Habit"> | number
+  lastCompletedAt?: Prisma.DateTimeNullableFilter<"Habit"> | Date | string | null
 }
 
 export type HabitCreateWithoutLogsInput = {
@@ -702,6 +758,8 @@ export type HabitCreateWithoutLogsInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
@@ -719,6 +777,8 @@ export type HabitUncheckedCreateWithoutLogsInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
 }
@@ -749,6 +809,8 @@ export type HabitUpdateWithoutLogsInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
@@ -766,6 +828,8 @@ export type HabitUncheckedUpdateWithoutLogsInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
 }
@@ -780,6 +844,8 @@ export type HabitCreateWithoutRemindersInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
@@ -797,6 +863,8 @@ export type HabitUncheckedCreateWithoutRemindersInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
 }
@@ -827,6 +895,8 @@ export type HabitUpdateWithoutRemindersInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
@@ -844,6 +914,8 @@ export type HabitUncheckedUpdateWithoutRemindersInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
 }
@@ -858,6 +930,8 @@ export type HabitCreateWithoutRoutineHabitsInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
@@ -875,6 +949,8 @@ export type HabitUncheckedCreateWithoutRoutineHabitsInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
 }
@@ -905,6 +981,8 @@ export type HabitUpdateWithoutRoutineHabitsInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
@@ -922,6 +1000,8 @@ export type HabitUncheckedUpdateWithoutRoutineHabitsInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
 }
@@ -937,6 +1017,8 @@ export type HabitCreateManyUserInput = {
   status: string
   currentStreak?: number
   maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
 }
 
 export type HabitUpdateWithoutUserInput = {
@@ -949,6 +1031,8 @@ export type HabitUpdateWithoutUserInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
@@ -965,6 +1049,8 @@ export type HabitUncheckedUpdateWithoutUserInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
@@ -981,6 +1067,8 @@ export type HabitUncheckedUpdateManyWithoutUserInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
   maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -1044,6 +1132,8 @@ export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   status?: boolean
   currentStreak?: boolean
   maxStreak?: boolean
+  streakShields?: boolean
+  lastCompletedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   logs?: boolean | Prisma.Habit$logsArgs<ExtArgs>
   reminders?: boolean | Prisma.Habit$remindersArgs<ExtArgs>
@@ -1063,6 +1153,8 @@ export type HabitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   currentStreak?: boolean
   maxStreak?: boolean
+  streakShields?: boolean
+  lastCompletedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["habit"]>
 
@@ -1078,6 +1170,8 @@ export type HabitSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   currentStreak?: boolean
   maxStreak?: boolean
+  streakShields?: boolean
+  lastCompletedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["habit"]>
 
@@ -1093,9 +1187,11 @@ export type HabitSelectScalar = {
   status?: boolean
   currentStreak?: boolean
   maxStreak?: boolean
+  streakShields?: boolean
+  lastCompletedAt?: boolean
 }
 
-export type HabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"habitId" | "userId" | "habitName" | "description" | "targetGoal" | "goalUnit" | "frequencyType" | "createdAt" | "status" | "currentStreak" | "maxStreak", ExtArgs["result"]["habit"]>
+export type HabitOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"habitId" | "userId" | "habitName" | "description" | "targetGoal" | "goalUnit" | "frequencyType" | "createdAt" | "status" | "currentStreak" | "maxStreak" | "streakShields" | "lastCompletedAt", ExtArgs["result"]["habit"]>
 export type HabitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   logs?: boolean | Prisma.Habit$logsArgs<ExtArgs>
@@ -1130,6 +1226,8 @@ export type $HabitPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     status: string
     currentStreak: number
     maxStreak: number
+    streakShields: number
+    lastCompletedAt: Date | null
   }, ExtArgs["result"]["habit"]>
   composites: {}
 }
@@ -1568,6 +1666,8 @@ export interface HabitFieldRefs {
   readonly status: Prisma.FieldRef<"Habit", 'String'>
   readonly currentStreak: Prisma.FieldRef<"Habit", 'Int'>
   readonly maxStreak: Prisma.FieldRef<"Habit", 'Int'>
+  readonly streakShields: Prisma.FieldRef<"Habit", 'Int'>
+  readonly lastCompletedAt: Prisma.FieldRef<"Habit", 'DateTime'>
 }
     
 

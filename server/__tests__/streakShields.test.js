@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 
+// Mock DB
 jest.unstable_mockModule('../db/db.js', () => ({
   default: {
     habit: {
@@ -8,12 +9,12 @@ jest.unstable_mockModule('../db/db.js', () => ({
     },
     log: {
       findFirst: jest.fn(),
-      findMany: jest.fn(),
       create: jest.fn(),
     },
   },
 }));
 
+// Mock user resolver
 jest.unstable_mockModule('../utils/resolveUser.js', () => ({
   findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1 }),
 }));
@@ -35,26 +36,21 @@ const mockRes = () => {
   return res;
 };
 
-describe('Streak Shields - completeHabit', () => {
+describe('Streak Shields (cron-based)', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  // Uses shield to preserve streak
-  it('uses a streak shield when a day is missed', async () => {
+  // Uses shield when user missed a day
+  it('uses a streak shield when a missed day is detected', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
       userId: 1,
       currentStreak: 5,
       maxStreak: 5,
       streakShields: 2,
+      lastCompletedAt: new Date(Date.now() - 2 * 86400000), // missed yesterday
     });
 
-    db.log.findFirst.mockResolvedValue(null); // not completed today
-
-    // simulate gap (missed yesterday)
-    db.log.findMany.mockResolvedValue([
-      { logDate: new Date(Date.now() - 2 * 86400000), completionStatus: true },
-    ]);
-
+    db.log.findFirst.mockResolvedValue(null);
     db.log.create.mockResolvedValue({});
 
     db.habit.update.mockResolvedValue({
@@ -72,16 +68,17 @@ describe('Streak Shields - completeHabit', () => {
 
     await completeHabit(req, res);
 
-    expect(db.habit.update).toHaveBeenCalled();
-    expect(res.json).toHaveBeenCalledWith(
+    expect(db.habit.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentStreak: 6,
-        streakShields: 1,
+        data: expect.objectContaining({
+          currentStreak: 6,
+          streakShields: 1,
+        }),
       })
     );
   });
 
-  // Resets streak if no shields
+  // Resets streak when no shields available
   it('resets streak when no shields are available', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
@@ -89,14 +86,10 @@ describe('Streak Shields - completeHabit', () => {
       currentStreak: 5,
       maxStreak: 5,
       streakShields: 0,
+      lastCompletedAt: new Date(Date.now() - 2 * 86400000),
     });
 
     db.log.findFirst.mockResolvedValue(null);
-
-    db.log.findMany.mockResolvedValue([
-      { logDate: new Date(Date.now() - 2 * 86400000), completionStatus: true },
-    ]);
-
     db.log.create.mockResolvedValue({});
 
     db.habit.update.mockResolvedValue({
@@ -114,30 +107,28 @@ describe('Streak Shields - completeHabit', () => {
 
     await completeHabit(req, res);
 
-    expect(res.json).toHaveBeenCalledWith(
+    expect(db.habit.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentStreak: 1,
-        streakShields: 0,
+        data: expect.objectContaining({
+          currentStreak: 1,
+          streakShields: 0,
+        }),
       })
     );
   });
 
-  // Consumes only one shield per missed day
-  it('consumes only one shield per missed day', async () => {
+  // Consumes exactly one shield for a single missed day
+  it('consumes only one shield for one missed day', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
       userId: 1,
       currentStreak: 5,
       maxStreak: 5,
       streakShields: 2,
+      lastCompletedAt: new Date(Date.now() - 2 * 86400000),
     });
 
     db.log.findFirst.mockResolvedValue(null);
-
-    db.log.findMany.mockResolvedValue([
-      { logDate: new Date(Date.now() - 2 * 86400000), completionStatus: true },
-    ]);
-
     db.log.create.mockResolvedValue({});
 
     db.habit.update.mockResolvedValue({
@@ -162,27 +153,18 @@ describe('Streak Shields - completeHabit', () => {
     );
   });
 
-  // Earns shield at milestone
-  it('awards a streak shield at milestone (e.g., 7 days)', async () => {
+  // Awards shield at milestone (e.g., 7-day streak)
+  it('awards a streak shield at milestone', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
       userId: 1,
       currentStreak: 6,
       maxStreak: 6,
       streakShields: 0,
+      lastCompletedAt: new Date(Date.now() - 86400000),
     });
 
     db.log.findFirst.mockResolvedValue(null);
-
-    db.log.findMany.mockResolvedValue([
-      { logDate: new Date(), completionStatus: true },
-      { logDate: new Date(Date.now() - 86400000), completionStatus: true },
-      { logDate: new Date(Date.now() - 2 * 86400000), completionStatus: true },
-      { logDate: new Date(Date.now() - 3 * 86400000), completionStatus: true },
-      { logDate: new Date(Date.now() - 4 * 86400000), completionStatus: true },
-      { logDate: new Date(Date.now() - 5 * 86400000), completionStatus: true },
-    ]);
-
     db.log.create.mockResolvedValue({});
 
     db.habit.update.mockResolvedValue({
@@ -216,14 +198,10 @@ describe('Streak Shields - completeHabit', () => {
       currentStreak: 6,
       maxStreak: 6,
       streakShields: 3, // assume cap = 3
+      lastCompletedAt: new Date(Date.now() - 86400000),
     });
 
     db.log.findFirst.mockResolvedValue(null);
-
-    db.log.findMany.mockResolvedValue([
-      { logDate: new Date(), completionStatus: true },
-    ]);
-
     db.log.create.mockResolvedValue({});
 
     db.habit.update.mockResolvedValue({
@@ -248,43 +226,33 @@ describe('Streak Shields - completeHabit', () => {
     );
   });
 
-  // Handles multiple missed days consuming multiple shields
-  it('consumes multiple shields for multiple missed days', async () => {
+  // Prevents double completion in same day
+  it('returns 400 if habit already completed today', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
       userId: 1,
-      currentStreak: 5,
-      maxStreak: 5,
-      streakShields: 2,
     });
 
-    db.log.findFirst.mockResolvedValue(null);
-
-    db.log.findMany.mockResolvedValue([
-      { logDate: new Date(Date.now() - 3 * 86400000), completionStatus: true },
-    ]);
-
-    db.log.create.mockResolvedValue({});
-
-    db.habit.update.mockResolvedValue({
-      habitId: 1,
-      currentStreak: 6,
-      maxStreak: 6,
-      streakShields: 0,
-      reminders: [],
-      routineHabits: [],
-      logs: [{ logId: 1 }],
-    });
+    db.log.findFirst.mockResolvedValue({ logId: 1 });
 
     const req = mockReq({ id: '1' });
     const res = mockRes();
 
     await completeHabit(req, res);
 
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        streakShields: 0,
-      })
-    );
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(db.log.create).not.toHaveBeenCalled();
+  });
+
+  // Handles unexpected errors
+  it('returns 500 on unexpected error', async () => {
+    db.habit.findFirst.mockRejectedValue(new Error('DB error'));
+
+    const req = mockReq({ id: '1' });
+    const res = mockRes();
+
+    await completeHabit(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 });
