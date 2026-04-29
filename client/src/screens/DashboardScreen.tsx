@@ -239,11 +239,7 @@ export default function DashboardScreen({ route, navigation }: any) {
                           })
                         }
                       />
-                      <IconButton icon="delete" onPress={(e: any) => { 
-                        e.stopPropagation(); // Prevent accordion toggle
-                        deleteRoutine(routine.ID);
-                        }} 
-                      />
+                      <IconButton icon="delete" onPress={() => deleteRoutine(routine.ID)} />
                     </View>
                   )}
                 >
