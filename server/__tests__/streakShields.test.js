@@ -1,9 +1,5 @@
 import { jest } from '@jest/globals';
 
-/* =========================
-   MOCKS
-========================= */
-
 jest.unstable_mockModule('../db/db.js', () => ({
   default: {
     habit: {
@@ -26,10 +22,6 @@ const db = (await import('../db/db.js')).default;
 const { completeHabit } = await import('../controllers/habitController.js');
 const { runStreakJob } = await import('../jobs/habitStreaks.js');
 
-/* =========================
-   HELPERS
-========================= */
-
 const mockReq = (params = {}, body = {}, user = { uid: 'user1' }) => ({
   params,
   body,
@@ -42,10 +34,6 @@ const mockRes = () => {
   res.json = jest.fn().mockReturnValue(res);
   return res;
 };
-
-/* =========================
-   COMPLETE HABIT TESTS
-========================= */
 
 describe('completeHabit (earning logic only)', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -171,10 +159,6 @@ describe('completeHabit (earning logic only)', () => {
   });
 });
 
-/* =========================
-   CRON JOB TESTS
-========================= */
-
 describe('runStreakJob (shield consumption + reset)', () => {
   beforeEach(() => jest.clearAllMocks());
 
@@ -188,7 +172,7 @@ describe('runStreakJob (shield consumption + reset)', () => {
       },
     ]);
 
-    await runStreakJob().task?.fireOnTick?.(); // or manually call inner fn if exported
+    await runStreakJob().task?.fireOnTick?.();
 
     expect(db.habit.update).toHaveBeenCalledWith(
       expect.objectContaining({
