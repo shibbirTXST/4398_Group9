@@ -164,11 +164,25 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     color: '#666',
   },
-  habitItem: {
+  habitCard: {
     backgroundColor: 'white',
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
     elevation: 2,
+  },
+  habitTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  shieldRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  streakText: {
+    fontSize: 14,
+    color: '#444',
   },
   emptyMessage: {
     fontSize: 16,
