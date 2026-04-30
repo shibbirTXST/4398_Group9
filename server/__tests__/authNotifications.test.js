@@ -22,6 +22,12 @@ app.use('/api/auth', authRouter);
 describe('POST /api/auth/push-token', () => {
   beforeEach(() => {
     jest.clearAllMocks(); 
+    // Suppress expected console.error logs during tests so the terminal output stays clean
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   // The Happy Path

@@ -1,4 +1,6 @@
-jest.mock('../firebaseAdmin', () => ({
+import { jest } from '@jest/globals';
+
+jest.unstable_mockModule('../firebaseAdmin.js', () => ({
   __esModule: true,
   default: {
     auth: () => ({
@@ -7,7 +9,7 @@ jest.mock('../firebaseAdmin', () => ({
   },
 }));
 
-jest.mock('../db/db.js', () => ({
+jest.unstable_mockModule('../db/db.js', () => ({
   __esModule: true,
   default: {
     $transaction: jest.fn(),
@@ -16,8 +18,8 @@ jest.mock('../db/db.js', () => ({
   },
 }));
 
-const request = require('supertest');
-const app = require('../app');
+const { default: request } = await import('supertest');
+const { default: app } = await import('../app.js');
 
 //test cases
 //simple test case for root endpoint

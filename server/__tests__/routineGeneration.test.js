@@ -45,11 +45,22 @@ const { default: app } = await import('../app.js');
 // Test Suite
 describe('AI Routine Generation API (POST /api/habits/routines/generate)', () => {
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Suppress expected console.error logs for 400/401 errors
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should generate a routine, save to DB, and return 201 with full survey data', async () => {
     const surveyData = {
       routineName: 'Morning Kickstart',
       focusArea: 'Productivity',
       timesOfDay: ['Morning'],
+      startTime: '09:00 AM', // <-- Added missing required field to fix 400 error!
       timeCommitment: '30 mins',
       difficulty: 'Beginner',
       additionalDetails: 'I want to feel energized'
@@ -88,6 +99,7 @@ describe('AI Routine Generation API (POST /api/habits/routines/generate)', () =>
         routineName: 'Test', 
         focusArea: 'Other',
         timesOfDay: ['Morning'],
+        startTime: '09:00 AM',
         timeCommitment: '15 mins',
         difficulty: 'Beginner',
         additionalDetails: 'None'
