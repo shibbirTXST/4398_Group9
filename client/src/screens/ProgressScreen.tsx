@@ -99,8 +99,7 @@ const sortedHabits = React.useMemo(() => {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <SafeAreaView style={styles.container}>
-          <ScrollView>
-            <View style={styles.content}>
+          <ScrollView style={styles.content}>
               <Text variant="headlineSmall" style={styles.title}>Settings</Text>
               <SegmentedButtons
                 value={sortby}
@@ -120,33 +119,35 @@ const sortedHabits = React.useMemo(() => {
               >
                 Sort {Descending ? 'Descending' : 'Ascending'}
               </Button>
-              <Text variant="headlineSmall" style={styles.title}>Your Streaks</Text>
-              {loading ? null : habits.length === 0 ? (
-                <Text style={styles.emptyMessage}>Add habits on your dashboard</Text>
-              ) : (
-                sortedHabits.map((habit) => (
-                  <List.Item
-                    key={habit.ID}
-                    title={habit.title}
-                    right={props => (
-                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {[0, 1, 2].map((i) => (
-                        <Ionicons
-                          key={i}
-                          name={i < (habit.streakShields ?? 0) ? "shield" : "shield-outline"}
-                          color={i < (habit.streakShields ?? 0) ? "#6200ee" : "#000000"}
-                          size={20}
-                        />
-                      ))}
-                      <Text {...props}>Longest Streak: {formatDays(habit.maxStreak)}</Text>
-                        <Text {...props}>Current Streak: {formatDays(habit.currentStreak)}</Text>
-                      </View>
-                    )}
-                    style={styles.habitItem}
-                  />
-                ))
-              )}
-            </View>
+            <Text variant="headlineSmall" style={styles.title}>Your Streaks</Text>
+            {loading ? null : habits.length === 0 ? (
+              <Text style={styles.emptyMessage}>Add habits on your dashboard</Text>
+            ) : (
+              sortedHabits.map((habit) => (
+                <View key={habit.ID} style={styles.habitCard}>
+                  <Text style={styles.habitTitle}>{habit.title}</Text>
+
+                  <View style={styles.shieldRow}>
+                    {[0, 1, 2].map((i) => (
+                      <Ionicons
+                        key={i}
+                        name={i < (habit.streakShields ?? 0) ? "shield" : "shield-outline"}
+                        color={i < (habit.streakShields ?? 0) ? "#6200ee" : "#999"}
+                        size={22}
+                        style={{ marginRight: 4 }}
+                      />
+                    ))}
+                  </View>
+
+                  <Text style={styles.streakText}>
+                    Current Streak: {formatDays(habit.currentStreak)}
+                  </Text>
+                  <Text style={styles.streakText}>
+                    Longest Streak: {formatDays(habit.maxStreak)}
+                  </Text>
+                </View>
+              ))
+            )}
           </ScrollView>
 
           <Snackbar
