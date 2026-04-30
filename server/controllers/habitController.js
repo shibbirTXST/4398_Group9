@@ -282,7 +282,6 @@ const completeHabit = async (req, res) => {
       return res.status(400).json({ error: 'Invalid habit ID' });
     }
 
-    // ===== Verify habit belongs to user =====
     const habit = await db.habit.findFirst({
       where: {
         habitId,
@@ -296,7 +295,6 @@ const completeHabit = async (req, res) => {
 
     const { start: startOfDay, end: endOfDay } = getTodayRange();
 
-    // ===== Prevent duplicate completion =====
     const existingLog = await db.log.findFirst({
       where: {
         habitId,
@@ -311,7 +309,6 @@ const completeHabit = async (req, res) => {
       return res.status(400).json({ error: 'Already completed today' });
     }
 
-    // ===== Create today's log =====
     await db.log.create({
       data: {
         habitId,
@@ -320,10 +317,8 @@ const completeHabit = async (req, res) => {
       },
     });
 
-    // ===== Increment streak (cron guarantees correctness) =====
     const newStreak = habit.currentStreak + 1;
 
-    // ===== Shield logic (ONLY earning, not consuming) =====
     const SHIELD_CAP = 3;
     const milestones = [7, 30, 100];
 
@@ -332,8 +327,7 @@ const completeHabit = async (req, res) => {
     if (milestones.includes(newStreak) && newShields < SHIELD_CAP) {
       newShields += 1;
     }
-
-    // ===== Update habit =====
+    
     const updatedHabit = await db.habit.update({
       where: { habitId },
       data: {

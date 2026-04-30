@@ -29,7 +29,7 @@ export const runStreakJob = async () => {
           await db.habit.update({
             where: { habitId: habit.habitId },
             data: {
-              streakShields: habit.streakShields - 1,
+              streakShields: Math.max(0, habit.streakShields - 1),
               // streak stays the same
             },
           });

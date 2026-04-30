@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
 import { API_BASE_URL } from '../config/API_base_url';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const theme = {
   ...DefaultTheme,
@@ -70,6 +71,14 @@ export default function ProgressScreen() {
                   title={habit.title}
                   right={props => (
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {[0, 1, 2].map((i) => (
+                        <Ionicons
+                          key={i}
+                          name={i < (habit.streakShields ?? 0) ? "shield" : "shield-outline"}
+                          color={i < (habit.streakShields ?? 0) ? "#6200ee" : "#000000"}
+                          size={20}
+                        />
+                      ))}
                       <Text {...props}>Longest Streak: {formatDays(habit.maxStreak)}</Text>
                       <Text {...props}>Current Streak: {formatDays(habit.currentStreak)}</Text>
                     </View>
