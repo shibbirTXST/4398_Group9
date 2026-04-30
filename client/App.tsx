@@ -17,6 +17,7 @@ import RoutineSettingsScreen from './src/screens/RoutineSettingsScreen';
 import AccountManagementScreen from './src/screens/AccountManagementScreen';
 import { ComponentProps } from 'react';
 import { API_BASE_URL } from './src/config/API_base_url';
+import { useFonts, Lobster_400Regular } from '@expo-google-fonts/lobster';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -214,6 +215,18 @@ function RootNavigation() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Lobster_400Regular,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <AuthProvider>
       <PaperProvider theme={theme}>

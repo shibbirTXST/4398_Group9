@@ -56,11 +56,11 @@ export default function SignInScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
-          <Image
+          {/* <Image
             source={require('../../assets/favicon.png')}
             style={{ width: 100, height: 100, alignSelf: 'center', marginBottom: 20 }}
-          />
-          <Text variant="titleLarge" style={styles.title}>Welcome back to Goaldn</Text>
+          /> */}
+          <Text variant="titleLarge" style={styles.title}>goalden</Text>
           <Text style={styles.subtitle}>Sign in to continue tracking your habits</Text>
 
           <TextInput
@@ -120,8 +120,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    lineHeight: 48,
+    fontSize: 40,
+    fontFamily: 'Lobster_400Regular',
+    color: '#D3AF37',
     textAlign: 'center',
     marginBottom: 8,
   },
