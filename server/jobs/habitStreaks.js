@@ -1,8 +1,7 @@
 import cron from 'node-cron';
 import db from '../db/db.js';
 
-export const streakCronJob = () => {
-  cron.schedule('0 0 * * *', async () => {
+export const runStreakJob = async () => {
     const yesterdayStart = new Date();
     yesterdayStart.setDate(yesterdayStart.getDate() - 1);
     yesterdayStart.setHours(0, 0, 0, 0);
@@ -48,5 +47,8 @@ export const streakCronJob = () => {
     } catch (err) {
       console.error('Error in streak cron job:', err);
     }
-  });
 };
+
+export const streakCronJob = () => {
+    cron.schedule('0 0 * * *', runStreakJob)
+}
