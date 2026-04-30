@@ -12,7 +12,7 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import HabitSettingsScreen from './src/screens/HabitSettingsScreen';
 import ProgressScreen from './src/screens/ProgressScreen';  
-import { View, Image } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import RoutineSettingsScreen from './src/screens/RoutineSettingsScreen';
 import AccountManagementScreen from './src/screens/AccountManagementScreen';
 import { ComponentProps } from 'react';
@@ -90,17 +90,22 @@ function HomeAppbar({ route, navigation }: any) {
 
   return (
     <Appbar.Header style={{ backgroundColor: '#f5f5f5' }}>
-      <Image
-        source={require('./assets/goldMonoIcon.png')}
-        style={{ width: 30, height: 30, marginRight: 10 }}
-      />
-      <Appbar.Content title={route.name} />
-      {/* Account Menu */}
-          <IconButton
-            icon="account-cog"
-            size={25}
-            onPress= {() => navigation.navigate('AccountManagementScreen')}
-          />
+      <View style={styles.headerSide}>
+        <Image
+          source={require('./assets/goldMonoIcon.png')}
+          style={styles.headerLogo}
+        />
+      </View>
+      <Appbar.Content title={route.name} titleStyle={styles.headerTitle} />
+      <View style={styles.headerSideRight}>
+        {/* Account Menu */}
+        <IconButton
+          icon="account-cog"
+          size={25}
+          onPress= {() => navigation.navigate('AccountManagementScreen')}
+        />
+        <Appbar.Action icon="logout" onPress={logout} />
+      </View>
           {/* Delete Account Dialog */}
           <Portal>
             <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
@@ -142,7 +147,6 @@ function HomeAppbar({ route, navigation }: any) {
             </Dialog.Actions>
             </Dialog>
           </Portal>
-      <Appbar.Action icon="logout" onPress={logout} />
     </Appbar.Header>
   )
 }
@@ -237,3 +241,24 @@ export default function App() {
     </AuthProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  headerSide: {
+    width: 96,
+    justifyContent: 'center',
+    paddingLeft: 12,
+  },
+  headerSideRight: {
+    width: 96,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  headerLogo: {
+    width: 30,
+    height: 30,
+  },
+  headerTitle: {
+    textAlign: 'center',
+  },
+});
