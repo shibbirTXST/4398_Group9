@@ -67,6 +67,11 @@ export type Log = Prisma.LogModel
  */
 export type Reminder = Prisma.ReminderModel
 /**
+ * Model HabitBadge
+ * 
+ */
+export type HabitBadge = Prisma.HabitBadgeModel
+/**
  * Model RoutineHabit
  * 
  */

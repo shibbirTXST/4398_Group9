@@ -48,6 +48,7 @@ model Habit {
   logs          Log[]
   reminders     Reminder[]
   routineHabits RoutineHabit[]
+  habitBadges   HabitBadge[]
 }
 
 model Routine {
@@ -85,6 +86,18 @@ model Reminder {
 
   // Relations
   habit Habit @relation(fields: [habitId], references: [habitId], onDelete: Cascade)
+}
+
+model HabitBadge {
+  id        Int @id @default(autoincrement())
+  habitId   Int
+  milestone Int   // e.g. 7, 30, 100
+  earnedAt  DateTime @default(now())
+
+  // Relations
+  habit Habit @relation(fields: [habitId], references: [habitId])
+
+  @@unique([habitId, milestone])
 }
 
 // Explicit Join Table for many-to-many relation between Routine and Habit

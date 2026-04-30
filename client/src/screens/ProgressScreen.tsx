@@ -73,8 +73,14 @@ export default function ProgressScreen() {
   }
 
   const names = habits.map(h => h.title);
-  return `${names.slice(0, -1).join(', ')}, and ${names.slice(-1)} were protected by streak shields`;
-};
+    return `${names.slice(0, -1).join(', ')}, and ${names.slice(-1)} were protected by streak shields`;
+  };
+
+  const badgeConfig: Record<number, { icon: string; color: string; label: string }> = {
+    7:   { icon: 'ribbon', color: '#CD7F32', label: '7-day streak' },   // bronze
+    30:  { icon: 'ribbon', color: '#C0C0C0', label: '30-day streak' },  // silver
+    100: { icon: 'ribbon', color: '#FFD700', label: '100-day streak' }, // gold
+  };
 
   return (
     <SafeAreaProvider>
@@ -107,6 +113,26 @@ export default function ProgressScreen() {
                   <Text style={styles.streakText}>
                     Longest Streak: {formatDays(habit.maxStreak)}
                   </Text>
+
+                  <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                    {habit.badges.map((milestone: number) => {
+                      const config = badgeConfig[milestone] ?? {
+                        icon: 'ribbon',
+                        color: '#888',
+                        label: `${milestone}-day streak`,
+                      };
+
+                      return (
+                        <Ionicons
+                          key={milestone}
+                          name={config.icon as any}
+                          size={16}
+                          color={config.color}
+                          style={{ marginRight: 6 }}
+                        />
+                      );
+                    })}
+                  </View>
                 </View>
               ))
             )}

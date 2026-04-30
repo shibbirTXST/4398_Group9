@@ -60,6 +60,16 @@ export default function DashboardScreen({ route, navigation }: any) {
       if (!res.ok) throw new Error('Failed to update habit');
       const updated = await res.json();
       setHabits(prev => prev.map(h => String(h.ID) === String(updated.ID) ? updated : h));
+
+      if (updated.newlyEarnedBadge) {
+        const milestone = updated.newlyEarnedBadge.milestone;
+
+        setSnackbarMessage(
+          `${updated.title}: ${milestone}-day streak badge earned!`
+        );
+        setSnackbarVisible(true);
+        return;
+      }
     } catch (err) {
       console.warn('Could not update habit:', err);
       setHabits(prev => prev.map(h => String(h.ID) === String(id) ? habit : h));
