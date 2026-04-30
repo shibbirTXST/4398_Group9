@@ -1,43 +1,52 @@
 import cron from 'node-cron';
 import db from '../db/db.js';
 
-export const resetHabitsCronJob = () => {
+export const streakCronJob = () => {
   cron.schedule('0 0 * * *', async () => {
-    const startOfDay = new Date();
-    startOfDay.setUTCHours(0, 0, 0, 0);
+    const yesterdayStart = new Date();
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    yesterdayStart.setHours(0, 0, 0, 0);
+
+    const yesterdayEnd = new Date(yesterdayStart);
+    yesterdayEnd.setHours(23, 59, 59, 999);
 
     try {
-      // Find habits NOT completed yesterday
-      const yesterday = new Date(startOfDay);
-      yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+      const habits = await db.habit.findMany({
+        where: { status: 'Active' },
+      });
 
-      const missedHabits = await db.habit.findMany({
-        where: {
-          status: 'Active',
-          logs: {
-            none: {
-              logDate: {
-                gte: yesterday,
-                lt: startOfDay,
-              },
-              completionStatus: true,
+      for (const habit of habits) {
+        const last = habit.lastCompletedAt;
+
+        const completedYesterday =
+          last &&
+          new Date(last) >= yesterdayStart &&
+          new Date(last) <= yesterdayEnd;
+
+        if (completedYesterday) continue;
+
+        // Missed day
+        if (habit.streakShields > 0) {
+          await db.habit.update({
+            where: { habitId: habit.habitId },
+            data: {
+              streakShields: habit.streakShields - 1,
+              // streak stays the same
             },
-          },
-        },
-      });
+          });
+        } else {
+          await db.habit.update({
+            where: { habitId: habit.habitId },
+            data: {
+              currentStreak: 0,
+            },
+          });
+        }
+      }
 
-      await db.habit.updateMany({
-        where: {
-          habitId: { in: missedHabits.map(h => h.habitId) },
-        },
-        data: {
-          currentStreak: 0,
-        },
-      });
-
-      console.log(`Reset ${missedHabits.length} streaks`);
+      console.log('Streak cron job completed');
     } catch (err) {
-      console.error('Error resetting streaks:', err);
+      console.error('Error in streak cron job:', err);
     }
   });
 };

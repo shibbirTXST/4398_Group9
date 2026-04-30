@@ -23,6 +23,31 @@ function getTodayRange() {
   return { start, end };
 }
 
+const isYesterday = (date) => {
+  if (!date) return false;
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+
+  return d.getTime() === yesterday.getTime();
+};
+
+const isToday = (date) => {
+  if (!date) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+
+  return d.getTime() === today.getTime();
+};
+
 /** Map Prisma habit (+ relations) to the JSON shape the mobile client expects. */
 function habitToDto(habit) {
   const reminder = habit.reminders?.[0];
@@ -33,12 +58,13 @@ function habitToDto(habit) {
   return {
     ID: String(habit.habitId),
     title: habit.habitName,
-    completed: completedToday,
-    count: completedToday ? 1 : 0,
+    completed: isToday(habit.lastCompletedAt),
+    count: isToday(habit.lastCompletedAt) ? 1 : 0,
     reminderTime: reminder?.reminderTime ?? '09:00',
     routineID: link ? link.routineId : 0,
     maxStreak: habit.maxStreak,
     currentStreak: habit.currentStreak,
+    streakShields: habit.streakShields,
   };
 }
 
