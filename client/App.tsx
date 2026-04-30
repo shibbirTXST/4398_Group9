@@ -14,6 +14,7 @@ import HabitSettingsScreen from './src/screens/HabitSettingsScreen';
 import ProgressScreen from './src/screens/ProgressScreen';  
 import { View, Image } from 'react-native';
 import RoutineSettingsScreen from './src/screens/RoutineSettingsScreen';
+import AccountManagementScreen from './src/screens/AccountManagementScreen';
 import { ComponentProps } from 'react';
 import { API_BASE_URL } from './src/config/API_base_url';
 
@@ -101,6 +102,14 @@ function HomeAppbar({ route, navigation }: any) {
               <Appbar.Action icon="account-cog" onPress={openAccMenu} />
             }
           >
+            <Menu.Item
+              onPress={() => {
+                closeAccMenu();
+                navigation.navigate('AccountManagementScreen');
+              }}
+              title="Account Settings"
+              leadingIcon="account-cog"
+            />
             <Menu.Item
               onPress={showDeleteAccDialog}
               title="Delete account"
@@ -210,6 +219,7 @@ function RootNavigation() {
         />
         <Stack.Screen name="HabitSettingsScreen" component={HabitSettingsScreen} />
         <Stack.Screen name="RoutineSettingsScreen" component={RoutineSettingsScreen} />
+        <Stack.Screen name="AccountManagementScreen" component={AccountManagementScreen} />
         </>
       ) : (
         <>

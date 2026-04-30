@@ -18,6 +18,20 @@ const getCurrentUser = async (req, res) => {
 };
 
 const updateCurrentUser = async (req, res) => {
+  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+    return res.status(400).json({ error: 'Invalid request body' });
+  }
+
+  const allowedFields = new Set(['username']);
+  const requestedFields = Object.keys(req.body);
+  const unsupportedFields = requestedFields.filter((field) => !allowedFields.has(field));
+
+  if (unsupportedFields.length > 0) {
+    return res.status(400).json({
+      error: `Unsupported fields: ${unsupportedFields.join(', ')}`,
+    });
+  }
+
   const { username } = req.body;
   if (username == null || typeof username !== 'string' || !username.trim()) {
     return res.status(400).json({ error: 'username is required' });
