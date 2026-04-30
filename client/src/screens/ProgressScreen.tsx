@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { MD3LightTheme as DefaultTheme, PaperProvider, Text, List } from 'react-native-paper';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -60,34 +60,37 @@ export default function ProgressScreen() {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <SafeAreaView style={styles.container}>
-          <View style={styles.content}>
+          <ScrollView style={styles.content}>
             <Text variant="headlineSmall" style={styles.title}>Your Streaks</Text>
             {loading ? null : habits.length === 0 ? (
               <Text style={styles.emptyMessage}>Add habits on your dashboard</Text>
             ) : (
               habits.map((habit) => (
-                <List.Item
-                  key={habit.ID}
-                  title={habit.title}
-                  right={props => (
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {[0, 1, 2].map((i) => (
-                        <Ionicons
-                          key={i}
-                          name={i < (habit.streakShields ?? 0) ? "shield" : "shield-outline"}
-                          color={i < (habit.streakShields ?? 0) ? "#6200ee" : "#000000"}
-                          size={20}
-                        />
-                      ))}
-                      <Text {...props}>Longest Streak: {formatDays(habit.maxStreak)}</Text>
-                      <Text {...props}>Current Streak: {formatDays(habit.currentStreak)}</Text>
-                    </View>
-                  )}
-                  style={styles.habitItem}
-                />
+                <View key={habit.ID} style={styles.habitCard}>
+                  <Text style={styles.habitTitle}>{habit.title}</Text>
+
+                  <View style={styles.shieldRow}>
+                    {[0, 1, 2].map((i) => (
+                      <Ionicons
+                        key={i}
+                        name={i < (habit.streakShields ?? 0) ? "shield" : "shield-outline"}
+                        color={i < (habit.streakShields ?? 0) ? "#6200ee" : "#999"}
+                        size={22}
+                        style={{ marginRight: 4 }}
+                      />
+                    ))}
+                  </View>
+
+                  <Text style={styles.streakText}>
+                    Current Streak: {formatDays(habit.currentStreak)}
+                  </Text>
+                  <Text style={styles.streakText}>
+                    Longest Streak: {formatDays(habit.maxStreak)}
+                  </Text>
+                </View>
               ))
             )}
-          </View>
+          </ScrollView>
         </SafeAreaView>
       </PaperProvider>
     </SafeAreaProvider>
@@ -111,11 +114,25 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     color: '#666',
   },
-  habitItem: {
+  habitCard: {
     backgroundColor: 'white',
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
     elevation: 2,
+  },
+  habitTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  shieldRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  streakText: {
+    fontSize: 14,
+    color: '#444',
   },
   emptyMessage: {
     fontSize: 16,
