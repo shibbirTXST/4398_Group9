@@ -41,6 +41,7 @@ function habitToDto(habit) {
     maxStreak: habit.maxStreak,
     currentStreak: habit.currentStreak,
     streakShields: habit.streakShields,
+    shieldUsedRecently: habit.shieldUsedRecently,
     enabledStatus: reminder?.enabledStatus ?? true,
   };
 }
@@ -92,7 +93,23 @@ const getHabits = async (req, res) => {
       },
       orderBy: { habitId: 'asc' },
     });
-    return res.status(200).json(rows.map(habitToDto));
+
+    const response = rows.map(habitToDto);
+
+    // Clear shieldUsedRecently flag
+    if (req.query.acknowledgeShieldUsage === 'true') {
+      await db.habit.updateMany({
+        where: {
+          userId: user.userId,
+          shieldUsedRecently: true,
+        },
+        data: {
+          shieldUsedRecently: false,
+        },
+      });
+    }
+
+    return res.status(200).json(response);
   } catch (err) {
     console.error('Error fetching habits:', err);
     return res.status(500).json({ error: 'Failed to fetch habits' });

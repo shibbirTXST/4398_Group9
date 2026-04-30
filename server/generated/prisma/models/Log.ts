@@ -428,10 +428,6 @@ export type LogUncheckedUpdateManyWithoutHabitNestedInput = {
   deleteMany?: Prisma.LogScalarWhereInput | Prisma.LogScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type LogCreateWithoutHabitInput = {
   logDate: Date | string
   completionStatus?: boolean
