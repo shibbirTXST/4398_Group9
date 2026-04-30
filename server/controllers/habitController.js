@@ -16,38 +16,13 @@ async function requireDbUser(req, res) {
 
 function getTodayRange() {
   const start = new Date();
-  start.setUTCHours(0, 0, 0, 0);
+  start.setHours(0, 0, 0, 0);
 
   const end = new Date();
-  end.setUTCHours(23, 59, 59, 999);
+  end.setHours(23, 59, 59, 999);
 
   return { start, end };
 }
-
-const isYesterday = (date) => {
-  if (!date) return false;
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(0, 0, 0, 0);
-
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-
-  return d.getTime() === yesterday.getTime();
-};
-
-const isToday = (date) => {
-  if (!date) return false;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-
-  return d.getTime() === today.getTime();
-};
 
 /** Map Prisma habit (+ relations) to the JSON shape the mobile client expects. */
 function habitToDto(habit) {
@@ -59,8 +34,8 @@ function habitToDto(habit) {
   return {
     ID: String(habit.habitId),
     title: habit.habitName,
-    completed: isToday(habit.lastCompletedAt),
-    count: isToday(habit.lastCompletedAt) ? 1 : 0,
+    completed: completedToday,
+    count: completedToday ? 1 : 0,
     reminderTime: reminder?.reminderTime ?? '09:00',
     routineID: link ? link.routineId : 0,
     maxStreak: habit.maxStreak,
@@ -311,7 +286,7 @@ const completeHabit = async (req, res) => {
       return res.status(400).json({ error: 'Invalid habit ID' });
     }
 
-    // Verify habit belongs to user
+    // ===== Verify habit belongs to user =====
     const habit = await db.habit.findFirst({
       where: {
         habitId,
@@ -349,12 +324,27 @@ const completeHabit = async (req, res) => {
       },
     });
 
-    // ===== Increment streak =====
+    // ===== Increment streak (cron guarantees correctness) =====
+    const newStreak = habit.currentStreak + 1;
+
+    // ===== Shield logic (ONLY earning, not consuming) =====
+    const SHIELD_CAP = 3;
+    const milestones = [7, 30, 100];
+
+    let newShields = habit.streakShields ?? 0;
+
+    if (milestones.includes(newStreak) && newShields < SHIELD_CAP) {
+      newShields += 1;
+    }
+
+    // ===== Update habit =====
     const updatedHabit = await db.habit.update({
       where: { habitId },
       data: {
-        currentStreak: habit.currentStreak + 1,
-        maxStreak: Math.max(habit.currentStreak + 1, habit.maxStreak),
+        currentStreak: newStreak,
+        maxStreak: Math.max(newStreak, habit.maxStreak),
+        streakShields: newShields,
+        lastCompletedAt: new Date(),
       },
       include: {
         reminders: true,
