@@ -40,6 +40,7 @@ function habitToDto(habit) {
     routineID: link ? link.routineId : 0,
     maxStreak: habit.maxStreak,
     currentStreak: habit.currentStreak,
+    enabledStatus: reminder?.enabledStatus ?? true,
     streakShields: habit.streakShields,
     shieldUsedRecently: habit.shieldUsedRecently,
     enabledStatus: reminder?.enabledStatus ?? true,
