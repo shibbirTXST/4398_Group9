@@ -3,7 +3,7 @@ import { NavigationContainer, useNavigationState } from '@react-navigation/nativ
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { PaperProvider, MD3LightTheme as DefaultTheme, ActivityIndicator, Appbar, Menu, Portal, Dialog, TextInput, Button, Text } from 'react-native-paper';
+import { PaperProvider, MD3LightTheme as DefaultTheme, ActivityIndicator, Appbar, Portal, Dialog, TextInput, Button, Text, IconButton } from 'react-native-paper';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import { EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { auth } from './src/config/firebase';
@@ -95,29 +95,11 @@ function HomeAppbar({ route, navigation }: any) {
       />
       <Appbar.Content title={route.name} />
       {/* Account Menu */}
-          <Menu
-            visible={accMenuVisible}
-            onDismiss={closeAccMenu}
-            anchor={
-              <Appbar.Action icon="account-cog" onPress={openAccMenu} />
-            }
-          >
-            <Menu.Item
-              onPress={() => {
-                closeAccMenu();
-                navigation.navigate('AccountManagementScreen');
-              }}
-              title="Account Settings"
-              leadingIcon="account-cog"
-            />
-            <Menu.Item
-              onPress={showDeleteAccDialog}
-              title="Delete account"
-              leadingIcon="delete"
-              titleStyle={{ color: 'red' }}
-            />
-          </Menu>
-          
+          <IconButton
+            icon="account-cog"
+            size={25}
+            onPress= {() => navigation.navigate('AccountManagementScreen')}
+          />
           {/* Delete Account Dialog */}
           <Portal>
             <Dialog visible={deleteAccDialogVisible} onDismiss={hideDeleteAccDialog}>
