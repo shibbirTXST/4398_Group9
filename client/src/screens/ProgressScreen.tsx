@@ -29,7 +29,7 @@ export default function ProgressScreen() {
         setLoading(true);
         try {
           const tok = await auth.currentUser?.getIdToken();
-          const res = await fetch(`${API_BASE_URL}/api/habits?acknowledgeShieldUsage=true`, {
+          const res = await fetch(`${API_BASE_URL}/api/habits?progressScreen=true`, {
             headers: { 'Authorization': `Bearer ${tok}` }
           });
           if (!res.ok) throw new Error('Failed to fetch habits');
@@ -44,10 +44,10 @@ export default function ProgressScreen() {
             }))
           );
 
-          const usedShieldHabit = data.find((h: any) => h.shieldUsedRecently);
+          const shieldedHabits = data.filter((h: any) => h.shieldUsedRecently);
 
-          if (usedShieldHabit) {
-            setSnackbarMessage(`A streak shield protected "${usedShieldHabit.title}"`);
+          if (shieldedHabits.length > 0) {
+            setSnackbarMessage(buildShieldMessage(shieldedHabits));
             setSnackbarVisible(true);
           }
         } catch (err) {
@@ -62,6 +62,19 @@ export default function ProgressScreen() {
   );
 
   const formatDays = (count: number) => `${count} ${count === 1 ? 'day' : 'days'}`;
+
+  const buildShieldMessage = (habits: any[]) => {
+  if (habits.length === 1) {
+    return `${habits[0].title} was protected by a streak shield`;
+  }
+
+  if (habits.length === 2) {
+    return `${habits[0].title} and ${habits[1].title} were protected by streak shields`;
+  }
+
+  const names = habits.map(h => h.title);
+  return `${names.slice(0, -1).join(', ')}, and ${names.slice(-1)} were protected by streak shields`;
+};
 
   return (
     <SafeAreaProvider>
@@ -102,7 +115,7 @@ export default function ProgressScreen() {
           <Snackbar
             visible={snackbarVisible}
             onDismiss={() => setSnackbarVisible(false)}
-            duration={3000}
+            duration={5000}
           >
             {snackbarMessage}
           </Snackbar>

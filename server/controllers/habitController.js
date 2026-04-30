@@ -95,7 +95,7 @@ const getHabits = async (req, res) => {
     const response = rows.map(habitToDto);
 
     // Clear shieldUsedRecently flag
-    if (req.query.acknowledgeShieldUsage === 'true') {
+    if (req.query?.progressScreen === 'true') {
       await db.habit.updateMany({
         where: {
           userId: user.userId,
