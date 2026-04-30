@@ -1,6 +1,25 @@
 import { jest } from '@jest/globals';
+import request from 'supertest';
 
-// Mock modules FIRST
+// Mock Firebase Auth
+jest.unstable_mockModule('../firebaseAdmin.js', () => ({
+  default: {
+    auth: () => ({
+      verifyIdToken: jest.fn().mockResolvedValue({
+        uid: 'test-uid',
+        email: 'user@test.com',
+      }),
+    }),
+  },
+}));
+
+// Mock User Resolver
+jest.unstable_mockModule('../utils/resolveUser.js', () => ({
+  findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' }),
+  upsertUserFromDecodedToken: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' })
+}));
+
+// Mock Database
 jest.unstable_mockModule('../db/db.js', () => ({
   default: {
     log: {
@@ -13,15 +32,23 @@ jest.unstable_mockModule('../db/db.js', () => ({
       update: jest.fn(),
       findMany: jest.fn(),
     },
-  },
-}));
-
-jest.unstable_mockModule('../utils/resolveUser.js', () => ({
-  findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1 }),
+    routine: {
+      findMany: jest.fn(),
+    },
+    $transaction: jest.fn().mockImplementation(async (callback) => {
+      const tx = {
+        habit: { create: jest.fn().mockResolvedValue({}) },
+        reminder: { create: jest.fn().mockResolvedValue({}) },
+        routineHabit: { create: jest.fn().mockResolvedValue({}) },
+      };
+      return callback(tx);
+    }),
+  }
 }));
 
 // THEN import after mocks
 const db = (await import('../db/db.js')).default;
+const { default: app } = await import('../app.js');
 const { completeHabit, getHabits } = await import('../controllers/habitController.js');
 
 // Helpers
@@ -199,6 +226,7 @@ describe('getHabits', () => {
   });
 
   it('returns habits with completed: true when log exists today', async () => {
+    // Mock the findMany to return habits with logs (completed today)
     db.habit.findMany.mockResolvedValue([
       {
         habitId: 1,
@@ -211,21 +239,17 @@ describe('getHabits', () => {
       },
     ]);
 
-    const req = mockReq({}, {}, { uid: 'user1' });
-    const res = mockRes();
+    const response = await request(app)
+      .get('/api/habits')
+      .set('Authorization', 'Bearer valid-firebase-token');
 
-    await getHabits(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith([
-      expect.objectContaining({
-        ID: '1',
-        completed: true,
-      }),
-    ]);
+    expect(response.status).toBe(200);
+    expect(response.body[0]).toHaveProperty('ID', '1');
+    expect(response.body[0]).toHaveProperty('completed', true);
   });
 
   it('returns habits with completed: false when no logs today', async () => {
+    // Mock the findMany to return habits without logs (not completed)
     db.habit.findMany.mockResolvedValue([
       {
         habitId: 1,
@@ -238,30 +262,23 @@ describe('getHabits', () => {
       },
     ]);
 
-    const req = mockReq({}, {}, { uid: 'user1' });
-    const res = mockRes();
+    const response = await request(app)
+      .get('/api/habits')
+      .set('Authorization', 'Bearer valid-firebase-token');
 
-    await getHabits(req, res);
-
-    expect(res.json).toHaveBeenCalledWith([
-      expect.objectContaining({
-        ID: '1',
-        completed: false,
-      }),
-    ]);
+    expect(response.status).toBe(200);
+    expect(response.body[0]).toHaveProperty('ID', '1');
+    expect(response.body[0]).toHaveProperty('completed', false);
   });
 
   it('returns 500 if database fails', async () => {
     db.habit.findMany.mockRejectedValue(new Error('DB error'));
 
-    const req = mockReq({}, {}, { uid: 'user1' });
-    const res = mockRes();
+    const response = await request(app)
+      .get('/api/habits')
+      .set('Authorization', 'Bearer valid-firebase-token');
 
-    await getHabits(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({
-      error: expect.any(String),
-    });
+    expect(response.status).toBe(500);
+    expect(response.body.error).toBeDefined();
   });
 });
