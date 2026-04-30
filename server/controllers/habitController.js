@@ -389,6 +389,7 @@ const completeHabit = async (req, res) => {
             completionStatus: true,
           },
         },
+        habitBadges: true,
       },
     });
 

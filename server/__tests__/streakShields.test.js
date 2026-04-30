@@ -135,7 +135,7 @@ describe('Streak Shields - completeHabit (cron-based architecture)', () => {
       currentStreak: 7,
       maxStreak: 7,
       streakShields: 1,
-      badges: [7],
+      habitBadges: [{ milestone: 7 }],
       reminders: [],
       routineHabits: [],
       logs: [{ logId: 1 }],
@@ -160,7 +160,7 @@ describe('Streak Shields - completeHabit (cron-based architecture)', () => {
       currentStreak: 6,
       maxStreak: 6,
       streakShields: 0,
-      badges: [7],
+      habitBadges: [{ milestone: 7 }],
     });
 
     db.log.findFirst.mockResolvedValue(null);
@@ -172,7 +172,7 @@ describe('Streak Shields - completeHabit (cron-based architecture)', () => {
       currentStreak: 7,
       maxStreak: 7,
       streakShields: 1,
-      badges: [7],
+      habitBadges: [{ milestone: 7 }],
       reminders: [],
       routineHabits: [],
       logs: [{ logId: 1 }],
