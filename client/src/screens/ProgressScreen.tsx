@@ -1,8 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, List } from 'react-native-paper';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, Snackbar } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../config/firebase';
 import { API_BASE_URL } from '../config/API_base_url';
@@ -18,9 +17,10 @@ const theme = {
 };
 
 export default function ProgressScreen() {
-  const navigation = useNavigation<StackNavigationProp<any>>();
   const [loading, setLoading] = useState(false);
   const [habits, setHabits] = React.useState<any[]>([]);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -29,7 +29,7 @@ export default function ProgressScreen() {
         setLoading(true);
         try {
           const tok = await auth.currentUser?.getIdToken();
-          const res = await fetch(`${API_BASE_URL}/api/habits/`, {
+          const res = await fetch(`${API_BASE_URL}/api/habits?acknowledgeShieldUsage=true`, {
             headers: { 'Authorization': `Bearer ${tok}` }
           });
           if (!res.ok) throw new Error('Failed to fetch habits');
@@ -43,6 +43,13 @@ export default function ProgressScreen() {
               currentStreak: h.currentStreak ?? 0,
             }))
           );
+
+          const usedShieldHabit = data.find((h: any) => h.shieldUsedRecently);
+
+          if (usedShieldHabit) {
+            setSnackbarMessage(`A streak shield protected "${usedShieldHabit.title}"`);
+            setSnackbarVisible(true);
+          }
         } catch (err) {
           console.warn('Could not load habits:', err);
         }
@@ -91,6 +98,14 @@ export default function ProgressScreen() {
               ))
             )}
           </ScrollView>
+
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={3000}
+          >
+            {snackbarMessage}
+          </Snackbar>
         </SafeAreaView>
       </PaperProvider>
     </SafeAreaProvider>

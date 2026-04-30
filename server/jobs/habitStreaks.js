@@ -31,6 +31,7 @@ export const runStreakJob = async () => {
             data: {
               streakShields: Math.max(0, habit.streakShields - 1),
               // streak stays the same
+              shieldUsedRecently: true,
             },
           });
         } else {

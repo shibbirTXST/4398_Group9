@@ -102,7 +102,8 @@ export const HabitScalarFieldEnum = {
   currentStreak: 'currentStreak',
   maxStreak: 'maxStreak',
   streakShields: 'streakShields',
-  lastCompletedAt: 'lastCompletedAt'
+  lastCompletedAt: 'lastCompletedAt',
+  shieldUsedRecently: 'shieldUsedRecently'
 } as const
 
 export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]

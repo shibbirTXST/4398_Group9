@@ -41,6 +41,7 @@ model Habit {
   maxStreak     Int      @default(0)
   streakShields Int      @default(0)
   lastCompletedAt DateTime?
+  shieldUsedRecently  Boolean @default(false)
 
   // Relations
   user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
