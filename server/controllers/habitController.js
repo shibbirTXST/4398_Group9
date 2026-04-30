@@ -40,6 +40,7 @@ function habitToDto(habit) {
     routineID: link ? link.routineId : 0,
     maxStreak: habit.maxStreak,
     currentStreak: habit.currentStreak,
+    enabledStatus: reminder?.enabledStatus ?? true,
   };
 }
 
@@ -207,7 +208,9 @@ const updateHabit = async (req, res) => {
     return res.status(400).json({ error: 'Error Message Return: Request body is required' });
   }
 
-  const { title, reminderTime, routineID } = req.body;
+  const { title, reminderTime, routineID, enabledStatus } = req.body;
+
+  const isEnabled = enabledStatus ?? true;
 
   if (isNaN(parseInt(id, 10))) {
     return res.status(400).json({ error: 'Error Message Return: Invalid habit ID' });
@@ -250,7 +253,7 @@ const updateHabit = async (req, res) => {
         data: {
           habitId,
           reminderTime: normalizeReminderTimeForCron(reminderTime),
-          enabledStatus: true,
+          enabledStatus: isEnabled,
         },
       });
       await tx.routineHabit.deleteMany({ where: { habitId } });

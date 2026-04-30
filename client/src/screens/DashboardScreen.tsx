@@ -68,6 +68,33 @@ export default function DashboardScreen({ route, navigation }: any) {
     }
   };
 
+  const toggleReminder = async (habit : any , isEnabled: boolean) => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+    const token = await user.getIdToken();
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/habits/${habit.ID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({title: habit.title, reminderTime: habit.reminderTime, routineID: habit.routineID, enabledStatus: isEnabled }),
+      });
+      if (res.ok) {
+        // Update local state to reflect the change immediately
+        setHabits(prev => prev.map(h => 
+          String(h.ID) === String(habit.ID) 
+            ? { ...h, enabledStatus: isEnabled } 
+            : h
+        ));
+      }
+    } catch (err) {
+      console.error('Error toggling reminder', err);
+    }
+  };
+
   React.useEffect(() => {
     // load habits from API
     const load = async () => {
@@ -206,7 +233,8 @@ export default function DashboardScreen({ route, navigation }: any) {
                             {habit.count}/1
                           </Text>
                           <IconButton
-                            icon="bell"
+                            icon={habit.enabledStatus ? "bell" : "bell-off"}
+                            onPress={() => toggleReminder(habit, !habit.enabledStatus)}
                           />
                           <IconButton
                             icon="pencil"
@@ -276,7 +304,10 @@ export default function DashboardScreen({ route, navigation }: any) {
                                   <Text {...props} style={styles.count}>
                                     {habit.count}/1
                                   </Text>
-                                  <IconButton icon="bell" />
+                                  <IconButton
+                                    icon={habit.enabledStatus ? "bell" : "bell-off"}
+                                    onPress={() => toggleReminder(habit, !habit.enabledStatus)}
+                                  />
                                   <IconButton
                                     icon="pencil"
                                     onPress={() => navigation.navigate('HabitSettingsScreen', {
