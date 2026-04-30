@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { MD3LightTheme as DefaultTheme, PaperProvider, Text, List } from 'react-native-paper';
+import { MD3LightTheme as DefaultTheme, PaperProvider, Text, List, SegmentedButtons, Button } from 'react-native-paper';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -11,8 +11,8 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#6200ee',
-    secondary: '#03dac6',
+    primary: '#D3AF37',
+    secondary: '#6BA292',
   },
 };
 
@@ -20,6 +20,38 @@ export default function ProgressScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const [loading, setLoading] = useState(false);
   const [habits, setHabits] = React.useState<any[]>([]);
+  const [sortby, setSortby] = useState('ID');
+  const [Descending, setDescending] = useState(false);
+
+const sortedHabits = React.useMemo(() => {
+    const sorted = [...habits];
+    switch (sortby) {
+      case 'title':
+        if(Descending) {
+          return sorted.sort((a, b) => b.title.localeCompare(a.title));
+        } else {
+          return sorted.sort((a, b) => a.title.localeCompare(b.title));
+        }
+      case 'currentStreak':
+        if(Descending) {
+          return sorted.sort((a, b) => b.currentStreak - a.currentStreak);
+        } else {
+          return sorted.sort((a, b) => a.currentStreak - b.currentStreak);
+        }
+      case 'maxStreak':
+        if(Descending) {
+          return sorted.sort((a, b) => b.maxStreak - a.maxStreak);
+        } else {
+          return sorted.sort((a, b) => a.maxStreak - b.maxStreak);
+        }
+      default:
+        if(Descending) {
+          return sorted.sort((a, b) => b.habitId - a.habitId);
+        } else {
+          return sorted.sort((a, b) => a.habitId - b.habitId);
+        }
+    }
+  }, [habits, sortby, Descending]);
 
   useFocusEffect(
     useCallback(() => {
@@ -61,11 +93,30 @@ export default function ProgressScreen() {
         <SafeAreaView style={styles.container}>
           <ScrollView>
             <View style={styles.content}>
+              <Text variant="headlineSmall" style={styles.title}>Settings</Text>
+              <SegmentedButtons
+                value={sortby}
+                onValueChange={setSortby}
+                style= {styles.button}
+                buttons={[
+                  { label: 'ID', value: 'ID', style: {backgroundColor: sortby === 'ID' ? theme.colors.secondary : undefined}, checkedColor: "white" },
+                  { label: 'Title', value: 'title', style: {backgroundColor: sortby === 'title' ? theme.colors.secondary : undefined}, checkedColor: "white" },
+                  { label: 'Current Streak', value: 'currentStreak', style: {backgroundColor: sortby === 'currentStreak' ? theme.colors.secondary : undefined}, checkedColor: "white" },
+                  { label: 'Max Streak', value: 'maxStreak', style: {backgroundColor: sortby === 'maxStreak' ? theme.colors.secondary : undefined}, checkedColor: "white" },
+                ]}
+              />
+              <Button
+                mode="contained"
+                onPress={() => setDescending(!Descending)}
+                style={styles.button}
+              >
+                Sort {Descending ? 'Descending' : 'Ascending'}
+              </Button>
               <Text variant="headlineSmall" style={styles.title}>Your Streaks</Text>
               {loading ? null : habits.length === 0 ? (
                 <Text style={styles.emptyMessage}>Add habits on your dashboard</Text>
               ) : (
-                habits.map((habit) => (
+                sortedHabits.map((habit) => (
                   <List.Item
                     key={habit.ID}
                     title={habit.title}
@@ -114,4 +165,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
   },
+  button: {
+    marginVertical: 6,
+    alignSelf: 'center',
+    maxWidth: 800,
+    width: '100%',
+  }
 });
