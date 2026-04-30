@@ -50,6 +50,16 @@ const { default: app } = await import('../app.js');
 
 describe('Habit Addition API (POST /api/habits)', () => {
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Suppress expected console.error logs for 400/401 errors
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   // test case 1: correct path
   it('should save the habit and return success when the user is logged in', async () => {
     const newHabit = {

@@ -16,18 +16,12 @@ authRouter.post('/sync', authCheck, async (req, res) => {
   }
 });
 
-authRouter.delete('/delete-account', async (req, res) => {
+authRouter.delete('/delete-account', authCheck, async (req, res) => {
   try {
-    const token = req.headers.authorization?.split('Bearer ')[1];
-
-    if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const decoded = await admin.auth().verifyIdToken(token);
-    const uid = decoded.uid;
+    const uid = req.user.uid; // Provided by authCheck middleware
 
     await db.$transaction(async (tx) => {
+      // Ensure we delete by the Firebase UID associated with the verified token
       await tx.user.deleteMany({ where: { firebaseUid: uid } });
     });
 

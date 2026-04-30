@@ -39,7 +39,15 @@ const mockRes = () => {
 };
 
 describe('completeHabit', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Suppress expected console.error logs to keep terminal clean
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   it('creates a log and updates streak correctly', async () => {
     db.habit.findFirst.mockResolvedValue({
@@ -181,7 +189,14 @@ describe('completeHabit', () => {
 });
 
 describe('getHabits', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   it('returns habits with completed: true when log exists today', async () => {
     db.habit.findMany.mockResolvedValue([

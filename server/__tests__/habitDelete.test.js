@@ -1,8 +1,7 @@
 import request from 'supertest';
-import app from '../app.js';
+import { jest } from '@jest/globals';
 
-jest.mock('../firebaseAdmin.js', () => ({
-  __esModule: true,
+jest.unstable_mockModule('../firebaseAdmin.js', () => ({
   default: {
     auth: () => ({
       verifyIdToken: jest.fn().mockResolvedValue({
@@ -13,10 +12,50 @@ jest.mock('../firebaseAdmin.js', () => ({
   },
 }));
 
+// Mock User Resolver
+jest.unstable_mockModule('../utils/resolveUser.js', () => ({
+  findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1 }),
+  upsertUserFromDecodedToken: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' }),
+}));
+
+// Mock Database to bypass Prisma TypeScript parsing issues
+jest.unstable_mockModule('../db/db.js', () => ({
+  default: {
+    habit: {
+      findFirst: jest.fn(),
+      deleteMany: jest.fn(),
+    },
+    reminder: {
+      deleteMany: jest.fn().mockResolvedValue({}),
+    },
+    routineHabit: {
+      deleteMany: jest.fn().mockResolvedValue({}),
+    },
+  },
+}));
+
+// Import modules AFTER mocks are defined
+const db = (await import('../db/db.js')).default;
+const { default: app } = await import('../app.js');
+
 describe('Habit Deletion API (DELETE /api/habits/:id)', () => {
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Suppress expected console.error logs for 400/401/404 errors
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   // test case 1: correct path
   it('should delete the habit and return success when the user is logged in', async () => {
+    // Mock the DB to pretend the habit exists and belongs to the user
+    db.habit.findFirst.mockResolvedValue({ habitId: 1, userId: 1 });
+    db.habit.deleteMany.mockResolvedValue({ count: 1 });
+
     const response = await request(app)
       .delete('/api/habits/1')
       .set('Authorization', 'Bearer valid-firebase-token') // triggers the "yes" path
@@ -28,6 +67,9 @@ describe('Habit Deletion API (DELETE /api/habits/:id)', () => {
 
   // test case 2: error handling - habit not found
   it('should return 404 Not Found if the habit does not exist', async () => {
+    // Mock the DB to return null, simulating a habit that doesn't exist
+    db.habit.deleteMany.mockResolvedValue({ count: 0 });
+
     const response = await request(app)
       .delete('/api/habits/9999')
       .set('Authorization', 'Bearer valid-firebase-token');

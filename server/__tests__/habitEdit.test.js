@@ -1,8 +1,8 @@
 import request from 'supertest';
-import app from '../app.js';
+import { jest } from '@jest/globals';
 
-jest.mock('../firebaseAdmin.js', () => ({
-  __esModule: true,
+// Mock Firebase Auth
+jest.unstable_mockModule('../firebaseAdmin.js', () => ({
   default: {
     auth: () => ({
       verifyIdToken: jest.fn().mockResolvedValue({
@@ -13,13 +13,78 @@ jest.mock('../firebaseAdmin.js', () => ({
   },
 }));
 
+// Mock User Resolver
+jest.unstable_mockModule('../utils/resolveUser.js', () => ({
+  findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1 }),
+  upsertUserFromDecodedToken: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' }),
+}));
+
+// Mock Database to bypass Prisma TypeScript parsing issues
+jest.unstable_mockModule('../db/db.js', () => ({
+  default: {
+    routine: {
+      findFirst: jest.fn(),
+    },
+    habit: {
+      findFirst: jest.fn(),
+      update: jest.fn(),
+    },
+    $transaction: jest.fn(),
+  },
+}));
+
+// Import modules AFTER mocks are defined
+const db = (await import('../db/db.js')).default;
+const { default: app } = await import('../app.js');
+
 describe('Habit Modification API (PUT /api/habits/:id)', () => {
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Suppress expected console.error logs for 400/401/404 errors
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   // test case 1: correct path
   it('should update the habit and return the updated habit when the user is logged in', async () => {
     const habitID = 2;
     const updatedTitle = 'Read for 1 hour';
     const updatedReminderTime = '20:00';
     const RoutineID = 1;
+
+    // Mock the DB check to pretend the habit and routine exist
+    db.habit.findFirst.mockResolvedValue({ habitId: 2, userId: 1 });
+    db.routine.findFirst.mockResolvedValue({ routineId: 1, userId: 1 });
+    
+    // Mock the DB update result
+    const updatedHabitMock = {
+      habitId: habitID,
+      userId: 1,
+      habitName: updatedTitle,
+      reminders: [{ reminderTime: updatedReminderTime }],
+      routineHabits: [{ routineId: RoutineID }],
+      logs: []
+    };
+    // Mock findFirst to return the complete object for both the check and the final response
+    db.habit.findFirst.mockResolvedValue(updatedHabitMock);
+    db.routine.findFirst.mockResolvedValue({ routineId: RoutineID, userId: 1 });
+
+    db.habit.update.mockResolvedValue(updatedHabitMock);
+    
+    // Mock transaction in case the controller uses Prisma transactions
+    db.$transaction.mockImplementation(async (callback) => {
+      const tx = {
+        habit: { update: jest.fn().mockResolvedValue(updatedHabitMock) },
+        reminder: { deleteMany: jest.fn(), create: jest.fn() },
+        routineHabit: { deleteMany: jest.fn(), create: jest.fn() },
+      };
+      await callback(tx);
+      return updatedHabitMock;
+    });
 
     const response = await request(app)
       .put(`/api/habits/${habitID}`)
@@ -40,6 +105,9 @@ describe('Habit Modification API (PUT /api/habits/:id)', () => {
     const updatedTitle = 'Some Title';
     const updatedReminderTime = '20:00';
     const RoutineID = 1;
+
+    // Return null to simulate not found
+    db.habit.findFirst.mockResolvedValue(null);
 
     const response = await request(app)
       .put(`/api/habits/${nonExistentHabitID}`)
