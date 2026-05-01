@@ -164,7 +164,6 @@ const sortedHabits = React.useMemo(() => {
                   <Text style={styles.streakText}>
                     Longest Streak: {formatDays(habit.maxStreak)}
                   </Text>
-                </View>
 
                   <View style={{ flexDirection: 'row', marginTop: 4 }}>
                     {habit.badges.map((milestone: number) => {

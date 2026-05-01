@@ -179,8 +179,16 @@ function HomeTabs() {
         header: ({ route, navigation }) => <HomeAppbar route={route} navigation={navigation} />,
       })}
     >
-      <Tab.Screen name='Dashboard' component={DashboardScreen} />
-      <Tab.Screen name='Progress' component={ProgressScreen} />
+      <Tab.Screen
+        name='Dashboard'
+        component={DashboardScreen}
+        options={{ title: 'Dashboard' }}
+      />
+      <Tab.Screen
+        name='Progress'
+        component={ProgressScreen}
+        options={{ title: 'Progress' }}
+      />
     </Tab.Navigator>
   );
 }
@@ -203,15 +211,36 @@ function RootNavigation() {
         <Stack.Screen
           name="Home"
           component={HomeTabs}
+          options={{ title: 'Dashboard' }}
         />
-        <Stack.Screen name="HabitSettingsScreen" component={HabitSettingsScreen} />
-        <Stack.Screen name="RoutineSettingsScreen" component={RoutineSettingsScreen} />
-        <Stack.Screen name="AccountManagementScreen" component={AccountManagementScreen} />
+        <Stack.Screen
+          name="HabitSettingsScreen"
+          component={HabitSettingsScreen}
+          options={{ title: 'Habit Settings' }}
+        />
+        <Stack.Screen
+          name="RoutineSettingsScreen"
+          component={RoutineSettingsScreen}
+          options={{ title: 'Routine Settings' }}
+        />
+        <Stack.Screen
+          name="AccountManagementScreen"
+          component={AccountManagementScreen}
+          options={{ title: 'Account Management' }}
+        />
         </>
       ) : (
         <>
-          <Stack.Screen name="SignIn" component={SignInScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen
+            name="SignIn"
+            component={SignInScreen}
+            options={{ title: 'Sign In' }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ title: 'Sign Up' }}
+          />
         </>
       )}
     </Stack.Navigator>
@@ -234,7 +263,12 @@ export default function App() {
   return (
     <AuthProvider>
       <PaperProvider theme={theme}>
-        <NavigationContainer>
+        <NavigationContainer
+          documentTitle={{
+            formatter: (options, route) =>
+              options?.title ?? route?.name ?? "Goalden"
+          }}
+        >
           <RootNavigation />
         </NavigationContainer>
       </PaperProvider>

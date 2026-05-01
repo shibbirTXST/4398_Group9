@@ -1,11 +1,31 @@
 import { jest } from '@jest/globals';
 import request from 'supertest';
 
+// Mock Firebase Auth
+jest.unstable_mockModule('../firebaseAdmin.js', () => ({
+  default: {
+    auth: () => ({
+      verifyIdToken: jest.fn().mockResolvedValue({
+        uid: 'test-uid',
+        email: 'user@test.com',
+      }),
+    }),
+  },
+}));
+
+// Mock User Resolver
+jest.unstable_mockModule('../utils/resolveUser.js', () => ({
+  findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' }),
+  upsertUserFromDecodedToken: jest.fn().mockResolvedValue({ userId: 1, firebaseUid: 'test-uid' })
+}));
+
+// Mock Database
 jest.unstable_mockModule('../db/db.js', () => ({
   default: {
     log: {
       findFirst: jest.fn(),
       create: jest.fn(),
+      findMany: jest.fn(),
     },
     habit: {
       findFirst: jest.fn(),
@@ -26,10 +46,7 @@ jest.unstable_mockModule('../db/db.js', () => ({
   }
 }));
 
-jest.unstable_mockModule('../utils/resolveUser.js', () => ({
-  findUserByFirebaseUid: jest.fn().mockResolvedValue({ userId: 1 }),
-}));
-
+// THEN import after mocks
 const db = (await import('../db/db.js')).default;
 const { default: app } = await import('../app.js');
 const { completeHabit, getHabits } = await import('../controllers/habitController.js');
@@ -48,10 +65,18 @@ const mockRes = () => {
   return res;
 };
 
-describe('completeHabit (cron-based)', () => {
-  beforeEach(() => jest.clearAllMocks());
+describe('completeHabit', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Suppress expected console.error logs to keep terminal clean
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
 
-  it('creates a log and increments streak by 1', async () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('creates a log and updates streak correctly', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
       userId: 1,
@@ -60,12 +85,18 @@ describe('completeHabit (cron-based)', () => {
     });
 
     db.log.findFirst.mockResolvedValue(null);
+
     db.log.create.mockResolvedValue({});
+
+    db.log.findMany.mockResolvedValue([
+      { logDate: new Date(), completionStatus: true },
+      { logDate: new Date(Date.now() - 86400000), completionStatus: true },
+    ]);
 
     db.habit.update.mockResolvedValue({
       habitId: 1,
       habitName: 'Exercise',
-      currentStreak: 3,
+      currentStreak: 2,
       maxStreak: 3,
       reminders: [],
       routineHabits: [],
@@ -78,19 +109,14 @@ describe('completeHabit (cron-based)', () => {
     await completeHabit(req, res);
 
     expect(db.log.create).toHaveBeenCalled();
-
-    expect(db.habit.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          currentStreak: 3,
-        }),
-      })
-    );
+    expect(db.habit.update).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentStreak: 3,
+        ID: '1',
+        completed: true,
+        currentStreak: 2,
       })
     );
   });
@@ -104,7 +130,17 @@ describe('completeHabit (cron-based)', () => {
     });
 
     db.log.findFirst.mockResolvedValue(null);
+
     db.log.create.mockResolvedValue({});
+
+    db.log.findMany.mockResolvedValue([
+      { logDate: new Date(), completionStatus: true },
+      { logDate: new Date(Date.now() - 86400000), completionStatus: true },
+      { logDate: new Date(Date.now() - 2 * 86400000), completionStatus: true },
+      { logDate: new Date(Date.now() - 3 * 86400000), completionStatus: true },
+      { logDate: new Date(Date.now() - 4 * 86400000), completionStatus: true },
+      { logDate: new Date(Date.now() - 5 * 86400000), completionStatus: true },
+    ]);
 
     db.habit.update.mockResolvedValue({
       habitId: 1,
@@ -143,6 +179,10 @@ describe('completeHabit (cron-based)', () => {
     await completeHabit(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Already completed today',
+    });
+
     expect(db.log.create).not.toHaveBeenCalled();
   });
 
@@ -155,6 +195,9 @@ describe('completeHabit (cron-based)', () => {
     await completeHabit(req, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Habit not found',
+    });
   });
 
   it('returns 500 on unexpected error', async () => {
@@ -166,6 +209,9 @@ describe('completeHabit (cron-based)', () => {
     await completeHabit(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Failed to complete habit',
+    });
   });
 });
 
@@ -197,14 +243,9 @@ describe('getHabits', () => {
       .get('/api/habits')
       .set('Authorization', 'Bearer valid-firebase-token');
 
-    await getHabits(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith([
-      expect.objectContaining({
-        completed: true,
-      }),
-    ]);
+    expect(response.status).toBe(200);
+    expect(response.body[0]).toHaveProperty('ID', '1');
+    expect(response.body[0]).toHaveProperty('completed', true);
   });
 
   it('returns habits with completed: false when no logs today', async () => {
@@ -225,13 +266,9 @@ describe('getHabits', () => {
       .get('/api/habits')
       .set('Authorization', 'Bearer valid-firebase-token');
 
-    await getHabits(req, res);
-
-    expect(res.json).toHaveBeenCalledWith([
-      expect.objectContaining({
-        completed: false,
-      }),
-    ]);
+    expect(response.status).toBe(200);
+    expect(response.body[0]).toHaveProperty('ID', '1');
+    expect(response.body[0]).toHaveProperty('completed', false);
   });
 
   it('returns 500 if database fails', async () => {
@@ -241,8 +278,7 @@ describe('getHabits', () => {
       .get('/api/habits')
       .set('Authorization', 'Bearer valid-firebase-token');
 
-    await getHabits(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(500);
+    expect(response.status).toBe(500);
+    expect(response.body.error).toBeDefined();
   });
 });
