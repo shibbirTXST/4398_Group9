@@ -389,6 +389,7 @@ export const ModelName = {
   Routine: 'Routine',
   Log: 'Log',
   Reminder: 'Reminder',
+  HabitBadge: 'HabitBadge',
   RoutineHabit: 'RoutineHabit'
 } as const
 
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "habit" | "routine" | "log" | "reminder" | "routineHabit"
+    modelProps: "user" | "habit" | "routine" | "log" | "reminder" | "habitBadge" | "routineHabit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -779,6 +780,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HabitBadge: {
+      payload: Prisma.$HabitBadgePayload<ExtArgs>
+      fields: Prisma.HabitBadgeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HabitBadgeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HabitBadgeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>
+        }
+        findFirst: {
+          args: Prisma.HabitBadgeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HabitBadgeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>
+        }
+        findMany: {
+          args: Prisma.HabitBadgeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>[]
+        }
+        create: {
+          args: Prisma.HabitBadgeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>
+        }
+        createMany: {
+          args: Prisma.HabitBadgeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HabitBadgeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>[]
+        }
+        delete: {
+          args: Prisma.HabitBadgeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>
+        }
+        update: {
+          args: Prisma.HabitBadgeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>
+        }
+        deleteMany: {
+          args: Prisma.HabitBadgeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HabitBadgeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HabitBadgeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>[]
+        }
+        upsert: {
+          args: Prisma.HabitBadgeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HabitBadgePayload>
+        }
+        aggregate: {
+          args: Prisma.HabitBadgeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHabitBadge>
+        }
+        groupBy: {
+          args: Prisma.HabitBadgeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HabitBadgeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HabitBadgeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HabitBadgeCountAggregateOutputType> | number
+        }
+      }
+    }
     RoutineHabit: {
       payload: Prisma.$RoutineHabitPayload<ExtArgs>
       fields: Prisma.RoutineHabitFieldRefs
@@ -960,6 +1035,16 @@ export const ReminderScalarFieldEnum = {
 } as const
 
 export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typeof ReminderScalarFieldEnum]
+
+
+export const HabitBadgeScalarFieldEnum = {
+  id: 'id',
+  habitId: 'habitId',
+  milestone: 'milestone',
+  earnedAt: 'earnedAt'
+} as const
+
+export type HabitBadgeScalarFieldEnum = (typeof HabitBadgeScalarFieldEnum)[keyof typeof HabitBadgeScalarFieldEnum]
 
 
 export const RoutineHabitScalarFieldEnum = {
@@ -1211,6 +1296,7 @@ export type GlobalOmitConfig = {
   routine?: Prisma.RoutineOmit
   log?: Prisma.LogOmit
   reminder?: Prisma.ReminderOmit
+  habitBadge?: Prisma.HabitBadgeOmit
   routineHabit?: Prisma.RoutineHabitOmit
 }
 

@@ -43,6 +43,7 @@ function habitToDto(habit) {
     enabledStatus: reminder?.enabledStatus ?? true,
     streakShields: habit.streakShields,
     shieldUsedRecently: habit.shieldUsedRecently,
+    badges: habit.habitBadges?.map(b => b.milestone) ?? [],
     enabledStatus: reminder?.enabledStatus ?? true,
   };
 }
@@ -91,6 +92,7 @@ const getHabits = async (req, res) => {
             completionStatus: true,
           },
         },
+        habitBadges: true,
       },
       orderBy: { habitId: 'asc' },
     });
@@ -98,7 +100,7 @@ const getHabits = async (req, res) => {
     const response = rows.map(habitToDto);
 
     // Clear shieldUsedRecently flag
-    if (req.query.acknowledgeShieldUsage === 'true') {
+    if (req.query?.progressScreen === 'true') {
       await db.habit.updateMany({
         where: {
           userId: user.userId,
@@ -349,6 +351,28 @@ const completeHabit = async (req, res) => {
     if (milestones.includes(newStreak) && newShields < SHIELD_CAP) {
       newShields += 1;
     }
+
+    let earnedBadge = null;
+
+    if (milestones.includes(newStreak)) {
+      const existing = await db.habitBadge.findUnique({
+        where: {
+          habitId_milestone: {
+            habitId,
+            milestone: newStreak,
+          },
+        },
+      });
+
+      if (!existing) {
+        earnedBadge = await db.habitBadge.create({
+          data: {
+            habitId,
+            milestone: newStreak,
+          },
+        });
+      }
+    }
     
     const updatedHabit = await db.habit.update({
       where: { habitId },
@@ -370,10 +394,16 @@ const completeHabit = async (req, res) => {
             completionStatus: true,
           },
         },
+        habitBadges: true,
       },
     });
 
-    return res.status(200).json(habitToDto(updatedHabit));
+    return res.status(200).json({
+      ...habitToDto(updatedHabit),
+      newlyEarnedBadge: earnedBadge
+        ? { milestone: earnedBadge.milestone }
+        : null,
+    });
 
   } catch (err) {
     console.error('Error completing habit:', err);

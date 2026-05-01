@@ -61,7 +61,7 @@ const sortedHabits = React.useMemo(() => {
         setLoading(true);
         try {
           const tok = await auth.currentUser?.getIdToken();
-          const res = await fetch(`${API_BASE_URL}/api/habits?acknowledgeShieldUsage=true`, {
+          const res = await fetch(`${API_BASE_URL}/api/habits?progressScreen=true`, {
             headers: { 'Authorization': `Bearer ${tok}` }
           });
           if (!res.ok) throw new Error('Failed to fetch habits');
@@ -76,10 +76,10 @@ const sortedHabits = React.useMemo(() => {
             }))
           );
 
-          const usedShieldHabit = data.find((h: any) => h.shieldUsedRecently);
+          const shieldedHabits = data.filter((h: any) => h.shieldUsedRecently);
 
-          if (usedShieldHabit) {
-            setSnackbarMessage(`A streak shield protected "${usedShieldHabit.title}"`);
+          if (shieldedHabits.length > 0) {
+            setSnackbarMessage(buildShieldMessage(shieldedHabits));
             setSnackbarVisible(true);
           }
         } catch (err) {
@@ -94,6 +94,25 @@ const sortedHabits = React.useMemo(() => {
   );
 
   const formatDays = (count: number) => `${count} ${count === 1 ? 'day' : 'days'}`;
+
+  const buildShieldMessage = (habits: any[]) => {
+  if (habits.length === 1) {
+    return `${habits[0].title} was protected by a streak shield`;
+  }
+
+  if (habits.length === 2) {
+    return `${habits[0].title} and ${habits[1].title} were protected by streak shields`;
+  }
+
+  const names = habits.map(h => h.title);
+    return `${names.slice(0, -1).join(', ')}, and ${names.slice(-1)} were protected by streak shields`;
+  };
+
+  const badgeConfig: Record<number, { icon: string; color: string; label: string }> = {
+    7:   { icon: 'ribbon', color: '#CD7F32', label: '7-day streak' },   // bronze
+    30:  { icon: 'ribbon', color: '#C0C0C0', label: '30-day streak' },  // silver
+    100: { icon: 'ribbon', color: '#FFD700', label: '100-day streak' }, // gold
+  };
 
   return (
     <SafeAreaProvider>
@@ -146,6 +165,27 @@ const sortedHabits = React.useMemo(() => {
                     Longest Streak: {formatDays(habit.maxStreak)}
                   </Text>
                 </View>
+
+                  <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                    {habit.badges.map((milestone: number) => {
+                      const config = badgeConfig[milestone] ?? {
+                        icon: 'ribbon',
+                        color: '#888',
+                        label: `${milestone}-day streak`,
+                      };
+
+                      return (
+                        <Ionicons
+                          key={milestone}
+                          name={config.icon as any}
+                          size={16}
+                          color={config.color}
+                          style={{ marginRight: 6 }}
+                        />
+                      );
+                    })}
+                  </View>
+                </View>
               ))
             )}
           </ScrollView>
@@ -153,7 +193,7 @@ const sortedHabits = React.useMemo(() => {
           <Snackbar
             visible={snackbarVisible}
             onDismiss={() => setSnackbarVisible(false)}
-            duration={3000}
+            duration={5000}
           >
             {snackbarMessage}
           </Snackbar>

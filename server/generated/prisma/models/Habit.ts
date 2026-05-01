@@ -308,6 +308,7 @@ export type HabitWhereInput = {
   logs?: Prisma.LogListRelationFilter
   reminders?: Prisma.ReminderListRelationFilter
   routineHabits?: Prisma.RoutineHabitListRelationFilter
+  habitBadges?: Prisma.HabitBadgeListRelationFilter
 }
 
 export type HabitOrderByWithRelationInput = {
@@ -329,6 +330,7 @@ export type HabitOrderByWithRelationInput = {
   logs?: Prisma.LogOrderByRelationAggregateInput
   reminders?: Prisma.ReminderOrderByRelationAggregateInput
   routineHabits?: Prisma.RoutineHabitOrderByRelationAggregateInput
+  habitBadges?: Prisma.HabitBadgeOrderByRelationAggregateInput
 }
 
 export type HabitWhereUniqueInput = Prisma.AtLeast<{
@@ -353,6 +355,7 @@ export type HabitWhereUniqueInput = Prisma.AtLeast<{
   logs?: Prisma.LogListRelationFilter
   reminders?: Prisma.ReminderListRelationFilter
   routineHabits?: Prisma.RoutineHabitListRelationFilter
+  habitBadges?: Prisma.HabitBadgeListRelationFilter
 }, "habitId">
 
 export type HabitOrderByWithAggregationInput = {
@@ -414,6 +417,7 @@ export type HabitCreateInput = {
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateInput = {
@@ -434,6 +438,7 @@ export type HabitUncheckedCreateInput = {
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUpdateInput = {
@@ -453,6 +458,7 @@ export type HabitUpdateInput = {
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateInput = {
@@ -473,6 +479,7 @@ export type HabitUncheckedUpdateInput = {
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitCreateManyInput = {
@@ -680,6 +687,20 @@ export type HabitUpdateOneRequiredWithoutRemindersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.HabitUpdateToOneWithWhereWithoutRemindersInput, Prisma.HabitUpdateWithoutRemindersInput>, Prisma.HabitUncheckedUpdateWithoutRemindersInput>
 }
 
+export type HabitCreateNestedOneWithoutHabitBadgesInput = {
+  create?: Prisma.XOR<Prisma.HabitCreateWithoutHabitBadgesInput, Prisma.HabitUncheckedCreateWithoutHabitBadgesInput>
+  connectOrCreate?: Prisma.HabitCreateOrConnectWithoutHabitBadgesInput
+  connect?: Prisma.HabitWhereUniqueInput
+}
+
+export type HabitUpdateOneRequiredWithoutHabitBadgesNestedInput = {
+  create?: Prisma.XOR<Prisma.HabitCreateWithoutHabitBadgesInput, Prisma.HabitUncheckedCreateWithoutHabitBadgesInput>
+  connectOrCreate?: Prisma.HabitCreateOrConnectWithoutHabitBadgesInput
+  upsert?: Prisma.HabitUpsertWithoutHabitBadgesInput
+  connect?: Prisma.HabitWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HabitUpdateToOneWithWhereWithoutHabitBadgesInput, Prisma.HabitUpdateWithoutHabitBadgesInput>, Prisma.HabitUncheckedUpdateWithoutHabitBadgesInput>
+}
+
 export type HabitCreateNestedOneWithoutRoutineHabitsInput = {
   create?: Prisma.XOR<Prisma.HabitCreateWithoutRoutineHabitsInput, Prisma.HabitUncheckedCreateWithoutRoutineHabitsInput>
   connectOrCreate?: Prisma.HabitCreateOrConnectWithoutRoutineHabitsInput
@@ -710,6 +731,7 @@ export type HabitCreateWithoutUserInput = {
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateWithoutUserInput = {
@@ -729,6 +751,7 @@ export type HabitUncheckedCreateWithoutUserInput = {
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitCreateOrConnectWithoutUserInput = {
@@ -793,6 +816,7 @@ export type HabitCreateWithoutLogsInput = {
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateWithoutLogsInput = {
@@ -812,6 +836,7 @@ export type HabitUncheckedCreateWithoutLogsInput = {
   shieldUsedRecently?: boolean
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitCreateOrConnectWithoutLogsInput = {
@@ -846,6 +871,7 @@ export type HabitUpdateWithoutLogsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateWithoutLogsInput = {
@@ -865,6 +891,7 @@ export type HabitUncheckedUpdateWithoutLogsInput = {
   shieldUsedRecently?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitCreateWithoutRemindersInput = {
@@ -883,6 +910,7 @@ export type HabitCreateWithoutRemindersInput = {
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateWithoutRemindersInput = {
@@ -902,6 +930,7 @@ export type HabitUncheckedCreateWithoutRemindersInput = {
   shieldUsedRecently?: boolean
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitCreateOrConnectWithoutRemindersInput = {
@@ -936,6 +965,7 @@ export type HabitUpdateWithoutRemindersInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateWithoutRemindersInput = {
@@ -955,6 +985,101 @@ export type HabitUncheckedUpdateWithoutRemindersInput = {
   shieldUsedRecently?: Prisma.BoolFieldUpdateOperationsInput | boolean
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUncheckedUpdateManyWithoutHabitNestedInput
+}
+
+export type HabitCreateWithoutHabitBadgesInput = {
+  habitName: string
+  description?: string | null
+  targetGoal?: string | null
+  goalUnit?: string | null
+  frequencyType: string
+  createdAt?: Date | string
+  status: string
+  currentStreak?: number
+  maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
+  shieldUsedRecently?: boolean
+  user: Prisma.UserCreateNestedOneWithoutHabitsInput
+  logs?: Prisma.LogCreateNestedManyWithoutHabitInput
+  reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
+  routineHabits?: Prisma.RoutineHabitCreateNestedManyWithoutHabitInput
+}
+
+export type HabitUncheckedCreateWithoutHabitBadgesInput = {
+  habitId?: number
+  userId: number
+  habitName: string
+  description?: string | null
+  targetGoal?: string | null
+  goalUnit?: string | null
+  frequencyType: string
+  createdAt?: Date | string
+  status: string
+  currentStreak?: number
+  maxStreak?: number
+  streakShields?: number
+  lastCompletedAt?: Date | string | null
+  shieldUsedRecently?: boolean
+  logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
+  reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
+  routineHabits?: Prisma.RoutineHabitUncheckedCreateNestedManyWithoutHabitInput
+}
+
+export type HabitCreateOrConnectWithoutHabitBadgesInput = {
+  where: Prisma.HabitWhereUniqueInput
+  create: Prisma.XOR<Prisma.HabitCreateWithoutHabitBadgesInput, Prisma.HabitUncheckedCreateWithoutHabitBadgesInput>
+}
+
+export type HabitUpsertWithoutHabitBadgesInput = {
+  update: Prisma.XOR<Prisma.HabitUpdateWithoutHabitBadgesInput, Prisma.HabitUncheckedUpdateWithoutHabitBadgesInput>
+  create: Prisma.XOR<Prisma.HabitCreateWithoutHabitBadgesInput, Prisma.HabitUncheckedCreateWithoutHabitBadgesInput>
+  where?: Prisma.HabitWhereInput
+}
+
+export type HabitUpdateToOneWithWhereWithoutHabitBadgesInput = {
+  where?: Prisma.HabitWhereInput
+  data: Prisma.XOR<Prisma.HabitUpdateWithoutHabitBadgesInput, Prisma.HabitUncheckedUpdateWithoutHabitBadgesInput>
+}
+
+export type HabitUpdateWithoutHabitBadgesInput = {
+  habitName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  goalUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frequencyType?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  shieldUsedRecently?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
+  logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
+  reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
+  routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+}
+
+export type HabitUncheckedUpdateWithoutHabitBadgesInput = {
+  habitId?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  habitName?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  targetGoal?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  goalUnit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  frequencyType?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  maxStreak?: Prisma.IntFieldUpdateOperationsInput | number
+  streakShields?: Prisma.IntFieldUpdateOperationsInput | number
+  lastCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  shieldUsedRecently?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
+  reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
+  routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitCreateWithoutRoutineHabitsInput = {
@@ -973,6 +1098,7 @@ export type HabitCreateWithoutRoutineHabitsInput = {
   user: Prisma.UserCreateNestedOneWithoutHabitsInput
   logs?: Prisma.LogCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeCreateNestedManyWithoutHabitInput
 }
 
 export type HabitUncheckedCreateWithoutRoutineHabitsInput = {
@@ -992,6 +1118,7 @@ export type HabitUncheckedCreateWithoutRoutineHabitsInput = {
   shieldUsedRecently?: boolean
   logs?: Prisma.LogUncheckedCreateNestedManyWithoutHabitInput
   reminders?: Prisma.ReminderUncheckedCreateNestedManyWithoutHabitInput
+  habitBadges?: Prisma.HabitBadgeUncheckedCreateNestedManyWithoutHabitInput
 }
 
 export type HabitCreateOrConnectWithoutRoutineHabitsInput = {
@@ -1026,6 +1153,7 @@ export type HabitUpdateWithoutRoutineHabitsInput = {
   user?: Prisma.UserUpdateOneRequiredWithoutHabitsNestedInput
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateWithoutRoutineHabitsInput = {
@@ -1045,6 +1173,7 @@ export type HabitUncheckedUpdateWithoutRoutineHabitsInput = {
   shieldUsedRecently?: Prisma.BoolFieldUpdateOperationsInput | boolean
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitCreateManyUserInput = {
@@ -1079,6 +1208,7 @@ export type HabitUpdateWithoutUserInput = {
   logs?: Prisma.LogUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateWithoutUserInput = {
@@ -1098,6 +1228,7 @@ export type HabitUncheckedUpdateWithoutUserInput = {
   logs?: Prisma.LogUncheckedUpdateManyWithoutHabitNestedInput
   reminders?: Prisma.ReminderUncheckedUpdateManyWithoutHabitNestedInput
   routineHabits?: Prisma.RoutineHabitUncheckedUpdateManyWithoutHabitNestedInput
+  habitBadges?: Prisma.HabitBadgeUncheckedUpdateManyWithoutHabitNestedInput
 }
 
 export type HabitUncheckedUpdateManyWithoutUserInput = {
@@ -1125,12 +1256,14 @@ export type HabitCountOutputType = {
   logs: number
   reminders: number
   routineHabits: number
+  habitBadges: number
 }
 
 export type HabitCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   logs?: boolean | HabitCountOutputTypeCountLogsArgs
   reminders?: boolean | HabitCountOutputTypeCountRemindersArgs
   routineHabits?: boolean | HabitCountOutputTypeCountRoutineHabitsArgs
+  habitBadges?: boolean | HabitCountOutputTypeCountHabitBadgesArgs
 }
 
 /**
@@ -1164,6 +1297,13 @@ export type HabitCountOutputTypeCountRoutineHabitsArgs<ExtArgs extends runtime.T
   where?: Prisma.RoutineHabitWhereInput
 }
 
+/**
+ * HabitCountOutputType without action
+ */
+export type HabitCountOutputTypeCountHabitBadgesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HabitBadgeWhereInput
+}
+
 
 export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   habitId?: boolean
@@ -1184,6 +1324,7 @@ export type HabitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   logs?: boolean | Prisma.Habit$logsArgs<ExtArgs>
   reminders?: boolean | Prisma.Habit$remindersArgs<ExtArgs>
   routineHabits?: boolean | Prisma.Habit$routineHabitsArgs<ExtArgs>
+  habitBadges?: boolean | Prisma.Habit$habitBadgesArgs<ExtArgs>
   _count?: boolean | Prisma.HabitCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["habit"]>
 
@@ -1246,6 +1387,7 @@ export type HabitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   logs?: boolean | Prisma.Habit$logsArgs<ExtArgs>
   reminders?: boolean | Prisma.Habit$remindersArgs<ExtArgs>
   routineHabits?: boolean | Prisma.Habit$routineHabitsArgs<ExtArgs>
+  habitBadges?: boolean | Prisma.Habit$habitBadgesArgs<ExtArgs>
   _count?: boolean | Prisma.HabitCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HabitIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1262,6 +1404,7 @@ export type $HabitPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     logs: Prisma.$LogPayload<ExtArgs>[]
     reminders: Prisma.$ReminderPayload<ExtArgs>[]
     routineHabits: Prisma.$RoutineHabitPayload<ExtArgs>[]
+    habitBadges: Prisma.$HabitBadgePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     habitId: number
@@ -1676,6 +1819,7 @@ export interface Prisma__HabitClient<T, Null = never, ExtArgs extends runtime.Ty
   logs<T extends Prisma.Habit$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Habit$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reminders<T extends Prisma.Habit$remindersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Habit$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   routineHabits<T extends Prisma.Habit$routineHabitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Habit$routineHabitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoutineHabitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  habitBadges<T extends Prisma.Habit$habitBadgesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Habit$habitBadgesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HabitBadgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2189,6 +2333,30 @@ export type Habit$routineHabitsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.RoutineHabitScalarFieldEnum | Prisma.RoutineHabitScalarFieldEnum[]
+}
+
+/**
+ * Habit.habitBadges
+ */
+export type Habit$habitBadgesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HabitBadge
+   */
+  select?: Prisma.HabitBadgeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HabitBadge
+   */
+  omit?: Prisma.HabitBadgeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HabitBadgeInclude<ExtArgs> | null
+  where?: Prisma.HabitBadgeWhereInput
+  orderBy?: Prisma.HabitBadgeOrderByWithRelationInput | Prisma.HabitBadgeOrderByWithRelationInput[]
+  cursor?: Prisma.HabitBadgeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HabitBadgeScalarFieldEnum | Prisma.HabitBadgeScalarFieldEnum[]
 }
 
 /**

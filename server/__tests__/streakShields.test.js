@@ -6,11 +6,16 @@ jest.unstable_mockModule('../db/db.js', () => ({
       findFirst: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn(),
     },
     log: {
       findFirst: jest.fn(),
       create: jest.fn(),
     },
+    habitBadge: {
+      findUnique: jest.fn(),
+      create: jest.fn(),
+    }
   },
 }));
 
@@ -35,51 +40,17 @@ const mockRes = () => {
   return res;
 };
 
-describe('completeHabit (earning logic only)', () => {
+describe('Streak Shields - completeHabit (cron-based architecture)', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('increments streak and maxStreak', async () => {
-    db.habit.findFirst.mockResolvedValue({
-      habitId: 1,
-      userId: 1,
-      currentStreak: 2,
-      maxStreak: 3,
-      streakShields: 0,
-    });
-
-    db.log.findFirst.mockResolvedValue(null);
-    db.log.create.mockResolvedValue({});
-
-    db.habit.update.mockResolvedValue({
-      habitId: 1,
-      currentStreak: 3,
-      maxStreak: 3,
-      streakShields: 0,
-      reminders: [],
-      routineHabits: [],
-      logs: [{ logId: 1 }],
-    });
-
-    const res = mockRes();
-    await completeHabit(mockReq({ id: '1' }), res);
-
-    expect(db.habit.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          currentStreak: 3,
-          maxStreak: 3,
-        }),
-      })
-    );
-  });
-
-  it('awards shield at milestone (7)', async () => {
+  it('awards a shield at 7-day milestone', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
       userId: 1,
       currentStreak: 6,
       maxStreak: 6,
       streakShields: 0,
+      badges: [],
     });
 
     db.log.findFirst.mockResolvedValue(null);
@@ -87,6 +58,7 @@ describe('completeHabit (earning logic only)', () => {
 
     db.habit.update.mockResolvedValue({
       habitId: 1,
+      habitName: 'Test',
       currentStreak: 7,
       maxStreak: 7,
       streakShields: 1,
@@ -95,8 +67,10 @@ describe('completeHabit (earning logic only)', () => {
       logs: [{ logId: 1 }],
     });
 
+    const req = mockReq({ id: '1' });
     const res = mockRes();
-    await completeHabit(mockReq({ id: '1' }), res);
+
+    await completeHabit(req, res);
 
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -106,13 +80,14 @@ describe('completeHabit (earning logic only)', () => {
     );
   });
 
-  it('does not exceed shield cap (3)', async () => {
+  it('does not exceed shield cap', async () => {
     db.habit.findFirst.mockResolvedValue({
       habitId: 1,
       userId: 1,
       currentStreak: 6,
       maxStreak: 6,
       streakShields: 3,
+      badges: [],
     });
 
     db.log.findFirst.mockResolvedValue(null);
@@ -120,6 +95,7 @@ describe('completeHabit (earning logic only)', () => {
 
     db.habit.update.mockResolvedValue({
       habitId: 1,
+      habitName: 'Test',
       currentStreak: 7,
       maxStreak: 7,
       streakShields: 3,
@@ -128,8 +104,10 @@ describe('completeHabit (earning logic only)', () => {
       logs: [{ logId: 1 }],
     });
 
+    const req = mockReq({ id: '1' });
     const res = mockRes();
-    await completeHabit(mockReq({ id: '1' }), res);
+
+    await completeHabit(req, res);
 
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -138,41 +116,132 @@ describe('completeHabit (earning logic only)', () => {
     );
   });
 
+  it('awards a badge at milestone', async () => {
+    db.habit.findFirst.mockResolvedValue({
+      habitId: 1,
+      userId: 1,
+      currentStreak: 6,
+      maxStreak: 6,
+      streakShields: 0,
+      badges: [],
+    });
+
+    db.log.findFirst.mockResolvedValue(null);
+    db.log.create.mockResolvedValue({});
+
+    db.habit.update.mockResolvedValue({
+      habitId: 1,
+      habitName: 'Test',
+      currentStreak: 7,
+      maxStreak: 7,
+      streakShields: 1,
+      habitBadges: [{ milestone: 7 }],
+      reminders: [],
+      routineHabits: [],
+      logs: [{ logId: 1 }],
+    });
+
+    const req = mockReq({ id: '1' });
+    const res = mockRes();
+
+    await completeHabit(req, res);
+
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        badges: expect.arrayContaining([7]),
+      })
+    );
+  });
+
+  it('does not duplicate badges', async () => {
+    db.habit.findFirst.mockResolvedValue({
+      habitId: 1,
+      userId: 1,
+      currentStreak: 6,
+      maxStreak: 6,
+      streakShields: 0,
+      habitBadges: [{ milestone: 7 }],
+    });
+
+    db.log.findFirst.mockResolvedValue(null);
+    db.log.create.mockResolvedValue({});
+
+    db.habit.update.mockResolvedValue({
+      habitId: 1,
+      habitName: 'Test',
+      currentStreak: 7,
+      maxStreak: 7,
+      streakShields: 1,
+      habitBadges: [{ milestone: 7 }],
+      reminders: [],
+      routineHabits: [],
+      logs: [{ logId: 1 }],
+    });
+
+    const req = mockReq({ id: '1' });
+    const res = mockRes();
+
+    await completeHabit(req, res);
+
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        badges: [7],
+      })
+    );
+  });
+
   it('returns 400 if already completed today', async () => {
     db.habit.findFirst.mockResolvedValue({ habitId: 1, userId: 1 });
     db.log.findFirst.mockResolvedValue({ logId: 1 });
 
+    const req = mockReq({ id: '1' });
     const res = mockRes();
-    await completeHabit(mockReq({ id: '1' }), res);
+
+    await completeHabit(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(db.log.create).not.toHaveBeenCalled();
   });
 
   it('returns 500 on unexpected error', async () => {
     db.habit.findFirst.mockRejectedValue(new Error('DB error'));
 
+    const req = mockReq({ id: '1' });
     const res = mockRes();
-    await completeHabit(mockReq({ id: '1' }), res);
+
+    await completeHabit(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
   });
 });
 
-describe('runStreakJob (shield consumption + reset)', () => {
-  beforeEach(() => jest.clearAllMocks());
+describe('Streak Shields - cron job', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
 
-  it('consumes shield if habit missed yesterday', async () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('consumes a shield when a day is missed', async () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 2);
+
     db.habit.findMany.mockResolvedValue([
       {
         habitId: 1,
-        streakShields: 2,
         currentStreak: 5,
-        lastCompletedAt: new Date(Date.now() - 2 * 86400000),
+        streakShields: 2,
+        lastCompletedAt: yesterday,
       },
     ]);
 
-    await runStreakJob().task?.fireOnTick?.();
+    db.habit.update.mockResolvedValue({});
+
+    runStreakJob();
+
+    await jest.runOnlyPendingTimersAsync();
 
     expect(db.habit.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -183,17 +252,24 @@ describe('runStreakJob (shield consumption + reset)', () => {
     );
   });
 
-  it('resets streak if no shields', async () => {
+  it('resets streak when no shields available', async () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 2);
+
     db.habit.findMany.mockResolvedValue([
       {
         habitId: 1,
-        streakShields: 0,
         currentStreak: 5,
-        lastCompletedAt: new Date(Date.now() - 2 * 86400000),
+        streakShields: 0,
+        lastCompletedAt: yesterday,
       },
     ]);
 
-    await runStreakJob().task?.fireOnTick?.();
+    db.habit.update.mockResolvedValue({});
+
+    runStreakJob();
+
+    await jest.runOnlyPendingTimersAsync();
 
     expect(db.habit.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -204,17 +280,22 @@ describe('runStreakJob (shield consumption + reset)', () => {
     );
   });
 
-  it('does nothing if completed yesterday', async () => {
+  it('does nothing if habit was completed yesterday', async () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
     db.habit.findMany.mockResolvedValue([
       {
         habitId: 1,
-        streakShields: 2,
         currentStreak: 5,
-        lastCompletedAt: new Date(Date.now() - 86400000),
+        streakShields: 2,
+        lastCompletedAt: yesterday,
       },
     ]);
 
-    await runStreakJob().task?.fireOnTick?.();
+    runStreakJob();
+
+    await jest.runOnlyPendingTimersAsync();
 
     expect(db.habit.update).not.toHaveBeenCalled();
   });

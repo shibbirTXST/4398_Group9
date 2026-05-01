@@ -56,6 +56,7 @@ export const ModelName = {
   Routine: 'Routine',
   Log: 'Log',
   Reminder: 'Reminder',
+  HabitBadge: 'HabitBadge',
   RoutineHabit: 'RoutineHabit'
 } as const
 
@@ -143,6 +144,16 @@ export const ReminderScalarFieldEnum = {
 } as const
 
 export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typeof ReminderScalarFieldEnum]
+
+
+export const HabitBadgeScalarFieldEnum = {
+  id: 'id',
+  habitId: 'habitId',
+  milestone: 'milestone',
+  earnedAt: 'earnedAt'
+} as const
+
+export type HabitBadgeScalarFieldEnum = (typeof HabitBadgeScalarFieldEnum)[keyof typeof HabitBadgeScalarFieldEnum]
 
 
 export const RoutineHabitScalarFieldEnum = {
