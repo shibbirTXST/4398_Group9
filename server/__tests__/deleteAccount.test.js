@@ -22,6 +22,7 @@ const { default: app } = await import('../app.js');
 describe("DELETE /api/auth/delete-account", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   test("should delete a user when given a valid token", async () => {

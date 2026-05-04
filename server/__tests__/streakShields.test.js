@@ -41,7 +41,10 @@ const mockRes = () => {
 };
 
 describe('Streak Shields - completeHabit (cron-based architecture)', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
 
   it('awards a shield at 7-day milestone', async () => {
     db.habit.findFirst.mockResolvedValue({
@@ -218,6 +221,7 @@ describe('Streak Shields - cron job', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
