@@ -52,7 +52,7 @@ npx expo install --fix
 npx expo start -c
 ```
 
-#### Running Tests
+## Running Tests
 You can invoke the test script from inside `server`:
 ```bash
 #Server-side
