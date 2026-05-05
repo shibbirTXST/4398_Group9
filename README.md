@@ -23,6 +23,12 @@ cd server
 npm install
 ```
 Create a `.env` file and fill in your Firebase and DB credentials (see `.env.example`).
+
+Load database schema using:
+```bash
+npx prisma db push
+```
+
 Start the server:
 ```bash
 npm run dev
@@ -39,23 +45,18 @@ npx expo start
 ```
 You can use the Expo Go app on your phone or an emulator to view the app.
 
-#### Running Tests
-All tests are executed from the workspace root using Jest and Supertest. The necessary packages are installed at the root level.
+If issues are encountered when bundling application, try the follow commands (in the `client` directory) in this order:
 ```bash
-# install on root if you haven't already
-npm install
-
-# run tests (Both Server and Client)
-npm test
+npm install expo@55 @expo/cli@latest
+npx expo install --fix
+npx expo start -c
 ```
-You can also invoke the test script from inside `server` or `client` to test only server-side/client-side components:
+
+#### Running Tests
+You can invoke the test script from inside `server`:
 ```bash
 #Server-side
 cd server
-npm test
-
-#Client-side
-cd client
 npm test
 ```
 
