@@ -20,5 +20,13 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to the Habit Tracker API' });
 });
 
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 export default app;

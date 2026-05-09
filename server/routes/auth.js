@@ -6,6 +6,30 @@ import { upsertUserFromDecodedToken } from '../utils/resolveUser.js';
 
 const authRouter = express.Router();
 
+/**
+ * @swagger
+ * /api/auth/sync:
+ *   post:
+ *     summary: Sync the authenticated Firebase user with the application database
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User synced successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   description: The synced user record
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Failed to sync user
+ */
 authRouter.post('/sync', authCheck, async (req, res) => {
   try {
     const user = await upsertUserFromDecodedToken(req.user);
@@ -16,6 +40,30 @@ authRouter.post('/sync', authCheck, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/delete-account:
+ *   delete:
+ *     summary: Delete the authenticated user's account
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Failed to delete user
+ */
 authRouter.delete('/delete-account', authCheck, async (req, res) => {
   try {
     const uid = req.user.uid; // Provided by authCheck middleware
@@ -34,6 +82,44 @@ authRouter.delete('/delete-account', authCheck, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/auth/push-token:
+ *   post:
+ *     summary: Save the authenticated user's Expo push notification token
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - pushToken
+ *             properties:
+ *               pushToken:
+ *                 type: string
+ *                 example: ExpoPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+ *     responses:
+ *       200:
+ *         description: Push token saved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Push token saved successfully
+ *       400:
+ *         description: Push token is required
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
 // push token route for saving Expo push tokens to the database
 authRouter.post('/push-token', async (req, res) => {
   try {
